@@ -31,9 +31,18 @@ try:
 except Exception as e:
     print(f"nvidia-smi error: {e}")
 
-# 2. Install knobs
-print("Installing knobs from /kaggle/input/knobs-code...")
-subprocess.run([sys.executable, "-m", "pip", "install", "-e", "/kaggle/input/knobs-code"], check=True)
+# 2. Dynamically locate knobs package in /kaggle/input
+print("Searching for knobs package in /kaggle/input...")
+if os.path.exists("/kaggle/input"):
+    for root, dirs, files in os.walk("/kaggle/input"):
+        if "knobs" in dirs and os.path.exists(os.path.join(root, "knobs", "__init__.py")):
+            if root not in sys.path:
+                sys.path.insert(0, root)
+            print(f"Found knobs package at: {root}, added to sys.path")
+            break
+
+import knobs
+print(f"Successfully loaded knobs from: {knobs.__file__}")
 
 import timm
 from knobs.models import (
