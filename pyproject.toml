@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "knobs"
+version = "0.1.0"
+description = "Which efficiency knob should you turn when the input is degraded?"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "timm>=1.0.0",
+    "imagecorruptions>=1.1.2",
+    "numpy>=1.22.0",
+    "scipy>=1.9.0",
+    "scikit-learn>=1.0.0",
+    "pandas>=1.4.0",
+    "pyarrow>=10.0.0",
+    "pillow>=9.0.0",
+    "opencv-python-headless>=4.6.0",
+    "matplotlib>=3.5.0",
+    "tqdm>=4.64.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gpu: marks tests as requiring GPU (deselect with '-m \"not gpu\"')"
+]
