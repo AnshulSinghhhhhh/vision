@@ -32,18 +32,28 @@ print(f"Successfully loaded knobs from: {knobs.__file__}")
 
 from knobs.data import create_stratified_splits
 
-DATA_DIR = "/kaggle/input/imagenet-object-localization-challenge"
-VAL_SOLUTION = os.path.join(DATA_DIR, "LOC_val_solution.csv")
-SYNSET_MAPPING = os.path.join(DATA_DIR, "LOC_synset_mapping.txt")
-OUTPUT_DIR = "/kaggle/working/splits"
+# Dynamically locate LOC_val_solution.csv
+val_solution_path = None
+synset_mapping_path = None
 
-print(f"Reading solution from: {VAL_SOLUTION}")
-print(f"Reading synset mapping from: {SYNSET_MAPPING}")
+for root, dirs, files in os.walk("/kaggle/input"):
+    if "LOC_val_solution.csv" in files:
+        val_solution_path = os.path.join(root, "LOC_val_solution.csv")
+    if "LOC_synset_mapping.txt" in files:
+        synset_mapping_path = os.path.join(root, "LOC_synset_mapping.txt")
+
+if not val_solution_path:
+    raise FileNotFoundError("Could not find LOC_val_solution.csv in /kaggle/input")
+
+print(f"Located LOC_val_solution.csv at: {val_solution_path}")
+print(f"Located LOC_synset_mapping.txt at: {synset_mapping_path}")
+
+OUTPUT_DIR = "/kaggle/working/splits"
 print(f"Writing splits to: {OUTPUT_DIR}")
 
 splits = create_stratified_splits(
-    val_solution_path=VAL_SOLUTION,
-    synset_mapping_path=SYNSET_MAPPING,
+    val_solution_path=val_solution_path,
+    synset_mapping_path=synset_mapping_path,
     output_dir=OUTPUT_DIR,
     seed=42,
 )

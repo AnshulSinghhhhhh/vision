@@ -1,0 +1,18 @@
+{
+  "id": "anshulsingh45/knobs-k1sanity",
+  "title": "knobs-k1sanity",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "accelerator": "NvidiaTeslaT4",
+  "dataset_sources": [
+    "anshulsingh45/knobs-code",
+    "anshulsingh45/knobs-kprep"
+  ],
+  "competition_sources": [
+    "imagenet-object-localization-challenge"
+  ]
+}

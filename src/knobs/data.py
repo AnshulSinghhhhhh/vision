@@ -121,8 +121,8 @@ def transform_bbox_to_crop448(
 
 def create_stratified_splits(
     val_solution_path: str,
-    synset_mapping_path: str,
-    output_dir: str,
+    synset_mapping_path: Optional[str] = None,
+    output_dir: str = "splits",
     seed: int = 42,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """Generates the disjoint stratified partitions:
@@ -134,7 +134,21 @@ def create_stratified_splits(
         - MECH: 2,000 (2/class)
     - FULL: 50,000 (all validation images)
     """
-    synset_to_idx, _ = load_synset_to_class_idx(synset_mapping_path)
+    if synset_mapping_path and os.path.exists(synset_mapping_path):
+        synset_to_idx, _ = load_synset_to_class_idx(synset_mapping_path)
+    else:
+        # Dynamically derive sorted synset mapping directly from val_solution_path
+        synset_to_idx = {}
+        with open(val_solution_path, "r", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            _ = next(reader)
+            all_synsets = set()
+            for row in reader:
+                if len(row) >= 2 and row[1]:
+                    syn = row[1].strip().split()[0]
+                    all_synsets.add(syn)
+            for idx, syn in enumerate(sorted(all_synsets)):
+                synset_to_idx[syn] = idx
     
     # Read LOC_val_solution.csv
     images_by_synset: Dict[str, List[Dict[str, Any]]] = {syn: [] for syn in synset_to_idx}
