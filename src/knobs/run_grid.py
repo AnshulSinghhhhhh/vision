@@ -26,14 +26,70 @@ from knobs.models import create_model_instance, normalize_tensor, MODEL_TAGS
 from knobs.tokens import patch_vit_with_tome, get_tome_schedule_for_budget
 
 
-def get_git_commit_hash() -> str:
-    """Attempts to retrieve the current git commit hash."""
+def get_git_commit_hash(git_commit_file: Optional[str] = None) -> str:
+    """Attempts to retrieve current git commit hash.
+    
+    If git is unavailable (e.g. on Kaggle), reads the GIT_COMMIT provenance file.
+    """
+    if git_commit_file and os.path.exists(git_commit_file):
+        try:
+            with open(git_commit_file, "r", encoding="utf-8") as f:
+                c = f.read().strip()
+                if c:
+                    return c
+        except Exception:
+            pass
+
+    # Check environment variable
+    env_path = os.environ.get("KNOBS_GIT_COMMIT_FILE")
+    if env_path and os.path.exists(env_path):
+        try:
+            with open(env_path, "r", encoding="utf-8") as f:
+                c = f.read().strip()
+                if c:
+                    return c
+        except Exception:
+            pass
+
+    # Try git command first if available
     try:
         import subprocess
         res = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True)
-        return res.stdout.strip()
+        commit = res.stdout.strip()
+        status_res = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
+        is_dirty = bool(status_res.stdout.strip()) if status_res.returncode == 0 else False
+        return f"{commit}{'-dirty' if is_dirty else ''}"
     except Exception:
-        return "unknown_git_commit"
+        pass
+
+    # Fallback to searching candidate GIT_COMMIT files
+    candidate_locations = [
+        "GIT_COMMIT",
+        os.path.join(os.getcwd(), "GIT_COMMIT"),
+        os.path.join(os.path.dirname(__file__), "GIT_COMMIT"),
+        os.path.join(os.path.dirname(__file__), "..", "GIT_COMMIT"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "GIT_COMMIT"),
+        "/kaggle/input/datasets/anshulsingh45/knobs-code/GIT_COMMIT",
+        "/kaggle/input/knobs-code/GIT_COMMIT",
+        "/tmp/GIT_COMMIT",
+        "/tmp/src/GIT_COMMIT",
+    ]
+    for p in sys.path:
+        candidate_locations.append(os.path.join(p, "GIT_COMMIT"))
+        candidate_locations.append(os.path.join(p, "knobs", "GIT_COMMIT"))
+        candidate_locations.append(os.path.join(p, "..", "GIT_COMMIT"))
+
+    for path in candidate_locations:
+        if os.path.exists(path) and os.path.isfile(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    c = f.read().strip()
+                    if c:
+                        return c
+            except Exception:
+                continue
+
+    return "unknown_git_commit"
 
 
 def get_environment_metadata(device: torch.device) -> Dict[str, Any]:

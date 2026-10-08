@@ -48,14 +48,25 @@ def package_and_push_code_dataset(
     shutil.copy2(os.path.join(repo_root, "pyproject.toml"), staging_dir)
     shutil.copy2(os.path.join(repo_root, "requirements.txt"), staging_dir)
     
-    # Copy splits directory if it exists
-    splits_src = os.path.join(repo_root, "splits")
-    splits_dest = os.path.join(staging_dir, "splits")
-    if os.path.exists(splits_src):
-        if os.path.exists(splits_dest):
-            shutil.rmtree(splits_dest)
-        shutil.copytree(splits_src, splits_dest)
-        print(f"Copied splits directory to staging ({len(os.listdir(splits_dest))} files)")
+    # Write GIT_COMMIT provenance file
+    try:
+        res = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo_root, capture_output=True, text=True, check=True)
+        commit_hash = res.stdout.strip()
+        status_res = subprocess.run(["git", "status", "--porcelain"], cwd=repo_root, capture_output=True, text=True)
+        is_dirty = bool(status_res.stdout.strip())
+        git_commit_info = f"{commit_hash}{'-dirty' if is_dirty else ''}"
+    except Exception:
+        git_commit_info = "unknown_git_commit"
+
+    for c_path in [
+        os.path.join(staging_dir, "GIT_COMMIT"),
+        os.path.join(src_dest, "GIT_COMMIT"),
+        os.path.join(src_dest, "knobs", "GIT_COMMIT"),
+    ]:
+        os.makedirs(os.path.dirname(c_path), exist_ok=True)
+        with open(c_path, "w", encoding="utf-8") as f:
+            f.write(git_commit_info)
+    print(f"Recorded provenance in GIT_COMMIT: {git_commit_info}")
     
     # Metadata for dataset
     meta_path = os.path.join(staging_dir, "dataset-metadata.json")
