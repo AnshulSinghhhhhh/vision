@@ -165,11 +165,13 @@ def run_freqnoise_v2(
                 pre_rms_list.append(pre_rms)
                 post_rms_list.append(post_rms)
                 valid_ids.append(img_id)
+                del arr_448, corr_arr
 
             if not valid_ids:
                 continue
 
             t_batch_448 = torch.cat(batch_448, dim=0).to(device)
+            del batch_448
 
             for res in resolutions:
                 t_res = resize_tensor_torch(t_batch_448, target_size=res)
@@ -210,8 +212,11 @@ def run_freqnoise_v2(
                             "pre_clip_rms": pre_rms_list[idx_img],
                             "post_clip_rms": post_rms_list[idx_img],
                         })
+                    del norm_in, logits
 
-            del batch_448, t_batch_448, t_res, norm_in
+                del t_res
+
+            del t_batch_448
             if device.type == "cuda":
                 torch.cuda.empty_cache()
             gc.collect()

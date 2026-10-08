@@ -16,7 +16,7 @@ Features:
 import os
 import hashlib
 import random
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 import numpy as np
 from PIL import Image
 
@@ -225,6 +225,25 @@ FREQ_BANDS = {
 }
 
 
+_FREQ_MASK_CACHE: Dict[Tuple[int, int, float, float], np.ndarray] = {}
+
+
+def get_annular_freq_mask(h: int, w: int, r_min: float, r_max: float) -> np.ndarray:
+    """Returns cached 2D annular frequency mask expanded to (H, W, 1)."""
+    key = (h, w, float(r_min), float(r_max))
+    if key not in _FREQ_MASK_CACHE:
+        u = np.fft.fftfreq(h) * h
+        v = np.fft.fftfreq(w) * w
+        U, V = np.meshgrid(u, v, indexing="ij")
+        R = np.sqrt(U**2 + V**2)
+        if r_max < h // 2:
+            mask = ((R >= r_min) & (R < r_max)).astype(np.float32)
+        else:
+            mask = ((R >= r_min) & (R <= r_max)).astype(np.float32)
+        _FREQ_MASK_CACHE[key] = mask[:, :, None]
+    return _FREQ_MASK_CACHE[key]
+
+
 def generate_fft_bandlimited_noise(
     shape: Tuple[int, int, int] = (448, 448, 3),
     band: str = "broadband",
@@ -268,20 +287,11 @@ def generate_fft_bandlimited_noise(
     if band.lower() == "broadband" and custom_cutoff is None:
         noise = w_noise
     else:
-        u = np.fft.fftfreq(h) * h
-        v = np.fft.fftfreq(w) * w
-        U, V = np.meshgrid(u, v, indexing="ij")
-        R = np.sqrt(U**2 + V**2)
-
-        if r_max < h // 2:
-            mask = ((R >= r_min) & (R < r_max)).astype(np.float32)
-        else:
-            mask = ((R >= r_min) & (R <= r_max)).astype(np.float32)
-
-        # 2D FFT per channel
+        mask = get_annular_freq_mask(h, w, r_min, r_max)
         W = np.fft.fft2(w_noise, axes=(0, 1))
-        W_filtered = W * mask[:, :, None]
-        noise = np.fft.ifft2(W_filtered, axes=(0, 1)).real.astype(np.float32)
+        W *= mask
+        noise = np.fft.ifft2(W, axes=(0, 1)).real.astype(np.float32)
+        del W, w_noise
 
     current_rms = float(np.sqrt(np.mean(noise**2)))
     if current_rms > 1e-12:
@@ -328,6 +338,7 @@ def apply_fft_frequency_noise(
 
     effective_noise = corrupted_uint8.astype(np.float32) - img_f
     post_clip_rms = float(np.sqrt(np.mean(effective_noise**2)))
+    del noise, img_f, corrupted_f, effective_noise
 
     return corrupted_uint8, pre_clip_rms, post_clip_rms
 
