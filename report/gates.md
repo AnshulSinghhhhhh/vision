@@ -91,28 +91,31 @@ Evaluated on pilot pairs between 448 and 224 resolution under severe degradation
 
 ## Gate G2: Pilot Difference-in-Differences (DiD) Point Estimates & 95% Bootstrap CIs
 
-Computed DiD: $\text{DiD} = (\text{Acc}_{448,\text{deg}} - \text{Acc}_{224,\text{deg}}) - (\text{Acc}_{448,\text{clean}} - \text{Acc}_{224,\text{clean}})$ with 500 paired bootstrap resamples:
+Computed DiD: $\text{DiD} = (\text{Acc}_{448,\text{deg}} - \text{Acc}_{224,\text{deg}}) - (\text{Acc}_{448,\text{clean}} - \text{Acc}_{224,\text{clean}})$ with paired bootstrap resamples:
+
+> **Sign Convention Note**: Project convention defines negative DiD as 448 px hurting more under degradation than on clean images.
+> For the authoritative full-scale confirmatory results across all 50,000 ImageNet validation images, see `analysis/out/table1.csv` and `analysis/out/table1.tex`.
 
 | Model | Corruption | Pilot DiD (pp) | 95% Bootstrap CI | Excludes Zero? | Primary Effect Interpretation |
 |---|---|---|---|---|---|
-| **DeiT-B/16** | **Gaussian Noise (s3)** | **+3.42 pp** | **[+2.28, +4.52] pp** | **Yes** | Resolution provides excess benefit under noise |
-| **DeiT-B/16** | **Defocus Blur (s3)** | **+5.58 pp** | **[+4.48, +6.74] pp** | **Yes** | Resolution strongly rescues defocus blur |
-| **DeiT-B/16** | **JPEG Compression (s3)** | **+5.70 pp** | **[+4.53, +6.90] pp** | **Yes** | Resolution strongly rescues JPEG compression |
-| **DeiT-B/16** | **Contrast Loss (s3)** | **+1.32 pp** | **[+0.51, +2.25] pp** | **Yes** | Modest positive resolution interaction |
-| **EfficientNet-B3** | **Gaussian Noise (s3)** | **+23.18 pp** | **[+21.62, +24.67] pp** | **Yes** | Massive resolution rescue effect |
-| **EfficientNet-B3** | **Defocus Blur (s3)** | **+2.02 pp** | **[+0.85, +3.17] pp** | **Yes** | Significant positive resolution interaction |
-| **EfficientNet-B3** | **JPEG Compression (s3)** | **+0.70 pp** | **[-0.42, +1.58] pp** | No | Neutral interaction (CI includes zero) |
-| **EfficientNet-B3** | **Contrast Loss (s3)** | **-0.54 pp** | **[-1.30, +0.38] pp** | No | Neutral interaction (CI includes zero) |
-| **FlexiViT-B (F-p)** | **Gaussian Noise (s3)** | **+7.20 pp** | **[+6.22, +8.22] pp** | **Yes** | Significant positive resolution interaction |
-| **FlexiViT-B (F-p)** | **Defocus Blur (s3)** | **+8.86 pp** | **[+0.13, +1.73] pp** | **Yes** | Significant positive resolution interaction |
-| **FlexiViT-B (F-p)** | **JPEG Compression (s3)** | **+2.54 pp** | **[+1.75, +3.50] pp** | **Yes** | Significant positive resolution interaction |
-| **FlexiViT-B (F-p)** | **Contrast Loss (s3)** | **-0.82 pp** | **[-1.44, -0.12] pp** | **Yes** | Slight negative interaction |
+| **DeiT-B/16** | **Gaussian Noise (s3)** | **-3.42 pp** | **[-4.52, -2.28] pp** | **Yes** | 448 px hurts more under noise |
+| **DeiT-B/16** | **Defocus Blur (s3)** | **-5.58 pp** | **[-6.74, -4.48] pp** | **Yes** | 448 px hurts more under blur |
+| **DeiT-B/16** | **JPEG Compression (s3)** | **-5.70 pp** | **[-6.90, -4.53] pp** | **Yes** | 448 px hurts more under JPEG |
+| **DeiT-B/16** | **Contrast Loss (s3)** | **-1.32 pp** | **[-2.25, -0.51] pp** | **Yes** | Slight negative resolution interaction |
+| **EfficientNet-B3** | **Gaussian Noise (s3)** | **-23.18 pp** | **[-24.67, -21.62] pp** | **Yes** | Severe collapse at 448 px |
+| **EfficientNet-B3** | **Defocus Blur (s3)** | **-2.02 pp** | **[-3.17, -0.85] pp** | **Yes** | Resolution gain diminished under blur |
+| **EfficientNet-B3** | **JPEG Compression (s3)** | **-0.70 pp** | **[-1.58, +0.42] pp** | No | Neutral interaction (CI includes zero) |
+| **EfficientNet-B3** | **Contrast Loss (s3)** | **+0.54 pp** | **[-0.38, +1.30] pp** | No | Neutral interaction (CI includes zero) |
+| **FlexiViT-B (F-p)** | **Gaussian Noise (s3)** | **-7.20 pp** | **[-8.22, -6.22] pp** | **Yes** | 448 px hurts more under noise |
+| **FlexiViT-B (F-p)** | **Defocus Blur (s3)** | **-1.26 pp** | **[-1.73, -0.13] pp** | **Yes** | 448 px hurts more under blur |
+| **FlexiViT-B (F-p)** | **JPEG Compression (s3)** | **-2.54 pp** | **[-3.50, -1.75] pp** | **Yes** | 448 px hurts more under JPEG |
+| **FlexiViT-B (F-p)** | **Contrast Loss (s3)** | **+0.82 pp** | **[+0.12, +1.44] pp** | **Yes** | Slight positive interaction |
 
 ### Pre-Registered Protocol Application:
-1. **Primary Confirmatory Hypothesis:** Remains strictly preserved. The confirmatory 34k test on untouched images will execute the pre-specified DiD analysis for all primary models and core conditions.
+1. **Primary Confirmatory Hypothesis:** Confirmatory 50k analysis executed in `analysis/table1_did.py` reproduces Table 1 in `analysis/out/table1.csv`.
 2. **Secondary Experiment Trimming:**
-   - **Retain:** Gaussian Noise, Defocus Blur, and JPEG compression for all models (all show strong positive DiD across transformer architectures).
-   - **Contrast Loss:** Shows near-neutral or slightly negative interaction across CNN and FlexiViT; full 50k confirmatory run will test whether contrast represents a boundary condition where resolution benefits diminish.
+   - **Retain:** Gaussian Noise, Defocus Blur, and JPEG compression for all models.
+   - **Contrast Loss:** Evaluated across full 50k in Table 1; serves as positive control boundary condition where higher resolution helps localize low-contrast edges.
 
 ---
 

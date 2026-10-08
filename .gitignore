@@ -62,7 +62,13 @@ htmlcov/
 outputs/
 cache/
 data/
-downloads/
 scratch/
 analysis/out/.cache/
+results.zip
+report.zip
+*.parquet
+*.pt
+!results/raw/**/*.parquet
+!results/raw/*.parquet
+
 
