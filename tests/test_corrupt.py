@@ -2,7 +2,18 @@
 
 import numpy as np
 import pytest
-from knobs.corrupt import apply_corruption, PRIMARY_CORRUPTIONS, generate_frequency_controlled_noise
+from knobs.corrupt import (
+    apply_corruption,
+    PRIMARY_CORRUPTIONS,
+    generate_frequency_controlled_noise,
+    CORRUPTION_BACKEND,
+    FALLBACK_GAUSSIAN_NOISE_SIGMAS,
+)
+
+
+@pytest.fixture(autouse=True)
+def allow_fallback_env(monkeypatch):
+    monkeypatch.setenv("KNOBS_ALLOW_FALLBACK", "1")
 
 
 def test_corruption_determinism():
@@ -58,3 +69,27 @@ def test_frequency_controlled_noise():
     # Tolerances within 1.0 RMS unit
     assert abs(rms_broad - target_rms) < 2.0
     assert abs(rms_band - target_rms) < 2.0
+
+
+def test_fallback_gaussian_noise_sigmas():
+    """Verifies that the fallback gaussian_noise sigma list equals [0.08, 0.12, 0.18, 0.26, 0.38]."""
+    assert FALLBACK_GAUSSIAN_NOISE_SIGMAS == [0.08, 0.12, 0.18, 0.26, 0.38]
+
+
+def test_corruption_backend_exposed():
+    """Verifies that CORRUPTION_BACKEND is exposed as expected."""
+    assert CORRUPTION_BACKEND in ("imagecorruptions", "fallback")
+
+
+def test_fallback_backend_raises_without_env_flag(monkeypatch):
+    """Verifies that fallback corruption raises unless KNOBS_ALLOW_FALLBACK=1."""
+    monkeypatch.delenv("KNOBS_ALLOW_FALLBACK", raising=False)
+    monkeypatch.setattr("knobs.corrupt.CORRUPTION_BACKEND", "fallback")
+    dummy = np.zeros((448, 448, 3), dtype=np.uint8)
+    with pytest.raises(RuntimeError, match="KNOBS_ALLOW_FALLBACK"):
+        apply_corruption(dummy, "id_test", "gaussian_noise", severity=1)
+        
+    # With flag set, it executes properly
+    monkeypatch.setenv("KNOBS_ALLOW_FALLBACK", "1")
+    out = apply_corruption(dummy, "id_test", "gaussian_noise", severity=1)
+    assert out.shape == dummy.shape

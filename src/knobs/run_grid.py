@@ -41,10 +41,24 @@ def get_environment_metadata(device: torch.device) -> Dict[str, Any]:
     is_cuda = device.type == "cuda"
     gpu_name = torch.cuda.get_device_name(device) if is_cuda else "CPU"
     
+    import timm
+    import PIL
+    from knobs.corrupt import CORRUPTION_BACKEND
+
+    try:
+        import imagecorruptions
+        ic_version = getattr(imagecorruptions, "__version__", "installed")
+    except Exception:
+        ic_version = "unavailable"
+    
     return {
         "git_commit": get_git_commit_hash(),
         "python_version": sys.version,
-        "torch_version": torch.__version__,
+        "torch_version": getattr(torch, "__version__", "unknown"),
+        "timm_version": getattr(timm, "__version__", "unknown"),
+        "pillow_version": getattr(PIL, "__version__", "unknown"),
+        "imagecorruptions_version": ic_version,
+        "corruption_backend": CORRUPTION_BACKEND,
         "cuda_available": torch.cuda.is_available(),
         "gpu_name": gpu_name,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

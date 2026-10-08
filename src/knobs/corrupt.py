@@ -13,6 +13,7 @@ Features:
   - Bandlimited noise generated at 224 and upsampled to 448 with matched RMS power.
 """
 
+import os
 import hashlib
 import random
 from typing import Tuple, Optional
@@ -21,9 +22,18 @@ from PIL import Image
 
 # Import imagecorruptions if available, otherwise fallback
 try:
+    import imagecorruptions
     from imagecorruptions import corrupt as ic_corrupt
-except ImportError:
+    CORRUPTION_BACKEND = "imagecorruptions"
+except Exception:
+    imagecorruptions = None
     ic_corrupt = None
+    CORRUPTION_BACKEND = "fallback"
+
+FALLBACK_GAUSSIAN_NOISE_SIGMAS = [0.08, 0.12, 0.18, 0.26, 0.38]
+FALLBACK_CONTRAST_FACTORS = [0.4, 0.3, 0.2, 0.1, 0.05]
+FALLBACK_DEFOCUS_BLUR_SIGMAS = [1.0, 2.0, 3.0, 4.0, 6.0]
+FALLBACK_JPEG_QUALITIES = [25, 18, 15, 10, 7]
 
 PRIMARY_CORRUPTIONS = [
     "gaussian_noise",
@@ -94,12 +104,17 @@ def apply_corruption(
     seed = compute_seed(image_id, corruption_name, severity, salt=salt)
     
     with SeedContext(seed):
-        if ic_corrupt is not None:
+        if ic_corrupt is not None and CORRUPTION_BACKEND == "imagecorruptions":
             # imagecorruptions takes uint8 array (H, W, 3)
             corrupted = ic_corrupt(img_448, corruption_name=corruption_name, severity=severity)
             return np.ascontiguousarray(corrupted, dtype=np.uint8)
         else:
             # Fallback simple deterministic implementations if imagecorruptions is missing
+            if os.environ.get("KNOBS_ALLOW_FALLBACK", "0") != "1":
+                raise RuntimeError(
+                    "Corruption backend is 'fallback' because imagecorruptions is unavailable. "
+                    "Set environment variable KNOBS_ALLOW_FALLBACK=1 to explicitly allow fallback corruptions."
+                )
             return _fallback_corrupt(img_448, corruption_name, severity)
 
 
@@ -107,27 +122,27 @@ def _fallback_corrupt(img: np.ndarray, corruption_name: str, severity: int) -> n
     """Fallback basic implementations of primary corruptions for testing environments."""
     img_float = img.astype(np.float32) / 255.0
     if corruption_name == "gaussian_noise":
-        sigmas = [0.08, 0.12, 0.18, 0.26, 0.38]
+        sigmas = FALLBACK_GAUSSIAN_NOISE_SIGMAS
         sigma = sigmas[min(severity - 1, len(sigmas) - 1)]
         noise = np.random.normal(0, sigma, img.shape)
         out = np.clip(img_float + noise, 0.0, 1.0) * 255.0
         return out.astype(np.uint8)
     elif corruption_name == "contrast":
-        factors = [0.4, 0.3, 0.2, 0.1, 0.05]
+        factors = FALLBACK_CONTRAST_FACTORS
         factor = factors[min(severity - 1, len(factors) - 1)]
         mean = np.mean(img_float, axis=(0, 1), keepdims=True)
         out = np.clip((img_float - mean) * factor + mean, 0.0, 1.0) * 255.0
         return out.astype(np.uint8)
     elif corruption_name == "defocus_blur":
         from scipy.ndimage import gaussian_filter
-        sigmas = [1.0, 2.0, 3.0, 4.0, 6.0]
+        sigmas = FALLBACK_DEFOCUS_BLUR_SIGMAS
         sigma = sigmas[min(severity - 1, len(sigmas) - 1)]
         out = np.zeros_like(img_float)
         for c in range(3):
             out[..., c] = gaussian_filter(img_float[..., c], sigma=sigma)
         return (np.clip(out, 0.0, 1.0) * 255.0).astype(np.uint8)
     elif corruption_name == "jpeg_compression":
-        qualities = [25, 18, 15, 10, 7]
+        qualities = FALLBACK_JPEG_QUALITIES
         quality = qualities[min(severity - 1, len(qualities) - 1)]
         pil_img = Image.fromarray(img)
         import io
