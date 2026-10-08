@@ -141,40 +141,61 @@ def _fallback_corrupt(img: np.ndarray, corruption_name: str, severity: int) -> n
 
 def generate_frequency_controlled_noise(
     img_448: np.ndarray,
-    image_id: str,
-    noise_mode: str,
+    image_id: str = "default",
+    noise_mode: Optional[str] = None,
+    band: Optional[str] = None,
     target_rms: float = 30.0,
+    sigma_total: Optional[float] = None,
+    seed: Optional[int] = None,
     salt: int = 0,
 ) -> np.ndarray:
     """Generates frequency-controlled noise on 448x448 image with matched RMS power.
     
-    Modes:
-    - 'broadband': white Gaussian noise injected directly at 448x448
-    - 'bandlimited': white Gaussian noise generated at 224x224, upsampled to 448x448
+    Modes/Bands:
+    - 'broadband' / 'high': white Gaussian noise injected directly at 448x448
+    - 'bandlimited' / 'low': white Gaussian noise generated at 224x224, upsampled to 448x448
       via bilinear interpolation, and calibrated to matched target RMS power.
+    - 'mid': bandpass noise calibrated to matched target RMS power.
     """
-    seed = compute_seed(image_id, f"freq_noise_{noise_mode}", int(target_rms), salt=salt)
+    mode = (band or noise_mode or "broadband").lower()
+    rms = sigma_total if sigma_total is not None else target_rms
+    
+    if seed is None:
+        seed = compute_seed(image_id, f"freq_noise_{mode}", int(rms), salt=salt)
+        
     with SeedContext(seed):
         h, w, c = img_448.shape
-        if noise_mode == "broadband":
+        if mode in ("broadband", "high"):
             noise = np.random.normal(0, 1.0, (h, w, c)).astype(np.float32)
-            # Normalize to target RMS
             current_rms = np.sqrt(np.mean(noise ** 2))
-            noise = noise * (target_rms / (current_rms + 1e-8))
-        elif noise_mode == "bandlimited":
-            # Generate at 224x224
+            noise = noise * (rms / (current_rms + 1e-8))
+        elif mode in ("bandlimited", "low"):
             noise_224 = np.random.normal(0, 1.0, (224, 224, c)).astype(np.float32)
-            # Upsample to 448x448 with bilinear interpolation
             noise_upsampled = np.zeros((h, w, c), dtype=np.float32)
             for ch in range(c):
                 pil_n = Image.fromarray(noise_224[..., ch], mode="F")
                 pil_up = pil_n.resize((w, h), resample=Image.Resampling.BILINEAR)
                 noise_upsampled[..., ch] = np.array(pil_up)
-            # Calibrate to matched target RMS power
             current_rms = np.sqrt(np.mean(noise_upsampled ** 2))
-            noise = noise_upsampled * (target_rms / (current_rms + 1e-8))
+            noise = noise_upsampled * (rms / (current_rms + 1e-8))
+        elif mode == "mid":
+            n1 = np.random.normal(0, 1.0, (336, 336, c)).astype(np.float32)
+            up1 = np.zeros((h, w, c), dtype=np.float32)
+            for ch in range(c):
+                pil_n = Image.fromarray(n1[..., ch], mode="F")
+                up1[..., ch] = np.array(pil_n.resize((w, h), resample=Image.Resampling.BILINEAR))
+                
+            n2 = np.random.normal(0, 1.0, (168, 168, c)).astype(np.float32)
+            up2 = np.zeros((h, w, c), dtype=np.float32)
+            for ch in range(c):
+                pil_n = Image.fromarray(n2[..., ch], mode="F")
+                up2[..., ch] = np.array(pil_n.resize((w, h), resample=Image.Resampling.BILINEAR))
+                
+            noise_mid = up1 - up2
+            current_rms = np.sqrt(np.mean(noise_mid ** 2))
+            noise = noise_mid * (rms / (current_rms + 1e-8))
         else:
-            raise ValueError(f"Unknown noise_mode: {noise_mode}")
+            raise ValueError(f"Unknown frequency mode/band: {mode}")
             
         corrupted = np.clip(img_448.astype(np.float32) + noise, 0.0, 255.0)
         return corrupted.astype(np.uint8)

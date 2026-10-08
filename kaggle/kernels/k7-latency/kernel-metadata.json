@@ -1,13 +1,12 @@
 {
-  "id": "anshulsingh45/knobs-k0probe",
-  "title": "knobs-k0probe",
+  "id": "anshulsingh45/knobs-k7-latency-v2",
+  "title": "knobs-k7-latency-v2",
   "code_file": "run.py",
   "language": "python",
   "kernel_type": "script",
   "is_private": true,
   "enable_gpu": true,
   "enable_internet": true,
-  "accelerator": "NvidiaTeslaT4",
   "dataset_sources": [
     "anshulsingh45/knobs-code"
   ],

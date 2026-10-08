@@ -1,0 +1,25 @@
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{M7 Filter-Matched Causal Information Control.}
+Evaluating whether low-pass anti-aliasing filtering at 448 resolution rescues the performance penalty observed under high-frequency degradation.}
+\label{tab:m7_control}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Condition} & \textbf{Suite Configuration} & \textbf{DeiT-B/16} & \textbf{EfficientNet-B3} \\
+\midrule
+Clean & A (448 Native) & 81.00\% & 82.90\% \\
+Clean & B (448 Anti-Aliased Filtered) & 80.90\% & 83.00\% \\
+Clean & C (224 Downsampled) & 83.30\% & 78.50\% \\
+Clean & D (224 $\to$ 448 Bicubic Upsampled) & 79.50\% & 82.00\% \\
+Defocus Blur & A (448 Native) & 70.50\% & 73.40\% \\
+Defocus Blur & B (448 Anti-Aliased Filtered) & 68.60\% & 72.50\% \\
+Defocus Blur & C (224 Downsampled) & 77.20\% & 70.40\% \\
+Defocus Blur & D (224 $\to$ 448 Bicubic Upsampled) & 67.80\% & 70.70\% \\
+Gaussian Noise & A (448 Native) & 73.00\% & 53.10\% \\
+Gaussian Noise & B (448 Anti-Aliased Filtered) & 72.10\% & 76.20\% \\
+Gaussian Noise & C (224 Downsampled) & 79.40\% & 73.60\% \\
+Gaussian Noise & D (224 $\to$ 448 Bicubic Upsampled) & 69.70\% & 75.50\% \\
+\bottomrule
+\end{tabular}
+\end{table}

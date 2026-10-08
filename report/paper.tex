@@ -1,0 +1,137 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\hypersetup{pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false}
+
+\begin{document}
+
+\title{Which Efficiency Knob Should You Turn When the Input Is Degraded?\\
+\large An Empirical Study of Resolution Scaling vs. Token Pruning}
+
+\author{
+Anonymous Authors\\
+Institution\\
+{\tt\small author@example.com}
+}
+
+\maketitle
+
+\begin{abstract}
+As vision models are deployed in unconstrained environments, they frequently encounter corrupted inputs (e.g., sensor noise, motion blur). To meet strict latency budgets, practitioners must choose an ``efficiency knob'' to turn, such as spatial resolution reduction or capacity pruning (e.g., token merging). This study empirically disentangles the trade-offs between spatial resolution scaling and token pruning across three representative ImageNet-1K architectures: DeiT-B/16 (fixed-patch Vision Transformer), EfficientNet-B3 (CNN), and FlexiViT-B (flexible-patch Vision Transformer). Evaluating 4.5 million forward passes across the ImageNet validation set under controlled corruptions, we discover a severe ``Difference-in-Differences'' penalty: scaling input resolution under high-frequency degradation (like Gaussian noise) disproportionately destroys accuracy. For instance, EfficientNet-B3 at 448 resolution collapses from 82.7\% (clean) to 3.7\% under severe noise, whereas downsampling to 224 retains 59.0\% accuracy. We identify the causal mechanism as the anti-aliasing low-pass filter inherently applied during downsampling, which suppresses zero-mean high-frequency noise. Conversely, token pruning maintains robustness while accelerating inference. We conclude that under high-frequency degradation, operating at a lower resolution or utilizing token reduction is not only computationally cheaper (up to 5$\times$ faster) but vastly more accurate.
+\end{abstract}
+
+\section{Introduction}
+
+In real-world computer vision deployments, input data is rarely pristine. Sensor noise, defocus blur, JPEG compression artifacts, and poor lighting (contrast degradation) are ubiquitous. Concurrently, inference must often operate under strict compute, memory, and latency constraints, forcing practitioners to employ efficiency techniques. Two of the most common ``efficiency knobs'' are (1) downsampling the spatial resolution of the input image, and (2) pruning the internal capacity of the model, such as merging redundant tokens in Vision Transformers (ViTs) or reducing channel dimensions in Convolutional Neural Networks (CNNs).
+
+The conventional wisdom in clean-data environments is that higher spatial resolution consistently yields higher accuracy, albeit at a steep computational cost. However, the interaction between these efficiency knobs and input degradation remains poorly understood. When an image is corrupted, does allocating more computational budget (e.g., processing at 448$\times$448 instead of 224$\times$224) rescue performance by providing the model with more pixels to average over? Or does it exacerbate the problem by forcing the model to process high-frequency noise without the protective smoothing effect of downsampling?
+
+In this paper, we conduct a rigorous, large-scale empirical study to answer: \textit{Which efficiency knob should you turn when the input is degraded?} We evaluate the phenomena across three representative ImageNet-1K vision architectures spanning CNN, fixed-patch transformer, and flexible-patch transformer designs: EfficientNet-B3, DeiT-B/16, and FlexiViT-B.
+
+\input{tables/table1_did_headline.tex}
+
+\textbf{Core Contributions:}
+\begin{itemize}
+    \item \textbf{The Anti-Aliasing Mechanism:} We empirically demonstrate that downsampling applies a low-pass anti-aliasing filter that acts as a powerful defense against high-frequency corruptions (e.g., Gaussian noise). Scaling resolution up under such noise explicitly removes this defense, causing catastrophic accuracy collapse (e.g., a $-21.92$ percentage point Difference-in-Differences penalty for EfficientNet).
+    \item \textbf{Resolution vs. Token Pruning:} Through extensive experiments with Token Merging (ToMe) and the variable-patch FlexiViT architecture, we show that token pruning is a much safer efficiency knob under corruption than resolution scaling.
+    \item \textbf{Hardware Efficiency Trade-offs:} We benchmark these configurations on NVIDIA T4 hardware, proving that under noise, downsampling to 224 resolution provides a simultaneous $3.6\times$--$5.2\times$ throughput speedup and up to a 55 percentage point accuracy boost over 448 resolution.
+\end{itemize}
+
+\section{Methodology}
+
+\subsection{Experimental Scope and Architectures}
+We evaluate three architectures that represent distinct paradigms of processing spatial information:
+\begin{enumerate}
+    \item \textbf{EfficientNet-B3:} A highly optimized CNN representing hierarchical, localized spatial processing.
+    \item \textbf{DeiT-B/16:} A standard Vision Transformer representing global attention over fixed-size ($16\times16$) patches.
+    \item \textbf{FlexiViT-B:} A Vision Transformer trained to handle variable patch sizes, allowing us to disentangle sequence length (token count) from spatial resolution.
+\end{enumerate}
+
+\subsection{Degradation and Resolution Pipeline}
+We utilize a subset of ImageNet-C corruptions: Gaussian Noise (high-frequency additive), Defocus Blur (high-frequency suppressive), JPEG Compression (block artifact/frequency quantization), and Contrast Reduction (low-frequency amplitude shift).
+
+Crucially, to ensure a causally sound experimental design, we apply the exact same physical corruption severity in the original high-resolution coordinate system \textit{before} any resolution transformations are applied. The pipeline is strictly: \texttt{Original Image $\to$ Corruption $\to$ Resolution Transformation $\to$ Model}. This guarantees that the corruption itself is not a confounding variable dependent on the chosen inference resolution. The resolution ladder evaluated is $\{224, 320, 384, 448\}$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/figure1_trajectories.pdf}
+\caption{Accuracy trajectories across resolutions under Clean, Gaussian Noise, and Defocus Blur. Notice the catastrophic drop for EfficientNet under noise at high resolutions.}
+\label{fig:trajectories}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/figure2_forest_plot.pdf}
+\caption{Forest plot of Difference-in-Differences (DiD) effect sizes with 95\% bootstrap confidence intervals. Negative values indicate that scaling to 448 resolution hurts performance more under degradation than on clean data.}
+\label{fig:forest_plot}
+\end{figure*}
+
+
+\subsection{Difference-in-Differences (DiD) Framework}
+To quantify the interaction between resolution scaling and input degradation, we employ a Difference-in-Differences (DiD) statistical framework. We measure the accuracy gain (or loss) of scaling from 224 to 448 resolution on clean data ($\Delta_{\text{Clean}}$), and compare it to the gain (or loss) of the identical scaling on degraded data ($\Delta_{\text{Deg}}$). The DiD is defined as $\text{DiD} = \Delta_{\text{Deg}} - \Delta_{\text{Clean}}$. A negative DiD indicates an interaction penalty: the degradation disproportionately punishes the high-resolution configuration.
+
+\section{Results and Discoveries}
+
+\subsection{The Anti-Aliasing Low-Pass Filtering Principle}
+
+Our primary evaluation across the 50,000 ImageNet validation set reveals massive DiD penalties under high-frequency degradation. Table~\ref{tab:main_did} presents the headline DiD statistics.
+
+For EfficientNet-B3, clean accuracy scales from $78.3\% \to 82.7\%$ ($+4.4\text{ pp}$) when moving from 224 to 448 resolution. However, under Gaussian Noise ($s=3$), accuracy plummets from $71.4\%$ at 224 down to $53.9\%$ at 448 ($-17.5\text{ pp}$), yielding a net DiD penalty of $\mathbf{-21.92\text{ pp}}$. Figure~\ref{fig:trajectories} illustrates these trajectories. At severe noise ($s=5$), EfficientNet at 448 collapses completely to 3.72\% (near random guess), whereas 224 resolution impressively retains 59.04\% accuracy. DeiT and FlexiViT exhibit similar, albeit less extreme, statistically significant DiD penalties.
+
+\input{tables/table2_resolution_ladder.tex}
+\input{tables/table5_m7_information_control.tex}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/figure4_m7_recovery.pdf}
+\caption{Causal M7 Filter Control: Applying an explicit anti-aliasing low-pass filter to the 448 input before inference rescues performance under high-frequency noise (+23.1 pp for EfficientNet).}
+\label{fig:m7_recovery}
+\end{figure}
+
+\textbf{Mechanism Proof:} We hypothesized that downsampling acts as an anti-aliasing low-pass filter, physically removing zero-mean high-frequency pixel noise before it enters the network. To prove this causally, we designed the M7 Information Control experiment (Table~\ref{tab:m7_control} and Figure~\ref{fig:m7_recovery}). When we take the 448-resolution degraded input and explicitly apply a low-pass anti-aliasing filter before inference (Configuration B), EfficientNet-B3's accuracy is rescued from 53.1\% to 76.2\% (+23.1 pp recovery). This confirms that the model's capacity at 448 is not fundamentally broken by noise; rather, the unmitigated injection of high-frequency noise directly into the first convolutional layers overwhelms the feature extractors.
+
+\subsection{Frequency Disentanglement}
+The type of degradation strongly dictates the DiD penalty (Figure~\ref{fig:forest_plot}). Vision Transformers suffer more severely under Defocus Blur (DeiT-B DiD: $-5.56\text{ pp}$) and JPEG Compression (DiD: $-5.41\text{ pp}$) than CNNs (Defocus DiD: $-1.94\text{ pp}$, JPEG DiD: $-0.60\text{ pp}$). Conversely, low-frequency dynamic range degradation (Contrast Loss) actually \textit{benefits} from higher resolution (DiD: $+1.16\text{ pp}$ for EfficientNet, $+0.70\text{ pp}$ for FlexiViT). Because contrast loss preserves high-frequency edge locations but suppresses their amplitude, higher resolution provides the necessary spatial granularity to detect faint boundaries.
+
+
+\subsection{Resolution vs. Token Pruning}
+
+If spatial resolution reduction is an effective defense against high-frequency noise, how does it compare to internal capacity reduction, such as Token Merging (ToMe)?
+
+\input{tables/table6_token_merging.tex}
+
+Table~\ref{tab:tome_comparison} compares ToMe against native resolution scaling. On clean inputs, token merging (ToMe $r=4$) maintains full accuracy. Crucially, under Gaussian Noise, ToMe $r=4$ retains $77.8\%$ accuracy at 224, but drops to $73.0\%$ at 448. Token pruning safely reduces computational overhead without stripping away the protective anti-aliasing filter of the 224 input. Resolution expansion, on the other hand, actively degrades robustness.
+
+\input{tables/table3_flexivit_disentanglement.tex}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/figure3_flexivit_disentangle.pdf}
+\caption{FlexiViT disentanglement. When tokens are held constant (Arm F-t), increasing resolution purely hurts under noise. Variable tokens (Arm F-p) show a slightly different trade-off, but downsampling remains superior.}
+\label{fig:flexivit}
+\end{figure}
+
+Furthermore, Table~\ref{tab:flexivit_disentanglement} and Figure~\ref{fig:flexivit} utilize FlexiViT to disentangle sequence length (token count) from spatial resolution. Even when fixing the token count to 256 (Arm F-t), scaling spatial resolution under noise strictly degrades performance. The primary driver of vulnerability is the ingestion of unfiltered high-frequency spatial noise, not the sheer number of tokens the attention mechanism must process.
+
+\input{tables/table4_dose_response.tex}
+
+
+\subsection{Hardware Efficiency Trade-Offs}
+
+\input{tables/table8_hardware_efficiency.tex}
+
+Finally, we translate these algorithmic findings into physical hardware metrics (Table~\ref{tab:hardware_benchmarks}). On an NVIDIA T4 GPU (FP16), scaling DeiT-B from 224 to 448 reduces throughput by $5.2\times$ ($464.8 \to 88.7\text{ img/s}$). For EfficientNet-B3, throughput drops $3.6\times$ ($792.1 \to 222.0\text{ img/s}$). Combining this with our robustness findings creates a compelling optimization strategy: under high-frequency degradation, operating at 224 instead of 448 is a rare ``free lunch,'' providing a massive $3.6\times$--$5.2\times$ speedup while simultaneously boosting accuracy by up to 55 percentage points (for EfficientNet under severe noise).
+
+
+\section{Conclusion}
+
+When deciding which efficiency knob to turn for vision models deployed in noisy environments, practitioners must recognize that input resolution scaling is not a monotonically beneficial operation. Under high-frequency corruptions, high-resolution inputs bypass the protective anti-aliasing filter naturally provided by downsampling, leading to catastrophic performance collapse—particularly for CNNs. We demonstrate that reducing input resolution or employing token pruning are significantly safer efficiency strategies. Under noise, turning the downsampling knob not only saves massive amounts of compute and latency but fundamentally rescues the model's predictive accuracy.
+
+\end{document}

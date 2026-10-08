@@ -80,6 +80,30 @@ def compute_did_bootstrap(
     }
 
 
+def calculate_paired_did(
+    c448: np.ndarray,
+    c224: np.ndarray,
+    d448: np.ndarray,
+    d224: np.ndarray,
+) -> float:
+    """Computes paired DiD point estimate in percentage points."""
+    res = compute_did_bootstrap(c448, c224, d448, d224, n_resamples=1)
+    return float(res["did_point_pp"])
+
+
+def bootstrap_paired_did_ci(
+    c448: np.ndarray,
+    c224: np.ndarray,
+    d448: np.ndarray,
+    d224: np.ndarray,
+    n_bootstraps: int = 1000,
+    seed: int = 42,
+) -> Tuple[float, float]:
+    """Computes paired DiD 95% bootstrap confidence interval."""
+    res = compute_did_bootstrap(c448, c224, d448, d224, n_resamples=n_bootstraps, seed=seed)
+    return float(res["ci_lower_pp"]), float(res["ci_upper_pp"])
+
+
 def holm_bonferroni_correction(p_values: List[float]) -> List[float]:
     """Applies Holm-Bonferroni step-down correction to a list of p-values."""
     m = len(p_values)
@@ -168,3 +192,8 @@ def tost_equivalence_test(
         "tost_p_value": tost_p,
         "is_equivalent": is_equivalent,
     }
+
+
+# Alias for backward-compatibility
+mcnemar_test = exact_mcnemar_test
+

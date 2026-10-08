@@ -13,16 +13,20 @@ import shutil
 import subprocess
 from typing import Dict, Any, Optional
 
+# Ensure prints flush immediately
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)
+
 CODE_DATASET_SLUG = "knobs-code"
 
 
 def run_cmd(cmd_list: list, check: bool = True) -> subprocess.CompletedProcess:
     """Executes a command and returns the completed process."""
-    print(f"[CMD] {' '.join(cmd_list)}")
+    print(f"[CMD] {' '.join(cmd_list)}", flush=True)
     res = subprocess.run(cmd_list, capture_output=True, text=True)
     if check and res.returncode != 0:
-        print(f"[ERROR] Stderr: {res.stderr}")
-        print(f"[ERROR] Stdout: {res.stdout}")
+        print(f"[ERROR] Stderr: {res.stderr}", flush=True)
+        print(f"[ERROR] Stdout: {res.stdout}", flush=True)
         res.check_returncode()
     return res
 
@@ -33,6 +37,7 @@ def package_and_push_code_dataset(
     username: str = "anshulsingh45",
 ):
     """Stages clean repository code and pushes/updates the private Kaggle code dataset."""
+    staging_dir = os.path.abspath(staging_dir)
     os.makedirs(staging_dir, exist_ok=True)
     
     # Copy src, pyproject.toml, requirements.txt
@@ -42,6 +47,15 @@ def package_and_push_code_dataset(
     shutil.copytree(os.path.join(repo_root, "src"), src_dest)
     shutil.copy2(os.path.join(repo_root, "pyproject.toml"), staging_dir)
     shutil.copy2(os.path.join(repo_root, "requirements.txt"), staging_dir)
+    
+    # Copy splits directory if it exists
+    splits_src = os.path.join(repo_root, "splits")
+    splits_dest = os.path.join(staging_dir, "splits")
+    if os.path.exists(splits_src):
+        if os.path.exists(splits_dest):
+            shutil.rmtree(splits_dest)
+        shutil.copytree(splits_src, splits_dest)
+        print(f"Copied splits directory to staging ({len(os.listdir(splits_dest))} files)")
     
     # Metadata for dataset
     meta_path = os.path.join(staging_dir, "dataset-metadata.json")

@@ -11,7 +11,7 @@ Supported models (Pretrained ImageNet-1K):
 """
 
 import copy
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional, Union
 import torch
 import torch.nn as nn
 import timm
@@ -126,13 +126,20 @@ def create_model_instance(
 
 def recalibrate_batchnorm(
     model: nn.Module,
-    calib_loader: torch.utils.data.DataLoader,
-    device: torch.device,
+    calib_loader: Union[torch.utils.data.DataLoader, torch.Tensor, list, tuple],
+    device: Optional[torch.device] = None,
     num_batches: int = 40,
 ) -> nn.Module:
     """Recomputes running mean and variance on unlabelled calibration images (CALIB)
     using cumulative averaging (momentum=None) with backbone weights frozen.
+    Accepts DataLoader, list/tuple of batches, or a raw Tensor.
     """
+    if device is None:
+        try:
+            device = next(model.parameters()).device
+        except StopIteration:
+            device = torch.device("cpu")
+            
     model.eval()
     bn_layers = []
     for m in model.modules():
@@ -146,12 +153,23 @@ def recalibrate_batchnorm(
         return model
 
     with torch.no_grad():
-        for i, batch in enumerate(calib_loader):
-            if i >= num_batches:
-                break
-            images = batch[0] if isinstance(batch, (list, tuple)) else batch
-            images = images.to(device)
-            _ = model(images)
+        if isinstance(calib_loader, torch.Tensor):
+            # Process tensor in chunks
+            chunk_size = 32
+            for start_idx in range(0, len(calib_loader), chunk_size):
+                batch = calib_loader[start_idx:start_idx + chunk_size].to(device)
+                _ = model(batch)
+        else:
+            for i, batch in enumerate(calib_loader):
+                if i >= num_batches:
+                    break
+                images = batch[0] if isinstance(batch, (list, tuple)) else batch
+                images = images.to(device)
+                _ = model(images)
 
     model.eval()
     return model
+
+
+# Alias for backward-compatibility
+recalibrate_bn_statistics = recalibrate_batchnorm

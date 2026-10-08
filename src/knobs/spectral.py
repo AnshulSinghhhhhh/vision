@@ -131,3 +131,13 @@ def compute_spectral_features(img_u8: np.ndarray) -> Dict[str, float]:
         "mean_luminance": mean_lum,
         "rms_contrast": rms_contrast,
     }
+
+
+def estimate_immerkaer_noise_sigma(img_u8: np.ndarray) -> float:
+    feats = compute_spectral_features(img_u8)
+    return feats["noise_sigma"]
+
+
+def calculate_radial_psd_slope(img_u8: np.ndarray) -> float:
+    feats = compute_spectral_features(img_u8)
+    return feats["psd_slope"]

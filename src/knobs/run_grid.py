@@ -59,6 +59,7 @@ def evaluate_batch_on_models(
     severity: int,
     models_dict: Dict[str, nn.Module],
     resolutions: List[int] = [224, 320, 384, 448],
+    device: Optional[torch.device] = None,
     use_fp16: bool = True,
 ) -> List[Dict[str, Any]]:
     """Evaluates a batch of corrupted 448x448 images across models and resolutions.

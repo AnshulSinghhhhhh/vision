@@ -1,0 +1,26 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{\textbf{Main Difference-in-Differences (DiD) Analysis Across Architectures and Corruptions.}
+Evaluates resolution scaling ($224 \to 448$) on Clean versus Degraded inputs (severity 3).
+DiD measures the excess rescue benefit attributable to input resolution under degradation. $95\%$ bootstrap CIs from 500 resamples.}
+\label{tab:main_did}
+\begin{tabular}{llccccccccc}
+\toprule
+\textbf{Architecture} & \textbf{Corruption} & \textbf{Clean 224} & \textbf{Clean 448} & $\Delta_{\text{Clean}}$ & \textbf{Deg 224} & \textbf{Deg 448} & $\Delta_{\text{Deg}}$ & \textbf{DiD (pp)} & \textbf{95\% CI} & \textbf{McNemar $p$} \\
+\midrule
+DeiT-B/16 & Gaussian Noise & 81.5\% & 79.9\% & -1.60 & 78.0\% & 72.3\% & -5.69 & \textbf{-4.08} & [+3.71, +4.43] & 1.85e-289 \\
+DeiT-B/16 & Defocus Blur & 81.5\% & 79.9\% & -1.60 & 75.4\% & 68.3\% & -7.16 & \textbf{-5.56} & [+5.19, +5.96] & 0.00e+00 \\
+DeiT-B/16 & Jpeg Compression & 81.5\% & 79.9\% & -1.60 & 77.4\% & 70.4\% & -7.01 & \textbf{-5.41} & [+5.08, +5.78] & 0.00e+00 \\
+DeiT-B/16 & Contrast & 81.5\% & 79.9\% & -1.60 & 79.9\% & 77.0\% & -2.88 & \textbf{-1.27} & [+0.96, +1.56] & 2.95e-90 \\
+EfficientNet-B3 & Gaussian Noise & 78.3\% & 82.7\% & +4.42 & 71.4\% & 53.9\% & -17.50 & \textbf{-21.92} & [+21.43, +22.39] & 0.00e+00 \\
+EfficientNet-B3 & Defocus Blur & 78.3\% & 82.7\% & +4.42 & 69.5\% & 72.0\% & +2.48 & \textbf{-1.94} & [+1.52, +2.31] & 8.31e-54 \\
+EfficientNet-B3 & Jpeg Compression & 78.3\% & 82.7\% & +4.42 & 74.3\% & 78.1\% & +3.82 & \textbf{-0.60} & [+0.24, +0.93] & 5.67e-148 \\
+EfficientNet-B3 & Contrast & 78.3\% & 82.7\% & +4.42 & 75.9\% & 81.4\% & +5.58 & \textbf{+1.16} & [-1.42, -0.91] & 1.57e-303 \\
+FlexiViT-B & Gaussian Noise & 83.5\% & 84.3\% & +0.72 & 80.3\% & 73.8\% & -6.49 & \textbf{-7.21} & [+6.89, +7.56] & 0.00e+00 \\
+FlexiViT-B & Defocus Blur & 83.5\% & 84.3\% & +0.72 & 77.6\% & 77.0\% & -0.54 & \textbf{-1.26} & [+1.01, +1.49] & 1.27e-08 \\
+FlexiViT-B & Jpeg Compression & 83.5\% & 84.3\% & +0.72 & 80.5\% & 78.7\% & -1.73 & \textbf{-2.45} & [+2.20, +2.71] & 1.14e-58 \\
+FlexiViT-B & Contrast & 83.5\% & 84.3\% & +0.72 & 83.2\% & 84.6\% & +1.42 & \textbf{+0.70} & [-0.93, -0.48] & 3.58e-45 \\
+\bottomrule
+\end{tabular}
+\end{table*}

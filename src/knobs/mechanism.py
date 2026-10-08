@@ -149,3 +149,58 @@ def occlusion_sensitivity_check(
         "drop_when_inside_masked": float(orig_prob - in_prob),
         "drop_when_outside_masked": float(orig_prob - out_prob),
     }
+
+
+def extract_attention_weights(model: nn.Module, input_tensor: torch.Tensor) -> np.ndarray:
+    """Extracts spatial attention map (H_grid, W_grid) from the last transformer block.
+    Averages CLS-to-patch attention across all attention heads.
+    """
+    last_block = model.blocks[-1]
+    last_attn = last_block.attn
+    orig_fused = getattr(last_attn, "fused_attn", False)
+    last_attn.fused_attn = False
+    
+    saved_attn = []
+    def hook(m, inp, out):
+        saved_attn.append(inp[0].detach().cpu())
+        
+    handle = last_attn.attn_drop.register_forward_hook(hook)
+    try:
+        with torch.no_grad():
+            _ = model(input_tensor)
+    finally:
+        handle.remove()
+        last_attn.fused_attn = orig_fused
+        
+    if not saved_attn:
+        res = input_tensor.shape[-1]
+        grid = res // 16
+        return np.ones((grid, grid), dtype=np.float32) / (grid * grid)
+        
+    attn = saved_attn[0]
+    attn_mean = attn.mean(dim=1)[0]
+    cls_attn = attn_mean[0, 1:].float().numpy()
+    grid = int(np.round(np.sqrt(len(cls_attn))))
+    cls_attn_2d = cls_attn.reshape(grid, grid)
+    total = np.sum(cls_attn_2d)
+    if total > 0:
+        cls_attn_2d = cls_attn_2d / total
+    return cls_attn_2d
+
+
+def calculate_normalized_attention_entropy(attn_matrix: np.ndarray) -> float:
+    return compute_normalized_attention_entropy(attn_matrix)
+
+
+def calculate_area_normalized_attention_mass(
+    attn_matrix: np.ndarray,
+    scaled_box: Tuple[float, float, float, float],
+    resolution: int,
+    patch_size: int = 16,
+    box_area_fraction: Optional[float] = None,
+) -> float:
+    """Calculates area-normalized attention mass inside bounding box."""
+    xmin, ymin, xmax, ymax = scaled_box
+    bbox_norm = (xmin / resolution, ymin / resolution, xmax / resolution, ymax / resolution)
+    res = compute_area_normalized_attention_mass(attn_matrix, bbox_norm)
+    return float(res["area_normalized_mass"])

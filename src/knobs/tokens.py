@@ -129,11 +129,20 @@ class ToMeBlock(nn.Module):
         return x, size
 
 
-def patch_vit_with_tome(model: nn.Module, r_schedule: List[int]) -> nn.Module:
+def patch_vit_with_tome(
+    model: nn.Module,
+    r_schedule: Optional[List[int]] = None,
+    schedule: Optional[List[int]] = None,
+) -> nn.Module:
     """Patches blocks in a timm VisionTransformer with ToMe blocks using a specified per-layer r schedule.
     
     If r_schedule is all 0, forward pass is functionally and numerically identical to the unpatched model.
     """
+    if r_schedule is None:
+        r_schedule = schedule
+    if r_schedule is None:
+        raise ValueError("Must provide r_schedule or schedule")
+        
     blocks = model.blocks
     if len(r_schedule) != len(blocks):
         raise ValueError(f"Schedule length ({len(r_schedule)}) must match block count ({len(blocks)})")

@@ -89,5 +89,6 @@ def benchmark_model_latency(
         "median_batch_latency_ms": median_batch_ms,
         "per_image_latency_ms": median_batch_ms / batch_size,
         "iqr_ms": iqr_ms,
+        "iqr_batch_latency_ms": iqr_ms,
         "throughput_img_per_sec": throughput_ips,
     }
