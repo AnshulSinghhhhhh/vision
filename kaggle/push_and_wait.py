@@ -149,16 +149,35 @@ def push_and_wait_kernel(
         elif "error" in stdout.lower() or "fail" in stdout.lower():
             print(f"Kernel {kernel_slug} failed with status: {stdout}")
             # Still download output logs for debugging
-            run_cmd(["kaggle", "kernels", "output", kernel_slug, "-p", output_dir], check=False)
+            download_kernel_outputs(kernel_slug, output_dir)
             return False
             
         time.sleep(poll_interval_sec)
         
     # 3. Download outputs
     print(f"Downloading outputs for {kernel_slug} to {output_dir}...")
-    run_cmd(["kaggle", "kernels", "output", kernel_slug, "-p", output_dir])
+    download_kernel_outputs(kernel_slug, output_dir)
     print(f"Outputs saved to {output_dir}")
     return True
+
+
+def download_kernel_outputs(kernel_slug: str, output_dir: str):
+    """Downloads kernel output files and logs, safely handling UTF-8 encoding on Windows."""
+    os.makedirs(output_dir, exist_ok=True)
+    try:
+        import builtins, kaggle
+        orig_open = builtins.open
+        def utf8_open(file, mode='r', *args, **kwargs):
+            if 'b' not in mode:
+                kwargs.setdefault('encoding', 'utf-8')
+            return orig_open(file, mode, *args, **kwargs)
+        builtins.open = utf8_open
+        api = kaggle.KaggleApi()
+        api.authenticate()
+        api.kernels_output(kernel_slug, path=output_dir, force=True)
+    except Exception as e:
+        print(f"Direct API download failed ({e}), falling back to CLI...", flush=True)
+        run_cmd(["kaggle", "kernels", "output", kernel_slug, "-p", output_dir], check=False)
 
 
 REGISTERED_KERNELS = [

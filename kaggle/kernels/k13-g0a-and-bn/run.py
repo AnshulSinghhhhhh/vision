@@ -162,6 +162,7 @@ def evaluate_g0a_checkpoints(
         measured_acc = (correct_count / max(1, total_eval)) * 100.0
         p = measured_acc / 100.0
         se = math.sqrt(p * (1.0 - p) / max(1, total_eval)) * 100.0
+        diff = abs(measured_acc - ref_acc)
         pass_margin = max(2.0 * se, 1.5)
         passed = diff <= pass_margin
 
