@@ -1,0 +1,73 @@
+[{"stream_name":"stderr","time":0.667247555,"data":"/kaggle/src/script.py:7: SyntaxWarning: invalid escape sequence '\\ '\n"}
+,{"stream_name":"stderr","time":0.667292975,"data":"  - Evaluates on FULL \\ PILOT (45,000 images), skipping the 5,000 images already evaluated in K2 Pilot\n"}
+,{"stream_name":"stdout","time":8.33150341,"data":"=== K3-Headline-A Initializing ===\n"}
+,{"stream_name":"stdout","time":8.346931871,"data":"Added knobs to sys.path from: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stdout","time":19.997992622,"data":"Active device: cuda:0, Available GPUs: 2\n"}
+,{"stream_name":"stdout","time":20.066634456,"data":"Found splits in: /kaggle/input/datasets/anshulsingh45/knobs-code/splits\n"}
+,{"stream_name":"stdout","time":20.865018915,"data":"Total FULL images: 50000, Pilot images to reuse: 5000\n"}
+,{"stream_name":"stdout","time":20.865057715,"data":"Remaining images to evaluate in K3: 45000\n"}
+,{"stream_name":"stdout","time":20.873512482,"data":"Validation images located at: /kaggle/input/competitions/imagenet-object-localization-challenge/ILSVRC/Data/CLS-LOC/val\n"}
+,{"stream_name":"stdout","time":20.873546738,"data":"\n"}
+,{"stream_name":"stdout","time":20.873575739,"data":"=== Initializing Headline Models ===\n"}
+,{"stream_name":"stdout","time":20.873583342,"data":"Loading deit_base...\n"}
+,{"stream_name":"stderr","time":22.643909029,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":26.069312408,"data":"Loading efficientnet_b3...\n"}
+,{"stream_name":"stdout","time":28.076408105,"data":"Loading flexivit_base F-p @ 224...\n"}
+,{"stream_name":"stdout","time":32.730263547,"data":"Loading flexivit_base F-p @ 320...\n"}
+,{"stream_name":"stdout","time":34.190163942,"data":"Loading flexivit_base F-p @ 384...\n"}
+,{"stream_name":"stdout","time":35.757136879,"data":"Loading flexivit_base F-p @ 448...\n"}
+,{"stream_name":"stdout","time":37.185155765,"data":"\n"}
+,{"stream_name":"stdout","time":37.18521313,"data":"=== Executing Tier 1 Grid across 3 Conditions ===\n"}
+,{"stream_name":"stdout","time":37.18522055,"data":"\n"}
+,{"stream_name":"stdout","time":37.185228501,"data":"Processing Condition: clean (Severity 0) on 45000 images...\n"}
+,{"stream_name":"stderr","time":41.417248388,"data":"/kaggle/src/script.py:206: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":41.417295811,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":65.631163383,"data":"/kaggle/src/script.py:233: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":65.631213253,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":690.381918045,"data":"Progress clean: 5056/45000 images (653.2s)\n"}
+,{"stream_name":"stdout","time":1281.958391101,"data":"Progress clean: 10048/45000 images (1244.8s)\n"}
+,{"stream_name":"stdout","time":1871.228874537,"data":"Progress clean: 15040/45000 images (1834.0s)\n"}
+,{"stream_name":"stdout","time":2459.991029169,"data":"Progress clean: 20032/45000 images (2422.8s)\n"}
+,{"stream_name":"stdout","time":3050.711580274,"data":"Progress clean: 25024/45000 images (3013.5s)\n"}
+,{"stream_name":"stdout","time":3675.333748957,"data":"Progress clean: 30016/45000 images (3638.1s)\n"}
+,{"stream_name":"stdout","time":4266.628586606,"data":"Progress clean: 35008/45000 images (4229.4s)\n"}
+,{"stream_name":"stdout","time":4884.174121311,"data":"Progress clean: 40000/45000 images (4847.0s)\n"}
+,{"stream_name":"stdout","time":5486.591347558,"data":"Progress clean: 45000/45000 images (5449.4s)\n"}
+,{"stream_name":"stdout","time":5488.111623191,"data":"Completed clean s0: saved 540000 records to /kaggle/working/shards/shard_k3_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":5488.112923675,"data":"\n"}
+,{"stream_name":"stdout","time":5488.112973294,"data":"Processing Condition: gaussian_noise (Severity 3) on 45000 images...\n"}
+,{"stream_name":"stdout","time":6069.194627568,"data":"Progress gaussian_noise: 5056/45000 images (581.1s)\n"}
+,{"stream_name":"stdout","time":6647.584458796,"data":"Progress gaussian_noise: 10048/45000 images (1159.5s)\n"}
+,{"stream_name":"stdout","time":7236.877325683,"data":"Progress gaussian_noise: 15040/45000 images (1748.8s)\n"}
+,{"stream_name":"stdout","time":7824.830382469,"data":"Progress gaussian_noise: 20032/45000 images (2336.7s)\n"}
+,{"stream_name":"stdout","time":8410.917102979,"data":"Progress gaussian_noise: 25024/45000 images (2922.8s)\n"}
+,{"stream_name":"stdout","time":9015.979648529,"data":"Progress gaussian_noise: 30016/45000 images (3527.9s)\n"}
+,{"stream_name":"stdout","time":9618.734755777,"data":"Progress gaussian_noise: 35008/45000 images (4130.6s)\n"}
+,{"stream_name":"stdout","time":10219.328679605,"data":"Progress gaussian_noise: 40000/45000 images (4731.2s)\n"}
+,{"stream_name":"stdout","time":10831.175841426,"data":"Progress gaussian_noise: 45000/45000 images (5343.1s)\n"}
+,{"stream_name":"stdout","time":10832.487535508,"data":"Completed gaussian_noise s3: saved 540000 records to /kaggle/working/shards/shard_k3_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":10832.487626917,"data":"\n"}
+,{"stream_name":"stdout","time":10832.487644049,"data":"Processing Condition: defocus_blur (Severity 3) on 45000 images...\n"}
+,{"stream_name":"stderr","time":10836.499051101,"data":"/kaggle/src/script.py:206: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":10836.499106855,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":10839.247315338,"data":"/kaggle/src/script.py:233: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":10839.247358736,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":11479.802319711,"data":"Progress defocus_blur: 5056/45000 images (647.3s)\n"}
+,{"stream_name":"stdout","time":12114.57488981,"data":"Progress defocus_blur: 10048/45000 images (1282.1s)\n"}
+,{"stream_name":"stdout","time":12745.725043714,"data":"Progress defocus_blur: 15040/45000 images (1913.2s)\n"}
+,{"stream_name":"stdout","time":13374.457806623,"data":"Progress defocus_blur: 20032/45000 images (2542.0s)\n"}
+,{"stream_name":"stdout","time":13988.043682138,"data":"Progress defocus_blur: 25024/45000 images (3155.6s)\n"}
+,{"stream_name":"stdout","time":14598.624645106,"data":"Progress defocus_blur: 30016/45000 images (3766.1s)\n"}
+,{"stream_name":"stdout","time":15225.166531182,"data":"Progress defocus_blur: 35008/45000 images (4392.7s)\n"}
+,{"stream_name":"stdout","time":15863.06039431,"data":"Progress defocus_blur: 40000/45000 images (5030.6s)\n"}
+,{"stream_name":"stdout","time":16494.272807564,"data":"Progress defocus_blur: 45000/45000 images (5661.8s)\n"}
+,{"stream_name":"stdout","time":16495.602652151,"data":"Completed defocus_blur s3: saved 540000 records to /kaggle/working/shards/shard_k3_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":16495.602685042,"data":"\n"}
+,{"stream_name":"stdout","time":16495.602691434,"data":"K3-Headline-A Complete: Elapsed = 4.580 Wall-Clock h, 9.160 Device-Hours\n"}
+,{"stream_name":"stderr","time":16502.647963398,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":16502.648001367,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":16502.936184538,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":16502.936212547,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":16503.922162465,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":16505.050649321,"data":"[NbConvertApp] Writing 320294 bytes to __results__.html\n"}
+]

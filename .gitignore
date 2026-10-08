@@ -53,10 +53,8 @@ secrets/
 .coverage
 htmlcov/
 
-# Results caches & large binary artifacts
-results/raw/
+# Results caches & large binary artifacts (model weights)
 *.npz
-*.parquet
 *.h5
 *.pth
 *.pt

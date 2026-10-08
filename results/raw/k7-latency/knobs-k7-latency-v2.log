@@ -1,0 +1,59 @@
+[{"stream_name":"stdout","time":10.164303961,"data":"=== K7-Latency Initializing ===\n"}
+,{"stream_name":"stdout","time":10.197817342,"data":"Added knobs to sys.path from: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stdout","time":20.683831182,"data":"Active timing device: cuda:0 (Tesla T4)\n"}
+,{"stream_name":"stdout","time":20.683918092,"data":"\n"}
+,{"stream_name":"stdout","time":20.683924599,"data":"=== Running Latency \u0026 Throughput Benchmark Suite ===\n"}
+,{"stream_name":"stdout","time":20.683928778,"data":"\n"}
+,{"stream_name":"stdout","time":20.683975699,"data":"Benchmarking model: deit_base...\n"}
+,{"stream_name":"stderr","time":22.402420897,"data":"/kaggle/input/datasets/anshulsingh45/knobs-code/src/knobs/latency.py:39: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":22.402453159,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":23.772016935,"data":"/kaggle/input/datasets/anshulsingh45/knobs-code/src/knobs/latency.py:57: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":23.772046036,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":24.541660171,"data":"  deit_base @ 224x224 (b=1): Latency=7.51ms, Throughput=133.1 img/s\n"}
+,{"stream_name":"stdout","time":33.502564238,"data":"  deit_base @ 224x224 (b=64): Latency=137.71ms, Throughput=464.8 img/s\n"}
+,{"stream_name":"stdout","time":35.892312074,"data":"  deit_base @ 320x320 (b=1): Latency=7.96ms, Throughput=125.6 img/s\n"}
+,{"stream_name":"stdout","time":55.471435057,"data":"  deit_base @ 320x320 (b=64): Latency=302.48ms, Throughput=211.6 img/s\n"}
+,{"stream_name":"stdout","time":57.94396686,"data":"  deit_base @ 384x384 (b=1): Latency=10.04ms, Throughput=99.6 img/s\n"}
+,{"stream_name":"stdout","time":88.716128659,"data":"  deit_base @ 384x384 (b=64): Latency=476.98ms, Throughput=134.2 img/s\n"}
+,{"stream_name":"stdout","time":91.721898944,"data":"  deit_base @ 448x448 (b=1): Latency=14.16ms, Throughput=70.6 img/s\n"}
+,{"stream_name":"stdout","time":138.409471193,"data":"  deit_base @ 448x448 (b=64): Latency=721.61ms, Throughput=88.7 img/s\n"}
+,{"stream_name":"stdout","time":138.450934726,"data":"\n"}
+,{"stream_name":"stdout","time":138.450960311,"data":"Benchmarking model: efficientnet_b3...\n"}
+,{"stream_name":"stdout","time":146.045799011,"data":"  efficientnet_b3 @ 224x224 (b=1): Latency=17.41ms, Throughput=57.4 img/s\n"}
+,{"stream_name":"stdout","time":155.019072723,"data":"  efficientnet_b3 @ 224x224 (b=64): Latency=80.80ms, Throughput=792.1 img/s\n"}
+,{"stream_name":"stdout","time":162.642628884,"data":"  efficientnet_b3 @ 320x320 (b=1): Latency=17.47ms, Throughput=57.2 img/s\n"}
+,{"stream_name":"stdout","time":176.695030858,"data":"  efficientnet_b3 @ 320x320 (b=64): Latency=150.70ms, Throughput=424.7 img/s\n"}
+,{"stream_name":"stdout","time":185.073398596,"data":"  efficientnet_b3 @ 384x384 (b=1): Latency=18.36ms, Throughput=54.5 img/s\n"}
+,{"stream_name":"stdout","time":204.260815148,"data":"  efficientnet_b3 @ 384x384 (b=64): Latency=223.26ms, Throughput=286.7 img/s\n"}
+,{"stream_name":"stdout","time":212.50048131,"data":"  efficientnet_b3 @ 448x448 (b=1): Latency=17.42ms, Throughput=57.4 img/s\n"}
+,{"stream_name":"stdout","time":235.776721597,"data":"  efficientnet_b3 @ 448x448 (b=64): Latency=288.32ms, Throughput=222.0 img/s\n"}
+,{"stream_name":"stdout","time":235.811613564,"data":"\n"}
+,{"stream_name":"stdout","time":235.811656318,"data":"Benchmarking model: flexivit_base...\n"}
+,{"stream_name":"stdout","time":238.137020134,"data":"  flexivit_base @ 224x224 (b=1): Latency=7.64ms, Throughput=130.9 img/s\n"}
+,{"stream_name":"stdout","time":248.516357851,"data":"  flexivit_base @ 224x224 (b=64): Latency=160.45ms, Throughput=398.9 img/s\n"}
+,{"stream_name":"stdout","time":250.938156709,"data":"  flexivit_base @ 320x320 (b=1): Latency=8.39ms, Throughput=119.2 img/s\n"}
+,{"stream_name":"stdout","time":273.407662832,"data":"  flexivit_base @ 320x320 (b=64): Latency=346.06ms, Throughput=184.9 img/s\n"}
+,{"stream_name":"stdout","time":276.121102663,"data":"  flexivit_base @ 384x384 (b=1): Latency=10.57ms, Throughput=94.6 img/s\n"}
+,{"stream_name":"stdout","time":310.820443017,"data":"  flexivit_base @ 384x384 (b=64): Latency=536.26ms, Throughput=119.3 img/s\n"}
+,{"stream_name":"stdout","time":314.071119289,"data":"  flexivit_base @ 448x448 (b=1): Latency=14.63ms, Throughput=68.4 img/s\n"}
+,{"stream_name":"stdout","time":365.828206867,"data":"  flexivit_base @ 448x448 (b=64): Latency=798.25ms, Throughput=80.2 img/s\n"}
+,{"stream_name":"stdout","time":365.869562317,"data":"\n"}
+,{"stream_name":"stdout","time":365.869588639,"data":"Benchmarking ToMe variants on DeiT-B...\n"}
+,{"stream_name":"stdout","time":370.126333061,"data":"  DeiT-B tome_r4 @ 224x224 (b=1): Latency=19.39ms, Throughput=51.6 img/s\n"}
+,{"stream_name":"stdout","time":381.320211502,"data":"  DeiT-B tome_r4 @ 224x224 (b=64): Latency=172.43ms, Throughput=371.2 img/s\n"}
+,{"stream_name":"stdout","time":383.853638416,"data":"  DeiT-B tome_r4 @ 448x448 (b=1): Latency=19.33ms, Throughput=51.7 img/s\n"}
+,{"stream_name":"stdout","time":440.770226757,"data":"  DeiT-B tome_r4 @ 448x448 (b=64): Latency=876.79ms, Throughput=73.0 img/s\n"}
+,{"stream_name":"stdout","time":443.265366911,"data":"  DeiT-B tome_r8 @ 224x224 (b=1): Latency=18.82ms, Throughput=53.1 img/s\n"}
+,{"stream_name":"stdout","time":452.80333905,"data":"  DeiT-B tome_r8 @ 224x224 (b=64): Latency=146.92ms, Throughput=435.6 img/s\n"}
+,{"stream_name":"stdout","time":455.307810251,"data":"  DeiT-B tome_r8 @ 448x448 (b=1): Latency=19.11ms, Throughput=52.3 img/s\n"}
+,{"stream_name":"stdout","time":509.131854655,"data":"  DeiT-B tome_r8 @ 448x448 (b=64): Latency=830.45ms, Throughput=77.1 img/s\n"}
+,{"stream_name":"stdout","time":509.15334118,"data":"\n"}
+,{"stream_name":"stdout","time":509.1533644,"data":"Saved benchmark outputs to /kaggle/working/Table8_hardware_efficiency.csv and /kaggle/working/k7_hardware_benchmark.json\n"}
+,{"stream_name":"stdout","time":509.153441377,"data":"K7-Latency Complete: Elapsed = 0.139 Wall-Clock h (499.0s)\n"}
+,{"stream_name":"stderr","time":516.087319592,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":516.087352738,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":516.355285065,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":516.355316353,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":517.371338656,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":518.370873697,"data":"[NbConvertApp] Writing 299803 bytes to __results__.html\n"}
+]

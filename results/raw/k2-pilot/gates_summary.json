@@ -1,0 +1,145 @@
+{
+  "G0_B": {
+    "passed": true,
+    "clean_accuracies": {
+      "deit_base": {
+        "224": 82.42,
+        "320": 82.32000000000001,
+        "384": 81.98,
+        "448": 80.80000000000001
+      },
+      "efficientnet_b3": {
+        "224": 79.10000000000001,
+        "320": 82.54,
+        "384": 83.38,
+        "448": 83.5
+      },
+      "flexivit_base": {
+        "224": 84.5,
+        "320": 85.52,
+        "384": 85.32,
+        "448": 85.06
+      }
+    },
+    "note": "Clean pipeline baselines established across all 4 resolutions"
+  },
+  "G1": {
+    "deit_base_gaussian_noise": {
+      "pilot_sample_size": 5000,
+      "disagreement_variance": 0.12108405681136591,
+      "projected_confirm_se_pp": 0.18871395784545417,
+      "projected_power": 0.8663428857661583,
+      "passed": true
+    },
+    "deit_base_defocus_blur": {
+      "pilot_sample_size": 5000,
+      "disagreement_variance": 0.11923984796958949,
+      "projected_confirm_se_pp": 0.18727130992351043,
+      "projected_power": 0.8728328256745416,
+      "passed": true
+    },
+    "efficientnet_b3_gaussian_noise": {
+      "pilot_sample_size": 5000,
+      "disagreement_variance": 0.2417795159031746,
+      "projected_confirm_se_pp": 0.266667625189979,
+      "projected_power": 0.47906112016069013,
+      "passed": false
+    },
+    "efficientnet_b3_defocus_blur": {
+      "pilot_sample_size": 5000,
+      "disagreement_variance": 0.12525861172233477,
+      "projected_confirm_se_pp": 0.19193949086529294,
+      "projected_power": 0.8514057392224437,
+      "passed": true
+    }
+  },
+  "G2": {
+    "did_estimates": {
+      "deit_base_gaussian_noise": {
+        "did_pp": 3.42,
+        "ci_95_low": 2.279,
+        "ci_95_high": 4.52,
+        "excludes_zero": true
+      },
+      "deit_base_defocus_blur": {
+        "did_pp": 5.58,
+        "ci_95_low": 4.4799999999999995,
+        "ci_95_high": 6.741999999999998,
+        "excludes_zero": true
+      },
+      "deit_base_jpeg_compression": {
+        "did_pp": 5.7,
+        "ci_95_low": 4.5295,
+        "ci_95_high": 6.9,
+        "excludes_zero": true
+      },
+      "deit_base_contrast": {
+        "did_pp": 1.32,
+        "ci_95_low": 0.5095000000000001,
+        "ci_95_high": 2.2504999999999993,
+        "excludes_zero": true
+      },
+      "efficientnet_b3_gaussian_noise": {
+        "did_pp": 23.18,
+        "ci_95_low": 21.619,
+        "ci_95_high": 24.671499999999998,
+        "excludes_zero": true
+      },
+      "efficientnet_b3_defocus_blur": {
+        "did_pp": 2.02,
+        "ci_95_low": 0.8495,
+        "ci_95_high": 3.1714999999999987,
+        "excludes_zero": true
+      },
+      "efficientnet_b3_jpeg_compression": {
+        "did_pp": 0.7000000000000001,
+        "ci_95_low": -0.42,
+        "ci_95_high": 1.58,
+        "excludes_zero": false
+      },
+      "efficientnet_b3_contrast": {
+        "did_pp": -0.54,
+        "ci_95_low": -1.301,
+        "ci_95_high": 0.38,
+        "excludes_zero": false
+      },
+      "flexivit_base_gaussian_noise": {
+        "did_pp": 7.199999999999999,
+        "ci_95_low": 6.22,
+        "ci_95_high": 8.221,
+        "excludes_zero": true
+      },
+      "flexivit_base_defocus_blur": {
+        "did_pp": 0.86,
+        "ci_95_low": 0.12950000000000003,
+        "ci_95_high": 1.7304999999999995,
+        "excludes_zero": true
+      },
+      "flexivit_base_jpeg_compression": {
+        "did_pp": 2.54,
+        "ci_95_low": 1.7494999999999998,
+        "ci_95_high": 3.500999999999999,
+        "excludes_zero": true
+      },
+      "flexivit_base_contrast": {
+        "did_pp": -0.8200000000000001,
+        "ci_95_low": -1.44,
+        "ci_95_high": -0.12,
+        "excludes_zero": true
+      }
+    },
+    "decision_protocol": "Pilot DiD estimates computed. Secondary trimming decisions informed while primary confirmatory hypothesis remains unchanged."
+  },
+  "G3": {
+    "wall_clock_hours": 2.039070581727558,
+    "active_gpus": 2,
+    "device_hours": 4.078141163455116,
+    "budgeted_device_hours": 0.9,
+    "passed": false
+  },
+  "G4": {
+    "exact_matches": 100,
+    "total_tested": 100,
+    "passed": true
+  }
+}

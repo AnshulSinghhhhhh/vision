@@ -1,0 +1,27 @@
+[{"stream_name":"stdout","time":7.504640136,"data":"=== K1-Sanity Initializing ===\n"}
+,{"stream_name":"stdout","time":7.507735951,"data":"Added /kaggle/input/datasets/anshulsingh45/knobs-code/src to sys.path\n"}
+,{"stream_name":"stdout","time":18.255479874,"data":"Active device: cuda:0\n"}
+,{"stream_name":"stdout","time":18.255546593,"data":"\n"}
+,{"stream_name":"stdout","time":18.255557325,"data":"=== Testing Pretrained ToMe r=0 GPU Identity ===\n"}
+,{"stream_name":"stderr","time":19.745104723,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":25.610701576,"data":"ToMe r=0 Max Logit Diff: 0.000000, Passed (\u003c 1e-3): True\n"}
+,{"stream_name":"stdout","time":25.617791491,"data":"Found splits in: /kaggle/input/datasets/anshulsingh45/knobs-code/splits\n"}
+,{"stream_name":"stdout","time":25.916209059,"data":"Found ImageNet validation images in: /kaggle/input/competitions/imagenet-object-localization-challenge/ILSVRC/Data/CLS-LOC/val\n"}
+,{"stream_name":"stdout","time":25.916273626,"data":"ImageNet validation directory located at: /kaggle/input/competitions/imagenet-object-localization-challenge/ILSVRC/Data/CLS-LOC/val\n"}
+,{"stream_name":"stdout","time":25.916282505,"data":"\n"}
+,{"stream_name":"stdout","time":25.916286576,"data":"=== Testing FP16 vs FP32 Precision Agreement (500 images) ===\n"}
+,{"stream_name":"stdout","time":25.916332415,"data":"Checking precision agreement for deit_base...\n"}
+,{"stream_name":"stderr","time":193.773647225,"data":"/kaggle/src/script.py:170: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":193.773698239,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":209.541364643,"data":"deit_base: FP32 Acc = 86.60%, FP16 Acc = 86.60%, Diff = 0.00 pp, Pass (\u003c=0.3 pp): True\n"}
+,{"stream_name":"stdout","time":209.566352493,"data":"Checking precision agreement for efficientnet_b3...\n"}
+,{"stream_name":"stdout","time":226.36341499,"data":"efficientnet_b3: FP32 Acc = 83.00%, FP16 Acc = 83.00%, Diff = 0.00 pp, Pass (\u003c=0.3 pp): True\n"}
+,{"stream_name":"stdout","time":226.435407246,"data":"\n"}
+,{"stream_name":"stdout","time":226.43543002,"data":"K1-sanity checks complete in 218.9s!\n"}
+,{"stream_name":"stderr","time":232.206238943,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":232.206278002,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":232.440242673,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":232.440278157,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":233.213751042,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":234.080677742,"data":"[NbConvertApp] Writing 308172 bytes to __results__.html\n"}
+]

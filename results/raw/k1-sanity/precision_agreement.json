@@ -1,0 +1,14 @@
+{
+  "deit_base": {
+    "acc_fp32": 86.6,
+    "acc_fp16": 86.6,
+    "diff_pp": 0.0,
+    "passed": true
+  },
+  "efficientnet_b3": {
+    "acc_fp32": 83.0,
+    "acc_fp16": 83.0,
+    "diff_pp": 0.0,
+    "passed": true
+  }
+}

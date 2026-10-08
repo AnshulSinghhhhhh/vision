@@ -1,0 +1,38 @@
+[{"stream_name":"stdout","time":11.749615602,"data":"=== K6-Mech Initializing ===\n"}
+,{"stream_name":"stdout","time":11.755180057,"data":"Added knobs to sys.path from: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stdout","time":22.893227857,"data":"Active device: cuda:0, Available GPUs: 2\n"}
+,{"stream_name":"stdout","time":22.897456232,"data":"Found splits in: /kaggle/input/datasets/anshulsingh45/knobs-code/splits\n"}
+,{"stream_name":"stdout","time":23.275276717,"data":"Loaded MECH split with 2000 images\n"}
+,{"stream_name":"stdout","time":23.28076991,"data":"Validation images located at: /kaggle/input/competitions/imagenet-object-localization-challenge/ILSVRC/Data/CLS-LOC/val\n"}
+,{"stream_name":"stdout","time":23.280789545,"data":"\n"}
+,{"stream_name":"stdout","time":23.280793879,"data":"=== Initializing Models for Mechanistic Analysis ===\n"}
+,{"stream_name":"stderr","time":24.93086094,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":30.339428357,"data":"\n"}
+,{"stream_name":"stdout","time":30.339467894,"data":"=== Executing Probes M1-M4 on MECH Split ===\n"}
+,{"stream_name":"stderr","time":30.95607771,"data":"/kaggle/src/script.py:165: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":30.95610596,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":197.362703169,"data":"Processed MECH 500/2000 images (185.6s)\n"}
+,{"stream_name":"stdout","time":362.123819424,"data":"Processed MECH 1000/2000 images (350.4s)\n"}
+,{"stream_name":"stdout","time":530.845738227,"data":"Processed MECH 1500/2000 images (519.1s)\n"}
+,{"stream_name":"stdout","time":706.581937484,"data":"Processed MECH 2000/2000 images (694.8s)\n"}
+,{"stream_name":"stdout","time":706.772746644,"data":"Saved 8000 records for M1-M4 probes\n"}
+,{"stream_name":"stdout","time":706.772774407,"data":"\n"}
+,{"stream_name":"stdout","time":706.772779964,"data":"=== Executing M7 Filter-Matched Information Control ===\n"}
+,{"stream_name":"stderr","time":706.820722938,"data":"/kaggle/src/script.py:230: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":706.820754402,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":706.857334934,"data":"/kaggle/src/script.py:237: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":706.857373693,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":719.393202646,"data":"/kaggle/src/script.py:230: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":719.393261253,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":719.415105037,"data":"/kaggle/src/script.py:237: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":719.415131422,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":1183.515973708,"data":"Saved 12000 records for M7 information control\n"}
+,{"stream_name":"stdout","time":1183.516283901,"data":"\n"}
+,{"stream_name":"stdout","time":1183.516308012,"data":"K6-Mech Complete: Elapsed = 0.325 Wall-Clock h, 0.651 Device-Hours\n"}
+,{"stream_name":"stderr","time":1190.465026093,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1190.465068474,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1190.777693851,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1190.777720335,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1191.709508163,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1192.834276089,"data":"[NbConvertApp] Writing 318665 bytes to __results__.html\n"}
+]

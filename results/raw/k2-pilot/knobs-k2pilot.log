@@ -1,0 +1,110 @@
+[{"stream_name":"stdout","time":12.320581611,"data":"=== K2-Pilot Initializing ===\n"}
+,{"stream_name":"stdout","time":12.327569557,"data":"Added knobs to sys.path from: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stdout","time":24.926051466,"data":"Active device: cuda:0, Available GPUs: 2\n"}
+,{"stream_name":"stdout","time":24.932541816,"data":"Found splits in: /kaggle/input/datasets/anshulsingh45/knobs-code/splits\n"}
+,{"stream_name":"stdout","time":25.327187483,"data":"Loaded PILOT split with 5000 images\n"}
+,{"stream_name":"stdout","time":25.371338493,"data":"Image directory located at: /kaggle/input/competitions/imagenet-object-localization-challenge/ILSVRC/Data/CLS-LOC/val\n"}
+,{"stream_name":"stdout","time":56.776365612,"data":"Verified 5000 existing image files for PILOT\n"}
+,{"stream_name":"stdout","time":56.776419228,"data":"\n"}
+,{"stream_name":"stdout","time":56.777501496,"data":"=== Initializing Models ===\n"}
+,{"stream_name":"stdout","time":56.777526608,"data":"Loading deit_base...\n"}
+,{"stream_name":"stderr","time":58.434009773,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":63.436692901,"data":"Loading efficientnet_b3...\n"}
+,{"stream_name":"stdout","time":64.426045031,"data":"Loading flexivit_base F-p @ 224...\n"}
+,{"stream_name":"stdout","time":68.795727795,"data":"Loading flexivit_base F-t @ 224...\n"}
+,{"stream_name":"stdout","time":71.091665211,"data":"Loading flexivit_base F-p @ 320...\n"}
+,{"stream_name":"stdout","time":72.642953623,"data":"Loading flexivit_base F-t @ 320...\n"}
+,{"stream_name":"stdout","time":73.934340976,"data":"Loading flexivit_base F-p @ 384...\n"}
+,{"stream_name":"stdout","time":75.220875453,"data":"Loading flexivit_base F-t @ 384...\n"}
+,{"stream_name":"stdout","time":76.474254439,"data":"Loading flexivit_base F-p @ 448...\n"}
+,{"stream_name":"stdout","time":77.750036338,"data":"Loading flexivit_base F-t @ 448...\n"}
+,{"stream_name":"stdout","time":79.025968206,"data":"Loading deit_base_384 control...\n"}
+,{"stream_name":"stdout","time":81.592085188,"data":"Preparing ToMe variants...\n"}
+,{"stream_name":"stdout","time":84.203269207,"data":"\n"}
+,{"stream_name":"stdout","time":84.203300923,"data":"=== Executing Grid across 9 Conditions ===\n"}
+,{"stream_name":"stdout","time":84.20338234,"data":"\n"}
+,{"stream_name":"stdout","time":84.203391303,"data":"Processing Condition: clean (Severity 0) on 5000 images...\n"}
+,{"stream_name":"stderr","time":85.289736345,"data":"/kaggle/src/script.py:241: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":85.289774175,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":107.375776295,"data":"/kaggle/src/script.py:269: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":107.375826599,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":107.47228518,"data":"/kaggle/src/script.py:277: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":107.472340656,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":108.60483352,"data":"/kaggle/src/script.py:316: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":108.604870217,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":108.82695061,"data":"/kaggle/src/script.py:342: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":108.82698804,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":1044.641424634,"data":"Condition clean s0 complete in 960.4s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":1044.641531423,"data":"\n"}
+,{"stream_name":"stdout","time":1044.641541861,"data":"Processing Condition: gaussian_noise (Severity 1) on 5000 images...\n"}
+,{"stream_name":"stdout","time":1877.924068304,"data":"Condition gaussian_noise s1 complete in 833.3s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":1877.924306352,"data":"\n"}
+,{"stream_name":"stdout","time":1877.924321685,"data":"Processing Condition: gaussian_noise (Severity 3) on 5000 images...\n"}
+,{"stream_name":"stdout","time":2678.964381007,"data":"Condition gaussian_noise s3 complete in 801.0s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":2678.964554074,"data":"\n"}
+,{"stream_name":"stdout","time":2678.964573997,"data":"Processing Condition: gaussian_noise (Severity 5) on 5000 images...\n"}
+,{"stream_name":"stdout","time":3482.75805375,"data":"Condition gaussian_noise s5 complete in 803.8s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":3482.758152791,"data":"\n"}
+,{"stream_name":"stdout","time":3482.758161784,"data":"Processing Condition: defocus_blur (Severity 1) on 5000 images...\n"}
+,{"stream_name":"stdout","time":4234.665503305,"data":"Condition defocus_blur s1 complete in 751.9s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":4234.665584147,"data":"\n"}
+,{"stream_name":"stdout","time":4234.665608895,"data":"Processing Condition: defocus_blur (Severity 3) on 5000 images...\n"}
+,{"stream_name":"stdout","time":5025.264843118,"data":"Condition defocus_blur s3 complete in 790.6s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":5025.264929065,"data":"\n"}
+,{"stream_name":"stdout","time":5025.264967296,"data":"Processing Condition: defocus_blur (Severity 5) on 5000 images...\n"}
+,{"stream_name":"stdout","time":5915.831817999,"data":"Condition defocus_blur s5 complete in 890.6s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":5915.832044425,"data":"\n"}
+,{"stream_name":"stdout","time":5915.832068364,"data":"Processing Condition: jpeg_compression (Severity 3) on 5000 images...\n"}
+,{"stream_name":"stdout","time":6617.803901125,"data":"Condition jpeg_compression s3 complete in 702.0s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":6617.804064128,"data":"\n"}
+,{"stream_name":"stdout","time":6617.804083354,"data":"Processing Condition: contrast (Severity 3) on 5000 images...\n"}
+,{"stream_name":"stdout","time":7346.145490988,"data":"Condition contrast s3 complete in 728.3s (105000 records saved)\n"}
+,{"stream_name":"stdout","time":7346.145529651,"data":"\n"}
+,{"stream_name":"stdout","time":7346.145536035,"data":"=== Aggregating Pilot Shards ===\n"}
+,{"stream_name":"stdout","time":7347.015337402,"data":"Master pilot parquet saved: /kaggle/working/k2_pilot_results.parquet (945000 total rows)\n"}
+,{"stream_name":"stdout","time":7347.015406784,"data":"\n"}
+,{"stream_name":"stdout","time":7347.015434852,"data":"=== Evaluating Pre-Specified Gates G0–G4 ===\n"}
+,{"stream_name":"stdout","time":7347.137463216,"data":"G0-B Clean: deit_base @ 224 = 82.42%\n"}
+,{"stream_name":"stdout","time":7347.143004987,"data":"G0-B Clean: deit_base @ 320 = 82.32%\n"}
+,{"stream_name":"stdout","time":7347.148557602,"data":"G0-B Clean: deit_base @ 384 = 81.98%\n"}
+,{"stream_name":"stdout","time":7347.154264434,"data":"G0-B Clean: deit_base @ 448 = 80.80%\n"}
+,{"stream_name":"stdout","time":7347.159915268,"data":"G0-B Clean: efficientnet_b3 @ 224 = 79.10%\n"}
+,{"stream_name":"stdout","time":7347.165550102,"data":"G0-B Clean: efficientnet_b3 @ 320 = 82.54%\n"}
+,{"stream_name":"stdout","time":7347.170902719,"data":"G0-B Clean: efficientnet_b3 @ 384 = 83.38%\n"}
+,{"stream_name":"stdout","time":7347.176311172,"data":"G0-B Clean: efficientnet_b3 @ 448 = 83.50%\n"}
+,{"stream_name":"stdout","time":7347.18167807,"data":"G0-B Clean: flexivit_base @ 224 = 84.50%\n"}
+,{"stream_name":"stdout","time":7347.187028255,"data":"G0-B Clean: flexivit_base @ 320 = 85.52%\n"}
+,{"stream_name":"stdout","time":7347.192076998,"data":"G0-B Clean: flexivit_base @ 384 = 85.32%\n"}
+,{"stream_name":"stdout","time":7347.197392947,"data":"G0-B Clean: flexivit_base @ 448 = 85.06%\n"}
+,{"stream_name":"stdout","time":7347.349418386,"data":"G1 Power Check deit_base under gaussian_noise: SE=0.189 pp, Power=86.6%, Pass=True\n"}
+,{"stream_name":"stdout","time":7347.478478142,"data":"G1 Power Check deit_base under defocus_blur: SE=0.187 pp, Power=87.3%, Pass=True\n"}
+,{"stream_name":"stdout","time":7347.607456677,"data":"G1 Power Check efficientnet_b3 under gaussian_noise: SE=0.267 pp, Power=47.9%, Pass=False\n"}
+,{"stream_name":"stdout","time":7347.744685881,"data":"G1 Power Check efficientnet_b3 under defocus_blur: SE=0.192 pp, Power=85.1%, Pass=True\n"}
+,{"stream_name":"stdout","time":7348.195513942,"data":"G2 Pilot DiD: deit_base x gaussian_noise = +3.42 pp [95% CI: +2.28, +4.52] pp\n"}
+,{"stream_name":"stdout","time":7348.617315805,"data":"G2 Pilot DiD: deit_base x defocus_blur = +5.58 pp [95% CI: +4.48, +6.74] pp\n"}
+,{"stream_name":"stdout","time":7349.066251835,"data":"G2 Pilot DiD: deit_base x jpeg_compression = +5.70 pp [95% CI: +4.53, +6.90] pp\n"}
+,{"stream_name":"stdout","time":7349.507305371,"data":"G2 Pilot DiD: deit_base x contrast = +1.32 pp [95% CI: +0.51, +2.25] pp\n"}
+,{"stream_name":"stdout","time":7349.920485408,"data":"G2 Pilot DiD: efficientnet_b3 x gaussian_noise = +23.18 pp [95% CI: +21.62, +24.67] pp\n"}
+,{"stream_name":"stdout","time":7350.337780776,"data":"G2 Pilot DiD: efficientnet_b3 x defocus_blur = +2.02 pp [95% CI: +0.85, +3.17] pp\n"}
+,{"stream_name":"stdout","time":7350.756337915,"data":"G2 Pilot DiD: efficientnet_b3 x jpeg_compression = +0.70 pp [95% CI: -0.42, +1.58] pp\n"}
+,{"stream_name":"stdout","time":7351.205612554,"data":"G2 Pilot DiD: efficientnet_b3 x contrast = -0.54 pp [95% CI: -1.30, +0.38] pp\n"}
+,{"stream_name":"stdout","time":7351.628390704,"data":"G2 Pilot DiD: flexivit_base x gaussian_noise = +7.20 pp [95% CI: +6.22, +8.22] pp\n"}
+,{"stream_name":"stdout","time":7352.070133246,"data":"G2 Pilot DiD: flexivit_base x defocus_blur = +0.86 pp [95% CI: +0.13, +1.73] pp\n"}
+,{"stream_name":"stdout","time":7352.514052816,"data":"G2 Pilot DiD: flexivit_base x jpeg_compression = +2.54 pp [95% CI: +1.75, +3.50] pp\n"}
+,{"stream_name":"stdout","time":7352.974564663,"data":"G2 Pilot DiD: flexivit_base x contrast = -0.82 pp [95% CI: -1.44, -0.12] pp\n"}
+,{"stream_name":"stdout","time":7352.974599439,"data":"\n"}
+,{"stream_name":"stdout","time":7352.974609463,"data":"G3 Compute Tracking: Elapsed Wall-Clock = 2.039 h, Device-Hours = 4.078 h (Target: 0.90 h)\n"}
+,{"stream_name":"stdout","time":7352.97468964,"data":"\n"}
+,{"stream_name":"stdout","time":7352.974769071,"data":"=== G4: Testing Bit-Exact Determinism (100 images) ===\n"}
+,{"stream_name":"stderr","time":7353.02495655,"data":"/kaggle/src/script.py:489: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":7353.025006175,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":7362.725980811,"data":"G4 Bit-Exact Determinism: 100/100 matches. Passed: True\n"}
+,{"stream_name":"stdout","time":7362.797838146,"data":"\n"}
+,{"stream_name":"stdout","time":7362.797865095,"data":"K2-Pilot execution successfully completed!\n"}
+,{"stream_name":"stderr","time":7370.585431295,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":7370.585467063,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":7370.89612328,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":7370.89614823,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":7372.113383194,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":7373.300076783,"data":"[NbConvertApp] Writing 371265 bytes to __results__.html\n"}
+]

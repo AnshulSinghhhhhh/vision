@@ -1,0 +1,71 @@
+[{"stream_name":"stdout","time":18.711614845,"data":"=== GPU Hardware Info ===\n"}
+,{"stream_name":"stdout","time":18.744516604,"data":"Tue Oct  6 23:28:50 2026       \n"}
+,{"stream_name":"stdout","time":18.744551198,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":18.744557521,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":18.744562602,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":18.744566845,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":18.744571428,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":18.744575863,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":18.744580796,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":18.813826023,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":18.813867093,"data":"| N/A   33C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":18.813872867,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":18.813890608,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":18.813895535,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":18.813900192,"data":"| N/A   33C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":18.813904373,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":18.813909497,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":18.814470184,"data":"\n"}
+,{"stream_name":"stdout","time":18.814483579,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":18.814487875,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":18.814491887,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":18.814495972,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":18.814499965,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":18.816154877,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":18.816174809,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":19.15911044,"data":"Added knobs to sys.path from: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stdout","time":19.217208419,"data":"Successfully loaded knobs from: /kaggle/input/datasets/anshulsingh45/knobs-code/src/knobs/__init__.py\n"}
+,{"stream_name":"stdout","time":34.88614683,"data":"Active primary device: cuda:0\n"}
+,{"stream_name":"stdout","time":34.894793737,"data":"Found splits in: /kaggle/input/datasets/anshulsingh45/knobs-code/splits\n"}
+,{"stream_name":"stdout","time":35.307977378,"data":"Loaded PILOT split: 5000 images\n"}
+,{"stream_name":"stdout","time":35.321008319,"data":"Found ImageNet validation images in: /kaggle/input/competitions/imagenet-object-localization-challenge/ILSVRC/Data/CLS-LOC/val\n"}
+,{"stream_name":"stdout","time":35.321375472,"data":"\n"}
+,{"stream_name":"stdout","time":35.321388556,"data":"=== G0-A: Native Checkpoint Verification ===\n"}
+,{"stream_name":"stdout","time":35.322005106,"data":"\n"}
+,{"stream_name":"stdout","time":35.322013755,"data":"Evaluating native checkpoint for deit_base (deit_base_patch16_224.fb_in1k)...\n"}
+,{"stream_name":"stderr","time":37.186359941,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":44.622625644,"data":"/kaggle/src/script.py:175: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":44.622661777,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":116.422635616,"data":"deit_base: Measured Top-1 = 86.85%, Reference = 81.80%, Diff = 5.05%, 2*SE = 1.73%, Pass = False\n"}
+,{"stream_name":"stdout","time":116.446131207,"data":"\n"}
+,{"stream_name":"stdout","time":116.446174656,"data":"Evaluating native checkpoint for deit_base_384 (deit_base_patch16_384.fb_in1k)...\n"}
+,{"stream_name":"stdout","time":163.961681891,"data":"deit_base_384: Measured Top-1 = 88.10%, Reference = 82.90%, Diff = 5.20%, 2*SE = 1.68%, Pass = False\n"}
+,{"stream_name":"stdout","time":163.993969051,"data":"\n"}
+,{"stream_name":"stdout","time":163.994013521,"data":"Evaluating native checkpoint for efficientnet_b3 (efficientnet_b3.ra2_in1k)...\n"}
+,{"stream_name":"stdout","time":208.068639767,"data":"efficientnet_b3: Measured Top-1 = 86.80%, Reference = 81.50%, Diff = 5.30%, 2*SE = 1.74%, Pass = False\n"}
+,{"stream_name":"stdout","time":208.095714746,"data":"\n"}
+,{"stream_name":"stdout","time":208.095751874,"data":"Evaluating native checkpoint for flexivit_base (flexivit_base.1200ep_in1k)...\n"}
+,{"stream_name":"stdout","time":240.673584961,"data":"flexivit_base: Measured Top-1 = 89.15%, Reference = 82.50%, Diff = 6.65%, 2*SE = 1.70%, Pass = False\n"}
+,{"stream_name":"stdout","time":240.699129787,"data":"\n"}
+,{"stream_name":"stdout","time":240.699173944,"data":"=== Throughput Benchmark ===\n"}
+,{"stream_name":"stderr","time":242.063494106,"data":"/kaggle/input/datasets/anshulsingh45/knobs-code/src/knobs/latency.py:39: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":242.063551001,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":244.275753017,"data":"/kaggle/input/datasets/anshulsingh45/knobs-code/src/knobs/latency.py:57: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":244.275797268,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":250.27299319,"data":"deit_base @ 224x224: 429.0 img/s (median batch 149.2ms)\n"}
+,{"stream_name":"stdout","time":268.002897688,"data":"deit_base @ 320x320: 197.6 img/s (median batch 323.9ms)\n"}
+,{"stream_name":"stdout","time":296.030611731,"data":"deit_base @ 384x384: 124.8 img/s (median batch 512.9ms)\n"}
+,{"stream_name":"stdout","time":338.579243616,"data":"deit_base @ 448x448: 82.0 img/s (median batch 780.5ms)\n"}
+,{"stream_name":"stdout","time":347.931430574,"data":"efficientnet_b3 @ 224x224: 735.6 img/s (median batch 87.0ms)\n"}
+,{"stream_name":"stdout","time":356.947028662,"data":"efficientnet_b3 @ 320x320: 390.8 img/s (median batch 163.8ms)\n"}
+,{"stream_name":"stdout","time":375.784394396,"data":"efficientnet_b3 @ 384x384: 262.8 img/s (median batch 243.6ms)\n"}
+,{"stream_name":"stdout","time":398.744486016,"data":"efficientnet_b3 @ 448x448: 199.4 img/s (median batch 321.0ms)\n"}
+,{"stream_name":"stdout","time":398.891499112,"data":"\n"}
+,{"stream_name":"stdout","time":398.891530014,"data":"K0-probe execution complete in 380.2s (6.34 min)!\n"}
+,{"stream_name":"stderr","time":410.012203393,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":410.012254732,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":410.424398519,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":410.424426569,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":411.590961399,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":413.143286935,"data":"[NbConvertApp] Writing 313018 bytes to __results__.html\n"}
+]

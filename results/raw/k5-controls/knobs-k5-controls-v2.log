@@ -1,0 +1,67 @@
+[{"stream_name":"stdout","time":7.479709167,"data":"=== K5-Controls Initializing ===\n"}
+,{"stream_name":"stdout","time":7.48625912,"data":"Added knobs to sys.path from: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stdout","time":16.649119876,"data":"Active device: cuda:0, Available GPUs: 2\n"}
+,{"stream_name":"stdout","time":16.651705867,"data":"Found splits in: /kaggle/input/datasets/anshulsingh45/knobs-code/splits\n"}
+,{"stream_name":"stdout","time":16.880356097,"data":"Loaded SUB10K split with 10000 images\n"}
+,{"stream_name":"stdout","time":16.890867931,"data":"Validation images located at: /kaggle/input/competitions/imagenet-object-localization-challenge/ILSVRC/Data/CLS-LOC/val\n"}
+,{"stream_name":"stdout","time":16.890890845,"data":"\n"}
+,{"stream_name":"stdout","time":16.890893659,"data":"=== Initializing Models \u0026 Controls ===\n"}
+,{"stream_name":"stdout","time":16.890896376,"data":"Loading deit_base...\n"}
+,{"stream_name":"stderr","time":18.603549676,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":26.752517114,"data":"Loading efficientnet_b3...\n"}
+,{"stream_name":"stdout","time":29.77815402,"data":"Loading flexivit_base F-p @ 224...\n"}
+,{"stream_name":"stdout","time":37.439222004,"data":"Loading flexivit_base F-t @ 224...\n"}
+,{"stream_name":"stdout","time":39.541885951,"data":"Loading flexivit_base F-p @ 320...\n"}
+,{"stream_name":"stdout","time":40.947861231,"data":"Loading flexivit_base F-t @ 320...\n"}
+,{"stream_name":"stdout","time":42.384059673,"data":"Loading flexivit_base F-p @ 384...\n"}
+,{"stream_name":"stdout","time":43.824104502,"data":"Loading flexivit_base F-t @ 384...\n"}
+,{"stream_name":"stdout","time":45.176454508,"data":"Loading flexivit_base F-p @ 448...\n"}
+,{"stream_name":"stdout","time":46.552928081,"data":"Loading flexivit_base F-t @ 448...\n"}
+,{"stream_name":"stdout","time":55.674243192,"data":"Preparing BN-recalibrated EfficientNet...\n"}
+,{"stream_name":"stdout","time":59.800990648,"data":"\n"}
+,{"stream_name":"stdout","time":59.801018209,"data":"=== Executing Dose-Response Grid on SUB10K ===\n"}
+,{"stream_name":"stdout","time":59.801035703,"data":"\n"}
+,{"stream_name":"stdout","time":59.801040436,"data":"Processing Dose Condition: gaussian_noise (Severity 1)...\n"}
+,{"stream_name":"stderr","time":61.822696813,"data":"/kaggle/src/script.py:221: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":61.822731703,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":81.847667127,"data":"/kaggle/src/script.py:245: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":81.847725206,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":82.371796384,"data":"/kaggle/src/script.py:270: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":82.371819742,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":84.402535773,"data":"/kaggle/src/script.py:294: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":84.402571003,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":84.786435825,"data":"/kaggle/src/script.py:321: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":84.786480341,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":1876.943847762,"data":"Saved 230000 records for gaussian_noise s1\n"}
+,{"stream_name":"stdout","time":1876.945820274,"data":"\n"}
+,{"stream_name":"stdout","time":1876.945840567,"data":"Processing Dose Condition: gaussian_noise (Severity 5)...\n"}
+,{"stream_name":"stdout","time":3577.32966822,"data":"Saved 230000 records for gaussian_noise s5\n"}
+,{"stream_name":"stdout","time":3577.332184637,"data":"\n"}
+,{"stream_name":"stdout","time":3577.332210525,"data":"Processing Dose Condition: defocus_blur (Severity 1)...\n"}
+,{"stream_name":"stderr","time":3579.129851891,"data":"/kaggle/src/script.py:221: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":3579.129886102,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":3581.911560312,"data":"/kaggle/src/script.py:245: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":3581.911592503,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":3582.471119106,"data":"/kaggle/src/script.py:270: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":3582.4711539,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":3584.577582432,"data":"/kaggle/src/script.py:294: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":3584.577619852,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stderr","time":3584.999869269,"data":"/kaggle/src/script.py:321: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.\n"}
+,{"stream_name":"stderr","time":3584.999898684,"data":"  with torch.cuda.amp.autocast():\n"}
+,{"stream_name":"stdout","time":5176.527555572,"data":"Saved 230000 records for defocus_blur s1\n"}
+,{"stream_name":"stdout","time":5176.530397227,"data":"\n"}
+,{"stream_name":"stdout","time":5176.530421786,"data":"Processing Dose Condition: defocus_blur (Severity 5)...\n"}
+,{"stream_name":"stdout","time":7014.931697595,"data":"Saved 230000 records for defocus_blur s5\n"}
+,{"stream_name":"stdout","time":7014.934619601,"data":"\n"}
+,{"stream_name":"stdout","time":7014.934639327,"data":"=== Executing Frequency-Controlled Noise (Low, Mid, High Bands) ===\n"}
+,{"stream_name":"stderr","time":7014.945570661,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":7014.946333064,"data":"  File \"/kaggle/src/script.py\", line 378, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":7014.946347573,"data":"    corr = generate_frequency_controlled_noise(arr, band=band, sigma_total=30.0, seed=42)\n"}
+,{"stream_name":"stderr","time":7014.946399263,"data":"TypeError: generate_frequency_controlled_noise() got an unexpected keyword argument 'band'\n"}
+,{"stream_name":"stderr","time":7020.693070673,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":7020.69309876,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":7020.919749383,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":7020.919780756,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":7021.711961392,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":7022.703019054,"data":"[NbConvertApp] Writing 356401 bytes to __results__.html\n"}
+]

@@ -1,0 +1,24 @@
+[{"stream_name":"stdout","time":1.021653213,"data":"Searching for knobs package in /kaggle/input...\n"}
+,{"stream_name":"stdout","time":6577.852369683,"data":"Found knobs package at: /kaggle/input/datasets/anshulsingh45/knobs-code/src, added to sys.path\n"}
+,{"stream_name":"stdout","time":6577.861678006,"data":"Successfully loaded knobs from: /kaggle/input/datasets/anshulsingh45/knobs-code/src/knobs/__init__.py\n"}
+,{"stream_name":"stdout","time":9328.329727119,"data":"Located LOC_val_solution.csv at: /kaggle/input/competitions/imagenet-object-localization-challenge/LOC_val_solution.csv\n"}
+,{"stream_name":"stdout","time":9328.329821389,"data":"Located LOC_synset_mapping.txt at: /kaggle/input/competitions/imagenet-object-localization-challenge/LOC_synset_mapping.txt\n"}
+,{"stream_name":"stdout","time":9328.329828981,"data":"Writing splits to: /kaggle/working/splits\n"}
+,{"stream_name":"stdout","time":9329.722141212,"data":"Generated split summary:\n"}
+,{"stream_name":"stdout","time":9329.722178046,"data":"{\n"}
+,{"stream_name":"stdout","time":9329.722184703,"data":"  \"PILOT\": 5000,\n"}
+,{"stream_name":"stdout","time":9329.722188308,"data":"  \"CAL-GATE\": 1000,\n"}
+,{"stream_name":"stdout","time":9329.72219185,"data":"  \"CONFIRM_POOL\": 44000,\n"}
+,{"stream_name":"stdout","time":9329.722194986,"data":"  \"PRIMARY_CONFIRM\": 34000,\n"}
+,{"stream_name":"stdout","time":9329.722198101,"data":"  \"SUB10K\": 10000,\n"}
+,{"stream_name":"stdout","time":9329.722201262,"data":"  \"MECH\": 2000,\n"}
+,{"stream_name":"stdout","time":9329.72220436,"data":"  \"FULL\": 50000\n"}
+,{"stream_name":"stdout","time":9329.722207278,"data":"}\n"}
+,{"stream_name":"stdout","time":9329.722404853,"data":"K-prep complete!\n"}
+,{"stream_name":"stderr","time":9333.752409394,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":9333.752458291,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":9334.416076889,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":9334.41612391,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":9337.480299703,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":9339.124149054,"data":"[NbConvertApp] Writing 281918 bytes to __results__.html\n"}
+]

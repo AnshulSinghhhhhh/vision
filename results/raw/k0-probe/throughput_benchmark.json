@@ -1,0 +1,90 @@
+{
+  "deit_base_224": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 224,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 149.1998062133789,
+    "per_image_latency_ms": 2.3312469720840454,
+    "iqr_ms": 1.4209327697753906,
+    "throughput_img_per_sec": 428.95498073549805
+  },
+  "deit_base_320": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 320,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 323.8645477294922,
+    "per_image_latency_ms": 5.060383558273315,
+    "iqr_ms": 4.015312194824219,
+    "throughput_img_per_sec": 197.61347899510133
+  },
+  "deit_base_384": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 384,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 512.8713073730469,
+    "per_image_latency_ms": 8.013614177703857,
+    "iqr_ms": 10.743545532226562,
+    "throughput_img_per_sec": 124.78763986195929
+  },
+  "deit_base_448": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 448,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 780.4558715820312,
+    "per_image_latency_ms": 12.194622993469238,
+    "iqr_ms": 22.417999267578125,
+    "throughput_img_per_sec": 82.0033551291864
+  },
+  "efficientnet_b3_224": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 224,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 87.00040054321289,
+    "per_image_latency_ms": 1.3593812584877014,
+    "iqr_ms": 0.5531349182128906,
+    "throughput_img_per_sec": 735.6287971135414
+  },
+  "efficientnet_b3_320": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 320,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 163.7620620727539,
+    "per_image_latency_ms": 2.55878221988678,
+    "iqr_ms": 0.7328834533691406,
+    "throughput_img_per_sec": 390.81090693378655
+  },
+  "efficientnet_b3_384": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 384,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 243.5684585571289,
+    "per_image_latency_ms": 3.805757164955139,
+    "iqr_ms": 2.9234237670898438,
+    "throughput_img_per_sec": 262.75980223025806
+  },
+  "efficientnet_b3_448": {
+    "device": "cuda:0",
+    "gpu_name": "Tesla T4",
+    "resolution": 448,
+    "batch_size": 64,
+    "use_fp16": true,
+    "median_batch_latency_ms": 321.0269470214844,
+    "per_image_latency_ms": 5.016046047210693,
+    "iqr_ms": 4.0748138427734375,
+    "throughput_img_per_sec": 199.36021132742127
+  }
+}

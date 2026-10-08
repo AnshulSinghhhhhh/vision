@@ -1,0 +1,290 @@
+[
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 224,
+    "batch_size": 1,
+    "median_latency_ms": 7.512959957122803,
+    "iqr_latency_ms": 0.26899993419647217,
+    "throughput_img_per_sec": 133.10333153738313
+  },
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 224,
+    "batch_size": 64,
+    "median_latency_ms": 137.70652770996094,
+    "iqr_latency_ms": 1.5798263549804688,
+    "throughput_img_per_sec": 464.7564720736952
+  },
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 320,
+    "batch_size": 1,
+    "median_latency_ms": 7.960943937301636,
+    "iqr_latency_ms": 0.0979839563369751,
+    "throughput_img_per_sec": 125.61324484580535
+  },
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 320,
+    "batch_size": 64,
+    "median_latency_ms": 302.4771728515625,
+    "iqr_latency_ms": 3.3165206909179688,
+    "throughput_img_per_sec": 211.58621457827275
+  },
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 384,
+    "batch_size": 1,
+    "median_latency_ms": 10.041887760162354,
+    "iqr_latency_ms": 0.12774395942687988,
+    "throughput_img_per_sec": 99.58286966392386
+  },
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 384,
+    "batch_size": 64,
+    "median_latency_ms": 476.98223876953125,
+    "iqr_latency_ms": 11.287544250488281,
+    "throughput_img_per_sec": 134.17690387193554
+  },
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 448,
+    "batch_size": 1,
+    "median_latency_ms": 14.15985631942749,
+    "iqr_latency_ms": 0.20672869682312012,
+    "throughput_img_per_sec": 70.62218552514464
+  },
+  {
+    "model": "deit_base",
+    "variant": "standard",
+    "resolution": 448,
+    "batch_size": 64,
+    "median_latency_ms": 721.6073913574219,
+    "iqr_latency_ms": 17.321975708007812,
+    "throughput_img_per_sec": 88.69088754704833
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 224,
+    "batch_size": 1,
+    "median_latency_ms": 17.40708827972412,
+    "iqr_latency_ms": 0.5703277587890625,
+    "throughput_img_per_sec": 57.44786169464114
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 224,
+    "batch_size": 64,
+    "median_latency_ms": 80.80161666870117,
+    "iqr_latency_ms": 0.24445152282714844,
+    "throughput_img_per_sec": 792.0633600984701
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 320,
+    "batch_size": 1,
+    "median_latency_ms": 17.472432136535645,
+    "iqr_latency_ms": 0.8865046501159668,
+    "throughput_img_per_sec": 57.23301668512164
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 320,
+    "batch_size": 64,
+    "median_latency_ms": 150.69960021972656,
+    "iqr_latency_ms": 0.7397575378417969,
+    "throughput_img_per_sec": 424.68593086302303
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 384,
+    "batch_size": 1,
+    "median_latency_ms": 18.362095832824707,
+    "iqr_latency_ms": 1.9597768783569336,
+    "throughput_img_per_sec": 54.46001421103391
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 384,
+    "batch_size": 64,
+    "median_latency_ms": 223.2590103149414,
+    "iqr_latency_ms": 1.20733642578125,
+    "throughput_img_per_sec": 286.6625625085325
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 448,
+    "batch_size": 1,
+    "median_latency_ms": 17.422048568725586,
+    "iqr_latency_ms": 0.8006792068481445,
+    "throughput_img_per_sec": 57.39853129528667
+  },
+  {
+    "model": "efficientnet_b3",
+    "variant": "standard",
+    "resolution": 448,
+    "batch_size": 64,
+    "median_latency_ms": 288.31785583496094,
+    "iqr_latency_ms": 1.86376953125,
+    "throughput_img_per_sec": 221.97723347608036
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 224,
+    "batch_size": 1,
+    "median_latency_ms": 7.640160083770752,
+    "iqr_latency_ms": 0.26944005489349365,
+    "throughput_img_per_sec": 130.88730982537953
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 224,
+    "batch_size": 64,
+    "median_latency_ms": 160.44515228271484,
+    "iqr_latency_ms": 2.6136512756347656,
+    "throughput_img_per_sec": 398.890206961366
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 320,
+    "batch_size": 1,
+    "median_latency_ms": 8.390656471252441,
+    "iqr_latency_ms": 0.23601627349853516,
+    "throughput_img_per_sec": 119.18018613038674
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 320,
+    "batch_size": 64,
+    "median_latency_ms": 346.0607147216797,
+    "iqr_latency_ms": 4.362251281738281,
+    "throughput_img_per_sec": 184.93864595833185
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 384,
+    "batch_size": 1,
+    "median_latency_ms": 10.569664001464844,
+    "iqr_latency_ms": 0.2275681495666504,
+    "throughput_img_per_sec": 94.61038684497545
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 384,
+    "batch_size": 64,
+    "median_latency_ms": 536.2552490234375,
+    "iqr_latency_ms": 6.681915283203125,
+    "throughput_img_per_sec": 119.34615114080277
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 448,
+    "batch_size": 1,
+    "median_latency_ms": 14.626736164093018,
+    "iqr_latency_ms": 0.06663966178894043,
+    "throughput_img_per_sec": 68.36795227460838
+  },
+  {
+    "model": "flexivit_base",
+    "variant": "standard",
+    "resolution": 448,
+    "batch_size": 64,
+    "median_latency_ms": 798.2473449707031,
+    "iqr_latency_ms": 10.722640991210938,
+    "throughput_img_per_sec": 80.1756503209527
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r4",
+    "resolution": 224,
+    "batch_size": 1,
+    "median_latency_ms": 19.385600090026855,
+    "iqr_latency_ms": 0.6341595649719238,
+    "throughput_img_per_sec": 51.58468117344799
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r4",
+    "resolution": 224,
+    "batch_size": 64,
+    "median_latency_ms": 172.43134307861328,
+    "iqr_latency_ms": 1.4979286193847656,
+    "throughput_img_per_sec": 371.1622194511454
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r4",
+    "resolution": 448,
+    "batch_size": 1,
+    "median_latency_ms": 19.334511756896973,
+    "iqr_latency_ms": 0.5150079727172852,
+    "throughput_img_per_sec": 51.72098538476317
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r4",
+    "resolution": 448,
+    "batch_size": 64,
+    "median_latency_ms": 876.7948608398438,
+    "iqr_latency_ms": 5.8177947998046875,
+    "throughput_img_per_sec": 72.9931285622468
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r8",
+    "resolution": 224,
+    "batch_size": 1,
+    "median_latency_ms": 18.824399948120117,
+    "iqr_latency_ms": 0.43729543685913086,
+    "throughput_img_per_sec": 53.12254322878771
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r8",
+    "resolution": 224,
+    "batch_size": 64,
+    "median_latency_ms": 146.916748046875,
+    "iqr_latency_ms": 2.042552947998047,
+    "throughput_img_per_sec": 435.6208590975637
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r8",
+    "resolution": 448,
+    "batch_size": 1,
+    "median_latency_ms": 19.110224723815918,
+    "iqr_latency_ms": 0.4978480339050293,
+    "throughput_img_per_sec": 52.32800840660761
+  },
+  {
+    "model": "deit_base",
+    "variant": "tome_r8",
+    "resolution": 448,
+    "batch_size": 64,
+    "median_latency_ms": 830.44677734375,
+    "iqr_latency_ms": 2.77947998046875,
+    "throughput_img_per_sec": 77.06694967823114
+  }
+]
