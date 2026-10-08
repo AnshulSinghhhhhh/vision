@@ -40,13 +40,19 @@ def package_and_push_code_dataset(
     staging_dir = os.path.abspath(staging_dir)
     os.makedirs(staging_dir, exist_ok=True)
     
-    # Copy src, pyproject.toml, requirements.txt
+    # Copy src, pyproject.toml, requirements.txt, splits
     src_dest = os.path.join(staging_dir, "src")
     if os.path.exists(src_dest):
         shutil.rmtree(src_dest)
     shutil.copytree(os.path.join(repo_root, "src"), src_dest)
     shutil.copy2(os.path.join(repo_root, "pyproject.toml"), staging_dir)
     shutil.copy2(os.path.join(repo_root, "requirements.txt"), staging_dir)
+    splits_src = os.path.join(repo_root, "splits")
+    if os.path.exists(splits_src):
+        splits_dest = os.path.join(staging_dir, "splits")
+        if os.path.exists(splits_dest):
+            shutil.rmtree(splits_dest)
+        shutil.copytree(splits_src, splits_dest)
     
     # Write GIT_COMMIT provenance file
     try:

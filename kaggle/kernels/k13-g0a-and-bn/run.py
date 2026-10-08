@@ -24,6 +24,7 @@ import time
 import json
 import zipfile
 import math
+import gc
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
@@ -171,6 +172,11 @@ def evaluate_g0a_checkpoints(
             "passed": bool(passed),
             "total_images": total_eval,
         }
+
+        del model, eval_model
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+        gc.collect()
 
     return g0a_results
 
@@ -343,6 +349,11 @@ def run_bn_recalibration_control(
                         "correct": bool(prd == lbl),
                     })
 
+            del model_cur, eval_model
+            if device.type == "cuda":
+                torch.cuda.empty_cache()
+            gc.collect()
+
     df_recal = pd.DataFrame(recal_records)
     df_recal.to_parquet(shard_file, index=False)
     print(f"Saved recalibrated BN shard to {shard_file} ({len(df_recal)} rows)", flush=True)
@@ -410,10 +421,11 @@ def main():
 
     out_dir = "/kaggle/working" if os.path.exists("/kaggle") else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "results", "derived"))
 
-    # Stage 1: G0-A dynamic validation
+    # Stage 1: G0-A dynamic validation (class-balanced PILOT 5,000 images)
+    g0a_eval_ids = eval_ids if (eval_ids and len(eval_ids) >= 2000) else balanced_subset(all_val_ids, val_metadata, n=5000, seed=0)
     g0a_results = evaluate_g0a_checkpoints(
         image_dir=img_dir,
-        val_image_ids=all_val_ids,
+        val_image_ids=g0a_eval_ids,
         val_metadata=val_metadata,
         device=device,
         batch_size=64,
