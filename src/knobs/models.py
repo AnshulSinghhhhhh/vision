@@ -124,15 +124,51 @@ def create_model_instance(
     return model
 
 
+def _apply_calibration_corruption(images: torch.Tensor, corruption: Union[str, tuple, list, object]) -> torch.Tensor:
+    if callable(corruption):
+        return corruption(images)
+    if isinstance(corruption, str):
+        c_name = corruption
+        c_sev = 3
+    elif isinstance(corruption, (tuple, list)):
+        c_name, c_sev = corruption[0], int(corruption[1])
+    else:
+        return images
+
+    import numpy as np
+    from knobs.corrupt import apply_corruption
+
+    corrupted = []
+    for i in range(len(images)):
+        img_t = images[i]
+        if img_t.dtype in (torch.float32, torch.float64, torch.float16):
+            arr = (img_t.detach().cpu().permute(1, 2, 0).numpy() * 255.0).clip(0, 255).astype(np.uint8)
+            c_arr = apply_corruption(arr, image_id=f"cal_{i}", corruption_name=c_name, severity=c_sev)
+            t = torch.from_numpy(c_arr).permute(2, 0, 1).to(images.device).to(images.dtype) / 255.0
+            corrupted.append(t)
+        else:
+            arr = img_t.detach().cpu().permute(1, 2, 0).numpy().astype(np.uint8)
+            c_arr = apply_corruption(arr, image_id=f"cal_{i}", corruption_name=c_name, severity=c_sev)
+            t = torch.from_numpy(c_arr).permute(2, 0, 1).to(images.device)
+            corrupted.append(t)
+    return torch.stack(corrupted, dim=0)
+
+
 def recalibrate_batchnorm(
     model: nn.Module,
     calib_loader: Union[torch.utils.data.DataLoader, torch.Tensor, list, tuple],
     device: Optional[torch.device] = None,
-    num_batches: int = 40,
+    batch_size: int = 32,
+    drop_remainder: bool = True,
+    calibration_corruption: Optional[Union[str, tuple, list, object]] = None,
+    calibration_resolution: Optional[int] = None,
+    num_batches: Optional[int] = None,
 ) -> nn.Module:
     """Recomputes running mean and variance on unlabelled calibration images (CALIB)
     using cumulative averaging (momentum=None) with backbone weights frozen.
-    Accepts DataLoader, list/tuple of batches, or a raw Tensor.
+    
+    Ensures all batches have equal weight by enforcing equal batch sizes and dropping
+    any remainder batch. Supports adapting to target corruption and resolution.
     """
     if device is None:
         try:
@@ -143,7 +179,7 @@ def recalibrate_batchnorm(
     model.eval()
     bn_layers = []
     for m in model.modules():
-        if isinstance(m, (nn.BatchNorm2d, nn.SyncBatchNorm)):
+        if isinstance(m, (nn.BatchNorm2d, nn.SyncBatchNorm, nn.BatchNorm1d)):
             m.reset_running_stats()
             m.momentum = None  # Cumulative moving average
             m.train()
@@ -154,22 +190,121 @@ def recalibrate_batchnorm(
 
     with torch.no_grad():
         if isinstance(calib_loader, torch.Tensor):
-            # Process tensor in chunks
-            chunk_size = 32
-            for start_idx in range(0, len(calib_loader), chunk_size):
-                batch = calib_loader[start_idx:start_idx + chunk_size].to(device)
+            total_n = len(calib_loader)
+            n_batches = total_n // batch_size if drop_remainder else (total_n + batch_size - 1) // batch_size
+            if num_batches is not None:
+                n_batches = min(n_batches, num_batches)
+                
+            for b_idx in range(n_batches):
+                start_idx = b_idx * batch_size
+                end_idx = start_idx + batch_size
+                if end_idx > total_n:
+                    if drop_remainder:
+                        break
+                    end_idx = total_n
+                batch = calib_loader[start_idx:end_idx].to(device)
+                
+                if calibration_corruption is not None:
+                    batch = _apply_calibration_corruption(batch, calibration_corruption)
+
+                if calibration_resolution is not None and (batch.shape[-2] != calibration_resolution or batch.shape[-1] != calibration_resolution):
+                    from knobs.resize import resize_tensor_torch
+                    batch = resize_tensor_torch(batch, calibration_resolution)
+                    
                 _ = model(batch)
         else:
+            processed = 0
             for i, batch in enumerate(calib_loader):
-                if i >= num_batches:
+                if num_batches is not None and i >= num_batches:
                     break
                 images = batch[0] if isinstance(batch, (list, tuple)) else batch
+                if drop_remainder and len(images) != batch_size:
+                    continue
                 images = images.to(device)
+
+                if calibration_corruption is not None:
+                    images = _apply_calibration_corruption(images, calibration_corruption)
+
+                if calibration_resolution is not None and (images.shape[-2] != calibration_resolution or images.shape[-1] != calibration_resolution):
+                    from knobs.resize import resize_tensor_torch
+                    images = resize_tensor_torch(images, calibration_resolution)
+
                 _ = model(images)
+                processed += 1
 
     model.eval()
     return model
 
 
+def assert_clean_sanity(
+    model: nn.Module,
+    images: torch.Tensor,
+    labels: torch.Tensor,
+    tol_pp: float = 1.0,
+    original_model: Optional[Union[nn.Module, float]] = None,
+    batch_size: int = 64,
+) -> float:
+    """Evaluates clean accuracy of recalibrated model on clean images and asserts
+    it is not more than tol_pp below the original clean accuracy on >= 1,000 images.
+    
+    Args:
+        model: Recalibrated model to test.
+        images: Clean validation images tensor.
+        labels: Ground-truth class labels.
+        tol_pp: Tolerance in percentage points (default 1.0 pp).
+        original_model: Uncalibrated reference model OR reference clean accuracy (float in percent).
+        batch_size: Batch size for evaluation.
+        
+    Returns:
+        float: Recalibrated clean accuracy in percent.
+        
+    Raises:
+        RuntimeError if recalibrated accuracy drops by more than tol_pp below original.
+    """
+    model.eval()
+    device = next(model.parameters()).device
+
+    # Handle case where user passes original_model as 4th positional argument
+    if isinstance(tol_pp, nn.Module) or (isinstance(tol_pp, (int, float)) and tol_pp > 10.0):
+        original_model = tol_pp
+        tol_pp = 1.0
+    
+    if isinstance(original_model, (int, float)):
+        orig_acc = float(original_model)
+    elif isinstance(original_model, nn.Module):
+        original_model.eval()
+        orig_correct = 0
+        with torch.no_grad():
+            for i in range(0, len(images), batch_size):
+                b_imgs = images[i:i + batch_size].to(device)
+                b_lbls = labels[i:i + batch_size].to(device)
+                logits = original_model(b_imgs)
+                orig_correct += int((logits.argmax(dim=-1) == b_lbls).sum().item())
+        orig_acc = (orig_correct / max(1, len(labels))) * 100.0
+    elif hasattr(model, "_original_clean_acc"):
+        orig_acc = getattr(model, "_original_clean_acc")
+    else:
+        raise ValueError("original_model or reference accuracy must be provided to assert_clean_sanity.")
+
+    recal_correct = 0
+    with torch.no_grad():
+        for i in range(0, len(images), batch_size):
+            b_imgs = images[i:i + batch_size].to(device)
+            b_lbls = labels[i:i + batch_size].to(device)
+            logits = model(b_imgs)
+            recal_correct += int((logits.argmax(dim=-1) == b_lbls).sum().item())
+    recal_acc = (recal_correct / max(1, len(labels))) * 100.0
+
+    drop = orig_acc - recal_acc
+    if drop > tol_pp:
+        raise RuntimeError(
+            f"Clean sanity check failed: recalibrated accuracy ({recal_acc:.2f}%) is "
+            f"{drop:.2f} pp below original clean accuracy ({orig_acc:.2f}%), "
+            f"exceeding tolerance of {tol_pp:.2f} pp."
+        )
+    return recal_acc
+
+
 # Alias for backward-compatibility
 recalibrate_bn_statistics = recalibrate_batchnorm
+

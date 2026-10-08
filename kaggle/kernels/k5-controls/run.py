@@ -55,8 +55,15 @@ for cand in KNOBS_CANDIDATES:
         break
 
 import knobs
-from knobs.models import MODEL_TAGS, create_model_instance, normalize_tensor, recalibrate_bn_statistics
-from knobs.data import preprocess_image_448
+from knobs.models import (
+    MODEL_TAGS,
+    create_model_instance,
+    normalize_tensor,
+    recalibrate_batchnorm,
+    recalibrate_bn_statistics,
+    assert_clean_sanity,
+)
+from knobs.data import preprocess_image_448, balanced_subset
 from knobs.corrupt import apply_corruption, generate_frequency_controlled_noise
 from knobs.resize import resize_tensor_torch
 from knobs.tokens import patch_vit_with_tome
@@ -73,13 +80,17 @@ SPLITS_CANDIDATES = [
     "/tmp/splits",
 ]
 sub10k_json_path = None
+cal_gate_json_path = None
 meta_json_path = None
 for s_dir in SPLITS_CANDIDATES:
     s_p = os.path.join(s_dir, "SUB10K.json")
+    cg_p = os.path.join(s_dir, "CAL-GATE.json")
     m_p = os.path.join(s_dir, "val_metadata.json")
     if os.path.exists(s_p) and os.path.exists(m_p):
         sub10k_json_path = s_p
         meta_json_path = m_p
+        if os.path.exists(cg_p):
+            cal_gate_json_path = cg_p
         print(f"Found splits in: {s_dir}")
         break
 
@@ -91,7 +102,14 @@ with open(sub10k_json_path, "r") as f:
 with open(meta_json_path, "r") as f:
     val_metadata = json.load(f)
 
+if cal_gate_json_path:
+    with open(cal_gate_json_path, "r") as f:
+        cal_gate_image_ids = json.load(f)
+else:
+    cal_gate_image_ids = balanced_subset(sub10k_image_ids, val_metadata, n=1000, seed=0)
+
 print(f"Loaded SUB10K split with {len(sub10k_image_ids)} images")
+print(f"Loaded CAL-GATE split with {len(cal_gate_image_ids)} images")
 
 # 3. Locate validation image directory precisely
 candidate_dirs = [
@@ -141,20 +159,31 @@ models_tome_r8 = patch_vit_with_tome(
 )
 
 # BN-recalibrated EfficientNet
-print("Preparing BN-recalibrated EfficientNet...")
+print(f"Preparing BN-recalibrated EfficientNet on {len(cal_gate_image_ids)} CAL-GATE images...")
 model_ebn = create_model_instance("efficientnet_b3", resolution=224, pretrained=True, device=device)
-# Recalibrate on first 100 images
 recal_imgs = []
-for img_id in sub10k_image_ids[:100]:
+recal_labels = []
+for img_id in cal_gate_image_ids:
     p = os.path.join(IMAGE_DIR, f"{img_id}.JPEG")
     if os.path.exists(p):
         arr, _ = preprocess_image_448(Image.open(p))
         t = torch.from_numpy(arr).permute(2, 0, 1).float() / 255.0
         recal_imgs.append(resize_tensor_torch(t.unsqueeze(0), 224))
+        recal_labels.append(val_metadata[img_id]["class_idx"])
+
 if recal_imgs:
     recal_tensor = torch.cat(recal_imgs, dim=0).to(device)
+    recal_labels_tensor = torch.tensor(recal_labels, dtype=torch.long, device=device)
     norm_recal = normalize_tensor(recal_tensor, model_tag=MODEL_TAGS["efficientnet_b3"])
-    recalibrate_bn_statistics(model_ebn, norm_recal, device=device)
+    recalibrate_batchnorm(model_ebn, norm_recal, device=device, batch_size=32, drop_remainder=True)
+    clean_acc = assert_clean_sanity(
+        model=model_ebn,
+        images=norm_recal,
+        labels=recal_labels_tensor,
+        tol_pp=1.0,
+        original_model=models["efficientnet_b3"],
+    )
+    print(f"BN recalibration successful. Clean sanity accuracy: {clean_acc:.2f}%")
 models["efficientnet_b3_ebn"] = model_ebn
 
 SHARDS_DIR = "/kaggle/working/shards"
