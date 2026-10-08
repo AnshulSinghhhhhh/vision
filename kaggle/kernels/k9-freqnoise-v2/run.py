@@ -28,6 +28,7 @@ from typing import Dict, List, Any, Optional
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 from PIL import Image
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -107,6 +108,11 @@ def run_freqnoise_v2(
     for r in resolutions:
         flex_models[("F-p", r)] = create_model_instance("flexivit_base", resolution=r, arm="F-p", pretrained=pretrained, device=device)
         flex_models[("F-t", r)] = create_model_instance("flexivit_base", resolution=r, arm="F-t", pretrained=pretrained, device=device)
+
+    if torch.cuda.device_count() > 1:
+        model_deit = nn.DataParallel(model_deit)
+        model_eff = nn.DataParallel(model_eff)
+        flex_models = {k: nn.DataParallel(v) for k, v in flex_models.items()}
 
     combined_shards = []
 

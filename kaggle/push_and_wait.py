@@ -94,6 +94,13 @@ def package_and_push_code_dataset(
         print("Dataset does not exist. Initializing dataset...")
         run_cmd(["kaggle", "datasets", "create", "-p", staging_dir, "--dir-mode", "zip"])
         
+    print("Waiting for dataset to be ready...")
+    for _ in range(30):
+        st = run_cmd(["kaggle", "datasets", "status", f"{username}/{CODE_DATASET_SLUG}"], check=False)
+        if "ready" in st.stdout.lower():
+            print("Dataset is ready.")
+            break
+        time.sleep(3)
     print("Code dataset push complete.")
 
 
@@ -174,7 +181,8 @@ if __name__ == "__main__":
             print(f"  - {k}")
         sys.exit(0 if len(sys.argv) >= 2 and sys.argv[1] == "--list" else 1)
         
-    kernel_name = sys.argv[1]
+    kernel_name = [a for a in sys.argv[1:] if not a.startswith("--")][0]
+    skip_code_push = "--skip-code-push" in sys.argv
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     staging_dir = os.path.join(repo_root, "build", "knobs-code-staging")
     
@@ -188,8 +196,11 @@ if __name__ == "__main__":
     if not os.path.exists(meta_file):
         raise FileNotFoundError(f"Missing kernel-metadata.json in {kernel_dir}")
 
-    # Push code dataset first
-    package_and_push_code_dataset(repo_root, staging_dir)
+    # Push code dataset if not skipped
+    if not skip_code_push:
+        package_and_push_code_dataset(repo_root, staging_dir)
+    else:
+        print("Skipping code dataset push as requested (--skip-code-push).")
     
     output_dir = os.path.join(repo_root, "results", "raw", kernel_name)
     

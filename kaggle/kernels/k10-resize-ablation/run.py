@@ -31,6 +31,7 @@ from typing import Dict, List, Any, Optional, Tuple, Callable
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from PIL import Image
 
@@ -135,6 +136,9 @@ def run_resize_ablation(
         ("efficientnet_b3", model_eff),
         ("deit_base", model_deit),
     ]
+
+    if torch.cuda.device_count() > 1:
+        models = [(name, nn.DataParallel(m)) for name, m in models]
 
     operators = [
         ("bilinear_antialias", [224, 320, 384]),
