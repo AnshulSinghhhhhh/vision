@@ -93,3 +93,37 @@ def test_fallback_backend_raises_without_env_flag(monkeypatch):
     monkeypatch.setenv("KNOBS_ALLOW_FALLBACK", "1")
     out = apply_corruption(dummy, "id_test", "gaussian_noise", severity=1)
     assert out.shape == dummy.shape
+
+
+def test_frequency_noise_seeding_and_power_spectrum():
+    dummy = np.full((448, 448, 3), 128, dtype=np.uint8)
+    
+    # 1. Determinism with same image_id
+    out1 = generate_frequency_controlled_noise(dummy, image_id="img_001", band="low")
+    out2 = generate_frequency_controlled_noise(dummy, image_id="img_001", band="low")
+    np.testing.assert_array_equal(out1, out2)
+    
+    # 2. Distinct realizations with different image_ids
+    out3 = generate_frequency_controlled_noise(dummy, image_id="img_002", band="low")
+    assert not np.array_equal(out1, out3)
+    
+    # 3. Power spectrum check: high vs low band
+    noise_high = generate_frequency_controlled_noise(dummy, image_id="spec_test", band="high").astype(np.float32) - 128.0
+    noise_low = generate_frequency_controlled_noise(dummy, image_id="spec_test", band="low").astype(np.float32) - 128.0
+    
+    fft_high = np.fft.fftshift(np.fft.fft2(noise_high[:, :, 0]))
+    fft_low = np.fft.fftshift(np.fft.fft2(noise_low[:, :, 0]))
+    power_high = np.abs(fft_high) ** 2
+    power_low = np.abs(fft_low) ** 2
+    
+    y, x = np.ogrid[-224:224, -224:224]
+    r = np.sqrt(x**2 + y**2)
+    high_freq_mask = r > 112
+    
+    hf_power_high = power_high[high_freq_mask].sum() / power_high.sum()
+    hf_power_low = power_low[high_freq_mask].sum() / power_low.sum()
+    
+    assert hf_power_high > 0.50
+    assert hf_power_low < 0.25
+    assert hf_power_high > 2.0 * hf_power_low
+

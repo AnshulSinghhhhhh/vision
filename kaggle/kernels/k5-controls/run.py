@@ -392,57 +392,75 @@ for cond_name, severity in DOSE_CONDITIONS:
 
 # 6. Frequency-Controlled Noise
 print("\n=== Executing Frequency-Controlled Noise (Low, Mid, High Bands) ===")
-freq_records = []
+freq_ids = balanced_subset(sub10k_image_ids, val_metadata, n=2000, seed=0)
 for band in ["low", "mid", "high"]:
-    for b_start in range(0, min(2000, len(sub10k_image_ids)), BATCH_SIZE):
-        b_end = min(b_start + BATCH_SIZE, min(2000, len(sub10k_image_ids)))
-        batch_ids = sub10k_image_ids[b_start:b_end]
-        batch_tensors = []
-        batch_labels = []
-        for img_id in batch_ids:
-            p = os.path.join(IMAGE_DIR, f"{img_id}.JPEG")
-            if not os.path.exists(p):
-                continue
-            arr, _ = preprocess_image_448(Image.open(p))
-            corr = generate_frequency_controlled_noise(arr, band=band, sigma_total=30.0, seed=42)
-            t = torch.from_numpy(corr).permute(2, 0, 1).float() / 255.0
-            batch_tensors.append(t)
-            batch_labels.append(val_metadata[img_id]["class_idx"])
-            
-        if not batch_tensors:
-            continue
-        t_batch = torch.stack(batch_tensors, dim=0).to(device)
-        labels = torch.tensor(batch_labels, dtype=torch.long, device=device)
-        b_size = len(batch_tensors)
-        
-        for r in [224, 448]:
-            r_t = resize_tensor_torch(t_batch, target_size=r)
-            for m_key in ["deit_base", "efficientnet_b3"]:
-                inp = normalize_tensor(r_t, model_tag=MODEL_TAGS[m_key])
-                with torch.no_grad():
-                    with torch.cuda.amp.autocast():
-                        logits = models[m_key](inp)
-                preds = logits.argmax(dim=-1).cpu().numpy()
-                probs = torch.softmax(logits, dim=-1)
-                for idx in range(b_size):
-                    p = int(preds[idx])
-                    lbl = int(labels[idx].item())
-                    freq_records.append({
-                        "image_id": batch_ids[idx],
-                        "condition": f"freq_noise_{band}",
-                        "severity": 3,
-                        "model": m_key,
-                        "arm": f"band_{band}",
-                        "resolution": r,
-                        "label": lbl,
-                        "pred": p,
-                        "correct": bool(p == lbl),
-                        "confidence": float(probs[idx, p].item()),
-                    })
+    shard_file = os.path.join(SHARDS_DIR, f"shard_k5_freq_noise_{band}.parquet")
+    if os.path.exists(shard_file):
+        print(f"Shard {shard_file} already exists, skipping.")
+        continue
 
-df_freq = pd.DataFrame(freq_records)
-df_freq.to_parquet("/kaggle/working/shards/shard_k5_freq_noise.parquet", index=False)
-print(f"Saved {len(df_freq)} records for frequency-controlled noise")
+    print(f"\nProcessing Frequency Band: {band} on {len(freq_ids)} class-balanced images...")
+    band_records = []
+    try:
+        for b_start in range(0, len(freq_ids), BATCH_SIZE):
+            b_end = min(b_start + BATCH_SIZE, len(freq_ids))
+            batch_ids = freq_ids[b_start:b_end]
+            batch_tensors = []
+            batch_labels = []
+            for img_id in batch_ids:
+                p = os.path.join(IMAGE_DIR, f"{img_id}.JPEG")
+                if not os.path.exists(p):
+                    continue
+                arr, _ = preprocess_image_448(Image.open(p))
+                corr = generate_frequency_controlled_noise(
+                    arr,
+                    image_id=img_id,
+                    band=band,
+                    sigma_total=30.0,
+                    severity=3,
+                )
+                t = torch.from_numpy(corr).permute(2, 0, 1).float() / 255.0
+                batch_tensors.append(t)
+                batch_labels.append(val_metadata[img_id]["class_idx"])
+                
+            if not batch_tensors:
+                continue
+            t_batch = torch.stack(batch_tensors, dim=0).to(device)
+            labels = torch.tensor(batch_labels, dtype=torch.long, device=device)
+            b_size = len(batch_tensors)
+            
+            for r in [224, 448]:
+                r_t = resize_tensor_torch(t_batch, target_size=r)
+                for m_key in ["deit_base", "efficientnet_b3"]:
+                    inp = normalize_tensor(r_t, model_tag=MODEL_TAGS[m_key])
+                    with torch.no_grad():
+                        with torch.cuda.amp.autocast():
+                            logits = models[m_key](inp)
+                    preds = logits.argmax(dim=-1).cpu().numpy()
+                    probs = torch.softmax(logits, dim=-1)
+                    for idx in range(b_size):
+                        p = int(preds[idx])
+                        lbl = int(labels[idx].item())
+                        band_records.append({
+                            "image_id": batch_ids[idx],
+                            "condition": f"freq_noise_{band}",
+                            "severity": 3,
+                            "model": m_key,
+                            "arm": f"band_{band}",
+                            "resolution": r,
+                            "label": lbl,
+                            "pred": p,
+                            "correct": bool(p == lbl),
+                            "confidence": float(probs[idx, p].item()),
+                        })
+
+        df_band = pd.DataFrame(band_records)
+        tmp_path = shard_file + ".tmp"
+        df_band.to_parquet(tmp_path, index=False)
+        os.replace(tmp_path, shard_file)
+        print(f"Saved {len(df_band)} records for frequency band {band}")
+    except Exception as e:
+        print(f"Error executing frequency band {band}: {e}")
 
 # Aggregate master controls dataframe
 all_k5_dfs = [pd.read_parquet(os.path.join(SHARDS_DIR, f)) for f in os.listdir(SHARDS_DIR) if f.startswith("shard_k5_")]

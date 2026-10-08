@@ -161,6 +161,7 @@ def generate_frequency_controlled_noise(
     band: Optional[str] = None,
     target_rms: float = 30.0,
     sigma_total: Optional[float] = None,
+    severity: int = 3,
     seed: Optional[int] = None,
     salt: int = 0,
 ) -> np.ndarray:
@@ -176,41 +177,41 @@ def generate_frequency_controlled_noise(
     rms = sigma_total if sigma_total is not None else target_rms
     
     if seed is None:
-        seed = compute_seed(image_id, f"freq_noise_{mode}", int(rms), salt=salt)
+        seed = compute_seed(image_id, f"freq_noise_{mode}", severity, salt=salt)
         
-    with SeedContext(seed):
-        h, w, c = img_448.shape
-        if mode in ("broadband", "high"):
-            noise = np.random.normal(0, 1.0, (h, w, c)).astype(np.float32)
-            current_rms = np.sqrt(np.mean(noise ** 2))
-            noise = noise * (rms / (current_rms + 1e-8))
-        elif mode in ("bandlimited", "low"):
-            noise_224 = np.random.normal(0, 1.0, (224, 224, c)).astype(np.float32)
-            noise_upsampled = np.zeros((h, w, c), dtype=np.float32)
-            for ch in range(c):
-                pil_n = Image.fromarray(noise_224[..., ch], mode="F")
-                pil_up = pil_n.resize((w, h), resample=Image.Resampling.BILINEAR)
-                noise_upsampled[..., ch] = np.array(pil_up)
-            current_rms = np.sqrt(np.mean(noise_upsampled ** 2))
-            noise = noise_upsampled * (rms / (current_rms + 1e-8))
-        elif mode == "mid":
-            n1 = np.random.normal(0, 1.0, (336, 336, c)).astype(np.float32)
-            up1 = np.zeros((h, w, c), dtype=np.float32)
-            for ch in range(c):
-                pil_n = Image.fromarray(n1[..., ch], mode="F")
-                up1[..., ch] = np.array(pil_n.resize((w, h), resample=Image.Resampling.BILINEAR))
-                
-            n2 = np.random.normal(0, 1.0, (168, 168, c)).astype(np.float32)
-            up2 = np.zeros((h, w, c), dtype=np.float32)
-            for ch in range(c):
-                pil_n = Image.fromarray(n2[..., ch], mode="F")
-                up2[..., ch] = np.array(pil_n.resize((w, h), resample=Image.Resampling.BILINEAR))
-                
-            noise_mid = up1 - up2
-            current_rms = np.sqrt(np.mean(noise_mid ** 2))
-            noise = noise_mid * (rms / (current_rms + 1e-8))
-        else:
-            raise ValueError(f"Unknown frequency mode/band: {mode}")
+    rng = np.random.RandomState(seed % (2**32 - 1))
+    h, w, c = img_448.shape
+    if mode in ("broadband", "high"):
+        noise = rng.normal(0, 1.0, (h, w, c)).astype(np.float32)
+        current_rms = np.sqrt(np.mean(noise ** 2))
+        noise = noise * (rms / (current_rms + 1e-8))
+    elif mode in ("bandlimited", "low"):
+        noise_224 = rng.normal(0, 1.0, (224, 224, c)).astype(np.float32)
+        noise_upsampled = np.zeros((h, w, c), dtype=np.float32)
+        for ch in range(c):
+            pil_n = Image.fromarray(noise_224[..., ch], mode="F")
+            pil_up = pil_n.resize((w, h), resample=Image.Resampling.BILINEAR)
+            noise_upsampled[..., ch] = np.array(pil_up)
+        current_rms = np.sqrt(np.mean(noise_upsampled ** 2))
+        noise = noise_upsampled * (rms / (current_rms + 1e-8))
+    elif mode == "mid":
+        n1 = rng.normal(0, 1.0, (336, 336, c)).astype(np.float32)
+        up1 = np.zeros((h, w, c), dtype=np.float32)
+        for ch in range(c):
+            pil_n = Image.fromarray(n1[..., ch], mode="F")
+            up1[..., ch] = np.array(pil_n.resize((w, h), resample=Image.Resampling.BILINEAR))
             
-        corrupted = np.clip(img_448.astype(np.float32) + noise, 0.0, 255.0)
-        return corrupted.astype(np.uint8)
+        n2 = rng.normal(0, 1.0, (168, 168, c)).astype(np.float32)
+        up2 = np.zeros((h, w, c), dtype=np.float32)
+        for ch in range(c):
+            pil_n = Image.fromarray(n2[..., ch], mode="F")
+            up2[..., ch] = np.array(pil_n.resize((w, h), resample=Image.Resampling.BILINEAR))
+            
+        noise_mid = up1 - up2
+        current_rms = np.sqrt(np.mean(noise_mid ** 2))
+        noise = noise_mid * (rms / (current_rms + 1e-8))
+    else:
+        raise ValueError(f"Unknown frequency mode/band: {mode}")
+        
+    corrupted = np.clip(img_448.astype(np.float32) + noise, 0.0, 255.0)
+    return corrupted.astype(np.uint8)
