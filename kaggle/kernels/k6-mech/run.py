@@ -225,7 +225,11 @@ for b_start in range(0, len(m7_sample), batch_size):
         continue
 
     for cond_name in conditions:
-        for suite_key in ["A", "B", "C", "D"]:
+        # Precompute suite for first image to get keys
+        first_t = torch.from_numpy(batch_items[0][1]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+        suite_keys = list(generate_m7_suite(first_t).keys())
+
+        for suite_key in suite_keys:
             suite_tensors = []
             labels = []
             curr_img_ids = []
