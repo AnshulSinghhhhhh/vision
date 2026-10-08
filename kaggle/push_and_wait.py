@@ -148,22 +148,52 @@ def push_and_wait_kernel(
     return True
 
 
+REGISTERED_KERNELS = [
+    "k0-probe",
+    "k1-prep",
+    "k2-pilot",
+    "k3-primary",
+    "k4-secondary",
+    "k5-controls",
+    "k6-mech",
+    "k7-latency",
+    "k8-m7-v2",
+    "k9-freqnoise-v2",
+    "k10-resize-ablation",
+    "k11-sensor-noise",
+    "k12-tome-matched",
+    "k13-g0a-and-bn",
+]
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[1] in ("--help", "-h", "--list"):
         print("Usage: python push_and_wait.py <kernel_name>")
-        sys.exit(1)
+        print("\nRegistered kernels:")
+        for k in REGISTERED_KERNELS:
+            print(f"  - {k}")
+        sys.exit(0 if len(sys.argv) >= 2 and sys.argv[1] == "--list" else 1)
         
     kernel_name = sys.argv[1]
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     staging_dir = os.path.join(repo_root, "build", "knobs-code-staging")
     
+    kernel_dir = os.path.join(repo_root, "kaggle", "kernels", kernel_name)
+    if not os.path.exists(kernel_dir):
+        print(f"[ERROR] Unknown kernel '{kernel_name}'. Kernel folder not found at: {kernel_dir}")
+        print("Available registered kernels:", ", ".join(REGISTERED_KERNELS))
+        sys.exit(1)
+
+    meta_file = os.path.join(kernel_dir, "kernel-metadata.json")
+    if not os.path.exists(meta_file):
+        raise FileNotFoundError(f"Missing kernel-metadata.json in {kernel_dir}")
+
     # Push code dataset first
     package_and_push_code_dataset(repo_root, staging_dir)
     
-    kernel_dir = os.path.join(repo_root, "kaggle", "kernels", kernel_name)
     output_dir = os.path.join(repo_root, "results", "raw", kernel_name)
     
-    with open(os.path.join(kernel_dir, "kernel-metadata.json"), "r") as f:
+    with open(meta_file, "r") as f:
         meta = json.load(f)
     kernel_slug = meta["id"]
     

@@ -265,7 +265,7 @@ def assert_clean_sanity(
     device = next(model.parameters()).device
 
     # Handle case where user passes original_model as 4th positional argument
-    if isinstance(tol_pp, nn.Module) or (isinstance(tol_pp, (int, float)) and tol_pp > 10.0):
+    if original_model is None and (isinstance(tol_pp, nn.Module) or (isinstance(tol_pp, (int, float)) and tol_pp > 10.0)):
         original_model = tol_pp
         tol_pp = 1.0
     
