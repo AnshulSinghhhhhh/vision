@@ -25,6 +25,7 @@ import sys
 import time
 import json
 import zipfile
+import gc
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Callable
 
@@ -190,8 +191,8 @@ def run_resize_ablation(
                 img_p = Path(image_dir) / f"{img_id}.JPEG"
                 if not img_p.exists():
                     continue
-                pil_img = Image.open(img_p)
-                arr_448, _ = preprocess_image_448(pil_img)
+                with Image.open(img_p) as pil_img:
+                    arr_448, _ = preprocess_image_448(pil_img)
 
                 if cond == "clean" or sev == 0:
                     corr_arr = arr_448
@@ -240,12 +241,21 @@ def run_resize_ablation(
                                 "effective_sigma": eff_sigma,
                             })
 
+            del batch_448, t_batch_448, t_resized, norm_in
+            if device.type == "cuda":
+                torch.cuda.empty_cache()
+            gc.collect()
+
             print(f"[{cond}-s{sev}] Processed {b_end}/{n_images} images", flush=True)
 
         df_stage = pd.DataFrame(stage_records)
         df_stage.to_parquet(shard_file, index=False)
         print(f"Saved stage shard {shard_file} ({len(df_stage)} rows)", flush=True)
         combined_shards.append(shard_file)
+        del stage_records, df_stage
+        gc.collect()
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
 
     # Consolidate all shards
     print("\n=== Consolidating All Shards into Final Dataset ===", flush=True)
