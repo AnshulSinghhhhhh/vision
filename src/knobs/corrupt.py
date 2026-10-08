@@ -215,3 +215,119 @@ def generate_frequency_controlled_noise(
         
     corrupted = np.clip(img_448.astype(np.float32) + noise, 0.0, 255.0)
     return corrupted.astype(np.uint8)
+
+
+FREQ_BANDS = {
+    "low": (0.0, 56.0),
+    "mid": (56.0, 112.0),
+    "high": (112.0, 224.0),
+    "broadband": (0.0, 224.0),
+}
+
+
+def generate_fft_bandlimited_noise(
+    shape: Tuple[int, int, int] = (448, 448, 3),
+    band: str = "broadband",
+    target_rms: float = 45.9,
+    seed: Optional[int] = None,
+    custom_cutoff: Optional[Tuple[float, float]] = None,
+) -> Tuple[np.ndarray, float]:
+    """Generates 2D FFT bandpass filtered noise on specified frame shape (default 448x448x3).
+
+    Annuli in cycles per image (for 448x448, Nyquist = 224 cyc/img):
+    - 'low': [0, 56)
+    - 'mid': [56, 112)
+    - 'high': [112, 224]
+    - 'broadband': [0, 224] (all frequencies)
+
+    Args:
+        shape: (H, W, C) shape of noise
+        band: one of {'low', 'mid', 'high', 'broadband'}
+        target_rms: desired pre-clip root-mean-square amplitude
+        seed: optional 32-bit random seed for reproducibility
+        custom_cutoff: optional (r_min, r_max) cutoff frequency tuple
+
+    Returns:
+        (noise_float32, pre_clip_rms)
+    """
+    h, w, c = shape
+    if custom_cutoff is not None:
+        r_min, r_max = custom_cutoff
+    elif band.lower() in FREQ_BANDS:
+        r_min, r_max = FREQ_BANDS[band.lower()]
+    else:
+        raise ValueError(f"Unknown frequency band: {band}. Choose from {list(FREQ_BANDS.keys())}")
+
+    if seed is not None:
+        rng = np.random.RandomState(seed % (2**32 - 1))
+    else:
+        rng = np.random.RandomState()
+
+    w_noise = rng.normal(0, 1.0, shape).astype(np.float32)
+
+    if band.lower() == "broadband" and custom_cutoff is None:
+        noise = w_noise
+    else:
+        u = np.fft.fftfreq(h) * h
+        v = np.fft.fftfreq(w) * w
+        U, V = np.meshgrid(u, v, indexing="ij")
+        R = np.sqrt(U**2 + V**2)
+
+        if r_max < h // 2:
+            mask = ((R >= r_min) & (R < r_max)).astype(np.float32)
+        else:
+            mask = ((R >= r_min) & (R <= r_max)).astype(np.float32)
+
+        # 2D FFT per channel
+        W = np.fft.fft2(w_noise, axes=(0, 1))
+        W_filtered = W * mask[:, :, None]
+        noise = np.fft.ifft2(W_filtered, axes=(0, 1)).real.astype(np.float32)
+
+    current_rms = float(np.sqrt(np.mean(noise**2)))
+    if current_rms > 1e-12:
+        noise = noise * (target_rms / current_rms)
+        pre_clip_rms = float(target_rms)
+    else:
+        pre_clip_rms = 0.0
+
+    return noise, pre_clip_rms
+
+
+def apply_fft_frequency_noise(
+    img_448: np.ndarray,
+    image_id: str,
+    band: str = "broadband",
+    severity: int = 3,
+    target_rms: Optional[float] = None,
+    salt: int = 0,
+) -> Tuple[np.ndarray, float, float]:
+    """Applies FFT bandlimited noise to an image with per-image seeding.
+
+    Pre-clip RMS levels:
+    - severity 3: 0.18 * 255.0 = 45.9
+    - severity 5: 0.38 * 255.0 = 96.9
+
+    Returns:
+        (corrupted_uint8, pre_clip_rms, post_clip_rms)
+    """
+    if target_rms is None:
+        rms_map = {1: 0.08 * 255.0, 2: 0.12 * 255.0, 3: 0.18 * 255.0, 4: 0.26 * 255.0, 5: 0.38 * 255.0}
+        target_rms = rms_map.get(severity, 0.18 * 255.0)
+
+    seed = compute_seed(image_id, f"freq_{band}", severity, salt=salt)
+    noise, pre_clip_rms = generate_fft_bandlimited_noise(
+        shape=img_448.shape,
+        band=band,
+        target_rms=target_rms,
+        seed=seed,
+    )
+
+    img_f = img_448.astype(np.float32)
+    corrupted_f = np.clip(img_f + noise, 0.0, 255.0)
+    corrupted_uint8 = corrupted_f.astype(np.uint8)
+
+    effective_noise = corrupted_uint8.astype(np.float32) - img_f
+    post_clip_rms = float(np.sqrt(np.mean(effective_noise**2)))
+
+    return corrupted_uint8, pre_clip_rms, post_clip_rms
+
