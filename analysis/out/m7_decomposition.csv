@@ -1,0 +1,28 @@
+condition,filter_suite,deit_acc,effnet_acc,is_mock,data_source,N
+clean,A_orig448,81.0,82.89999999999999,False,measured_k6,1000
+clean,B_filtered448,80.9,83.0,False,measured_k6,1000
+clean,C_down224,83.3,78.5,False,measured_k6,1000
+clean,D_up448,79.5,82.0,False,measured_k6,1000
+clean,B_g0.5,80.6,82.65,True,mock_projection (pending K8),1000
+clean,B_g0.866,80.31,82.47,True,mock_projection (pending K8),1000
+clean,B_g1.5,79.8,82.15,True,mock_projection (pending K8),1000
+clean,B_g2.5,79.0,81.65,True,mock_projection (pending K8),1000
+clean,E_noise_matched,81.0,82.9,True,mock_projection (pending K8),1000
+defocus_blur,A_orig448,70.5,73.4,False,measured_k6,1000
+defocus_blur,B_filtered448,68.60000000000001,72.5,False,measured_k6,1000
+defocus_blur,C_down224,77.2,70.39999999999999,False,measured_k6,1000
+defocus_blur,D_up448,67.80000000000001,70.7,False,measured_k6,1000
+defocus_blur,B_g0.5,70.1,73.15,True,mock_projection (pending K8),1000
+defocus_blur,B_g0.866,69.81,72.97,True,mock_projection (pending K8),1000
+defocus_blur,B_g1.5,69.3,72.65,True,mock_projection (pending K8),1000
+defocus_blur,B_g2.5,68.5,72.15,True,mock_projection (pending K8),1000
+defocus_blur,E_noise_matched,70.5,73.4,True,mock_projection (pending K8),1000
+gaussian_noise,A_orig448,73.0,53.1,False,measured_k6,1000
+gaussian_noise,B_filtered448,72.1,76.2,False,measured_k6,1000
+gaussian_noise,C_down224,79.4,73.6,False,measured_k6,1000
+gaussian_noise,D_up448,69.69999999999999,75.5,False,measured_k6,1000
+gaussian_noise,B_g0.5,72.42,66.44,True,mock_projection (pending K8),1000
+gaussian_noise,B_g0.866,72.0,76.2,True,mock_projection (pending K8),1000
+gaussian_noise,B_g1.5,72.0,76.2,True,mock_projection (pending K8),1000
+gaussian_noise,B_g2.5,72.0,76.2,True,mock_projection (pending K8),1000
+gaussian_noise,E_noise_matched,77.8,76.5,True,mock_projection (pending K8),1000
