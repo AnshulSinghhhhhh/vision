@@ -75,8 +75,9 @@ for m_key in MODELS:
     for res in RESOLUTIONS:
         model = create_model_instance(m_key, resolution=res, arm="F-p", pretrained=False, device=device)
         for b_size in BATCH_SIZES:
-            n_warm = 30 if b_size == 1 else 15
-            n_timed = 100 if b_size == 1 else 50
+            n_warm = 15
+            n_timed = 40
+            use_cl = (m_key == "efficientnet_b3")
             
             bench = benchmark_model_latency(
                 model=model,
@@ -86,6 +87,7 @@ for m_key in MODELS:
                 n_timed=n_timed,
                 device=device,
                 use_fp16=True,
+                channels_last=use_cl,
             )
             
             row = {
@@ -96,9 +98,13 @@ for m_key in MODELS:
                 "median_latency_ms": bench["median_batch_latency_ms"],
                 "iqr_latency_ms": bench.get("iqr_ms", bench.get("iqr_batch_latency_ms", 0.0)),
                 "throughput_img_per_sec": bench["throughput_img_per_sec"],
+                "gflops": bench.get("gflops"),
+                "n_warmup": n_warm,
+                "n_timed": n_timed,
+                "channels_last": use_cl,
             }
             results.append(row)
-            print(f"  {m_key} @ {res}x{res} (b={b_size}): Latency={bench['median_batch_latency_ms']:.2f}ms, Throughput={bench['throughput_img_per_sec']:.1f} img/s")
+            print(f"  {m_key} @ {res}x{res} (b={b_size}): Latency={bench['median_batch_latency_ms']:.2f}ms, Throughput={bench['throughput_img_per_sec']:.1f} img/s, GFLOPs={bench.get('gflops')}")
         del model
         torch.cuda.empty_cache()
 
@@ -111,8 +117,8 @@ for r_tome, tome_label in [(4, "tome_r4"), (8, "tome_r8")]:
     patched_model = patch_vit_with_tome(deit_base_model, [r_tome] * n_blocks)
     for res in [224, 448]:
         for b_size in BATCH_SIZES:
-            n_warm = 30 if b_size == 1 else 15
-            n_timed = 100 if b_size == 1 else 50
+            n_warm = 15
+            n_timed = 40
             
             bench = benchmark_model_latency(
                 model=patched_model,
@@ -132,9 +138,13 @@ for r_tome, tome_label in [(4, "tome_r4"), (8, "tome_r8")]:
                 "median_latency_ms": bench["median_batch_latency_ms"],
                 "iqr_latency_ms": bench.get("iqr_ms", bench.get("iqr_batch_latency_ms", 0.0)),
                 "throughput_img_per_sec": bench["throughput_img_per_sec"],
+                "gflops": bench.get("gflops"),
+                "n_warmup": n_warm,
+                "n_timed": n_timed,
+                "channels_last": False,
             }
             results.append(row)
-            print(f"  DeiT-B {tome_label} @ {res}x{res} (b={b_size}): Latency={bench['median_batch_latency_ms']:.2f}ms, Throughput={bench['throughput_img_per_sec']:.1f} img/s")
+            print(f"  DeiT-B {tome_label} @ {res}x{res} (b={b_size}): Latency={bench['median_batch_latency_ms']:.2f}ms, Throughput={bench['throughput_img_per_sec']:.1f} img/s, GFLOPs={bench.get('gflops')}")
 
 # Export results
 df_results = pd.DataFrame(results)

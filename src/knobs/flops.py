@@ -17,7 +17,7 @@ def count_gflops(
     model: nn.Module,
     input_resolution: int = 224,
     batch_size: int = 1,
-    device: torch.device = torch.device("cpu"),
+    device: torch.device = None,
 ) -> float:
     """Counts floating-point operations (in GFLOPs, 2x MAC convention) for a model forward pass.
     
@@ -30,6 +30,11 @@ def count_gflops(
     Returns:
         float: GFLOPs per image (10^9 operations)
     """
+    if device is None:
+        try:
+            device = next(model.parameters()).device
+        except StopIteration:
+            device = torch.device("cpu")
     model.eval()
     dummy_input = torch.randn(batch_size, 3, input_resolution, input_resolution, device=device)
     
