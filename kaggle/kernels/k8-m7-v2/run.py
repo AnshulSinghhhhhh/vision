@@ -204,7 +204,11 @@ def run_m7_v2(
                 continue
 
             # Process each suite arm for this batch
-            first_suite = build_m7_v2_suite(batch_clean_t[0], batch_corr_t[0], cond, sev, valid_ids[0])
+            batch_suites = [
+                build_m7_v2_suite(batch_clean_t[i], batch_corr_t[i], cond, sev, valid_ids[i])
+                for i in range(len(valid_ids))
+            ]
+            first_suite = batch_suites[0]
             suite_keys = list(first_suite.keys())
 
             for skey in suite_keys:
@@ -212,8 +216,7 @@ def run_m7_v2(
                 res_sigmas = []
 
                 for i, iid in enumerate(valid_ids):
-                    s_dict = build_m7_v2_suite(batch_clean_t[i], batch_corr_t[i], cond, sev, iid)
-                    s_t = s_dict[skey]
+                    s_t = batch_suites[i][skey]
                     suite_tensors.append(s_t)
 
                     # Estimate residual noise sigma on the filtered tensor

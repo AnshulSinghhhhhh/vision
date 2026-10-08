@@ -289,6 +289,13 @@ def run_tome_matched(
 
             t_batch_448 = torch.cat(batch_448, dim=0)
 
+            # Pre-resize and normalize for distinct resolutions
+            distinct_res = {cinfo["resolution"] for cinfo in configs.values()}
+            norm_inputs_by_res = {}
+            for r in distinct_res:
+                t_in = resize_tensor_torch(t_batch_448, target_size=r).to(device)
+                norm_inputs_by_res[r] = normalize_tensor(t_in, model_tag=MODEL_TAGS["deit_base"])
+
             # Evaluate each configuration
             for cname, cinfo in configs.items():
                 res = cinfo["resolution"]
@@ -298,8 +305,7 @@ def run_tome_matched(
                 gf = cinfo["gflops"]
                 th = cinfo["throughput"]
 
-                t_in = resize_tensor_torch(t_batch_448, target_size=res).to(device)
-                norm_in = normalize_tensor(t_in, model_tag=MODEL_TAGS["deit_base"])
+                norm_in = norm_inputs_by_res[res]
 
                 with torch.no_grad():
                     if device.type == "cuda":
@@ -328,7 +334,7 @@ def run_tome_matched(
                         "correct": bool(prd == lbl),
                     })
 
-            del batch_448, t_batch_448, t_in, norm_in
+            del batch_448, t_batch_448, norm_inputs_by_res
             if device.type == "cuda":
                 torch.cuda.empty_cache()
             gc.collect()
