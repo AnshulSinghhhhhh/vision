@@ -9,7 +9,7 @@ Features:
 - Class-clustered bootstrap for hierarchical sensitivity.
 """
 
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any, NamedTuple
 import numpy as np
 from scipy import stats
 
@@ -47,6 +47,83 @@ def paired_bootstrap_ci(
     return point_est, ci_lower, ci_upper
 
 
+class PairedDiDResult(NamedTuple):
+    """Container for paired Difference-in-Differences z-test results."""
+    did_pp: float
+    se_pp: float
+    ci_lo: float
+    ci_hi: float
+    z: float
+    p_two_sided: float
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            try:
+                return getattr(self, item)
+            except AttributeError:
+                raise KeyError(item)
+        return tuple.__getitem__(self, item)
+
+    def get(self, key, default=None):
+        if hasattr(self, key):
+            return getattr(self, key)
+        return default
+
+
+def paired_did_ztest(
+    c448: np.ndarray,
+    c224: np.ndarray,
+    d448: np.ndarray,
+    d224: np.ndarray,
+    alpha: float = 0.05,
+) -> PairedDiDResult:
+    """Computes analytic paired Difference-in-Differences z-test:
+    DiD = (Acc_448 - Acc_224)_corr - (Acc_448 - Acc_224)_clean
+    across paired observations.
+    Negative means 448 px hurts more under degradation than on clean images.
+    
+    Returns:
+        PairedDiDResult containing did_pp, se_pp, ci_lo, ci_hi, z, p_two_sided.
+    """
+    delta_clean = c448.astype(np.float64) - c224.astype(np.float64)
+    delta_corr = d448.astype(np.float64) - d224.astype(np.float64)
+    did_diff = delta_corr - delta_clean
+
+    n = len(did_diff)
+    if n == 0:
+        return PairedDiDResult(0.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+
+    mean_diff = float(np.mean(did_diff))
+    did_pp = mean_diff * 100.0
+
+    if n > 1:
+        s = float(np.std(did_diff, ddof=1))
+        se = s / np.sqrt(n)
+        se_pp = float(se * 100.0)
+    else:
+        se_pp = 0.0
+
+    if se_pp == 0.0:
+        z = 0.0
+        p_two_sided = 1.0 if did_pp == 0.0 else 0.0
+    else:
+        z = float(did_pp / se_pp)
+        p_two_sided = float(2.0 * (1.0 - stats.norm.cdf(abs(z))))
+
+    z_crit = float(stats.norm.ppf(1.0 - alpha / 2.0))
+    ci_lo = float(did_pp - z_crit * se_pp)
+    ci_hi = float(did_pp + z_crit * se_pp)
+
+    return PairedDiDResult(
+        did_pp=did_pp,
+        se_pp=se_pp,
+        ci_lo=ci_lo,
+        ci_hi=ci_hi,
+        z=z,
+        p_two_sided=p_two_sided,
+    )
+
+
 def compute_did_bootstrap(
     correct_clean_448: np.ndarray,
     correct_clean_224: np.ndarray,
@@ -56,12 +133,13 @@ def compute_did_bootstrap(
     seed: int = 42,
 ) -> Dict[str, float]:
     """Computes paired Difference-in-Differences:
-    DiD = (Acc_448 - Acc_224)_clean - (Acc_448 - Acc_224)_corr
+    DiD = (Acc_448 - Acc_224)_corr - (Acc_448 - Acc_224)_clean
     across paired observations.
+    Negative means 448 px hurts more under degradation than on clean images.
     """
     delta_clean = correct_clean_448.astype(np.float64) - correct_clean_224.astype(np.float64)
     delta_corr = correct_corr_448.astype(np.float64) - correct_corr_224.astype(np.float64)
-    did_diff = delta_clean - delta_corr  # Individual observation level difference
+    did_diff = delta_corr - delta_clean  # Individual observation level difference
     
     point_est, ci_low, ci_high = paired_bootstrap_ci(did_diff, n_resamples=n_resamples, seed=seed)
     
@@ -86,9 +164,12 @@ def calculate_paired_did(
     d448: np.ndarray,
     d224: np.ndarray,
 ) -> float:
-    """Computes paired DiD point estimate in percentage points."""
-    res = compute_did_bootstrap(c448, c224, d448, d224, n_resamples=1)
-    return float(res["did_point_pp"])
+    """Computes paired DiD point estimate in percentage points:
+    DiD = (Acc_448 - Acc_224)_corr - (Acc_448 - Acc_224)_clean.
+    """
+    delta_clean = c448.astype(np.float64) - c224.astype(np.float64)
+    delta_corr = d448.astype(np.float64) - d224.astype(np.float64)
+    return float(np.mean(delta_corr - delta_clean) * 100.0)
 
 
 def bootstrap_paired_did_ci(
@@ -125,6 +206,10 @@ def holm_bonferroni_correction(p_values: List[float]) -> List[float]:
     orig_order_adjusted = np.zeros(m)
     orig_order_adjusted[sorted_indices] = adjusted
     return [float(x) for x in orig_order_adjusted]
+
+
+# Alias for Holm-Bonferroni correction
+holm_adjust = holm_bonferroni_correction
 
 
 def exact_mcnemar_test(

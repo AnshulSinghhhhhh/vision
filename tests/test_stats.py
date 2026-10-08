@@ -5,7 +5,9 @@ import pytest
 from knobs.stats import (
     paired_bootstrap_ci,
     compute_did_bootstrap,
+    paired_did_ztest,
     holm_bonferroni_correction,
+    holm_adjust,
     exact_mcnemar_test,
     tost_equivalence_test,
 )
@@ -51,3 +53,44 @@ def test_tost_equivalence():
     
     assert res["is_equivalent"] is True
     assert res["tost_p_value"] < 0.05
+
+
+def test_did_sign_and_ci():
+    """Verifies that synthetic arrays with known negative DiD yield a negative point estimate inside CI."""
+    n = 200
+    c448 = np.ones(n, dtype=int)
+    c224 = np.ones(n, dtype=int)
+    d448 = np.ones(n, dtype=int)
+    d448[:50] = 0  # 50 degraded errors at 448
+    d224 = np.ones(n, dtype=int)
+    
+    # 1. Test bootstrap
+    boot_res = compute_did_bootstrap(c448, c224, d448, d224, n_resamples=1000, seed=42)
+    assert boot_res["did_point_pp"] < 0.0
+    assert abs(boot_res["did_point_pp"] - (-25.0)) < 1e-5
+    assert boot_res["ci_lower_pp"] <= boot_res["did_point_pp"] <= boot_res["ci_upper_pp"]
+    
+    # 2. Test analytic z-test
+    z_res = paired_did_ztest(c448, c224, d448, d224)
+    assert z_res.did_pp < 0.0
+    assert abs(z_res.did_pp - (-25.0)) < 1e-5
+    assert z_res.ci_lo <= z_res.did_pp <= z_res.ci_hi
+    assert z_res.z < 0.0
+    assert z_res.p_two_sided < 0.001
+    
+    # Verify dict-like and tuple unpacking behavior
+    did_pp, se_pp, ci_lo, ci_hi, z_val, p_val = z_res
+    assert did_pp == z_res["did_pp"]
+    assert se_pp == z_res["se_pp"]
+
+
+def test_holm_bonferroni_hand_computed():
+    """Verifies Holm-Bonferroni on a hand-computed 4-test list."""
+    raw_p = [0.01, 0.04, 0.03, 0.005]
+    adj_p = holm_bonferroni_correction(raw_p)
+    expected = [0.03, 0.06, 0.06, 0.02]
+    for a, e in zip(adj_p, expected):
+        assert abs(a - e) < 1e-6
+        
+    # Verify holm_adjust alias
+    assert holm_adjust(raw_p) == adj_p

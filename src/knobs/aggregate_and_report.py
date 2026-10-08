@@ -36,8 +36,10 @@ plt.rcParams.update({
 from knobs.stats import (
     calculate_paired_did,
     bootstrap_paired_did_ci,
+    paired_did_ztest,
     mcnemar_test,
     holm_bonferroni_correction,
+    holm_adjust,
     tost_equivalence_test,
 )
 
@@ -97,7 +99,6 @@ def generate_table1_did_headline(df: pd.DataFrame, out_dir: str):
     conditions = ["gaussian_noise", "defocus_blur", "jpeg_compression", "contrast"]
     
     rows = []
-    latex_rows = []
     
     for m in models:
         for c in conditions:
@@ -125,10 +126,8 @@ def generate_table1_did_headline(df: pd.DataFrame, out_dir: str):
             
             delta_clean = acc_c448 - acc_c224
             delta_deg = acc_d448 - acc_d224
-            did_val = delta_deg - delta_clean
             
-            ci_low, ci_high = bootstrap_paired_did_ci(c448_v, c224_v, d448_v, d224_v, n_bootstraps=500, seed=42)
-            mcnemar_res = mcnemar_test(d448_v, d224_v)
+            z_res = paired_did_ztest(c448_v, c224_v, d448_v, d224_v)
             
             rows.append({
                 "Model": m,
@@ -140,33 +139,44 @@ def generate_table1_did_headline(df: pd.DataFrame, out_dir: str):
                 "Deg_224": acc_d224,
                 "Deg_448": acc_d448,
                 "Delta_Deg": delta_deg,
-                "DiD_pp": did_val,
-                "CI_95_low": ci_low,
-                "CI_95_high": ci_high,
-                "McNemar_p": mcnemar_res["p_value"],
+                "DiD_pp": z_res.did_pp,
+                "SE_pp": z_res.se_pp,
+                "CI_95_low": z_res.ci_lo,
+                "CI_95_high": z_res.ci_hi,
+                "z": z_res.z,
+                "p_raw": z_res.p_two_sided,
             })
             
-            model_disp = "DeiT-B/16" if m == "deit_base" else ("EfficientNet-B3" if m == "efficientnet_b3" else "FlexiViT-B")
-            corr_disp = c.replace("_", " ").title()
-            latex_rows.append(
-                f"{model_disp} & {corr_disp} & {acc_c224:.1f}\\% & {acc_c448:.1f}\\% & {delta_clean:+.2f} & "
-                f"{acc_d224:.1f}\\% & {acc_d448:.1f}\\% & {delta_deg:+.2f} & "
-                f"\\textbf{{{did_val:+.2f}}} & [{ci_low:+.2f}, {ci_high:+.2f}] & {mcnemar_res['p_value']:.2e} \\\\"
-            )
-            
     df_t1 = pd.DataFrame(rows)
+    p_holm_vals = holm_adjust(df_t1["p_raw"].tolist())
+    df_t1["p_holm"] = p_holm_vals
     df_t1.to_csv(os.path.join(out_dir, "table1_did_headline.csv"), index=False)
+    
+    latex_rows = []
+    for _, row in df_t1.iterrows():
+        m = row["Model"]
+        c = row["Corruption"]
+        model_disp = "DeiT-B/16" if m == "deit_base" else ("EfficientNet-B3" if m == "efficientnet_b3" else "FlexiViT-B")
+        corr_disp = c.replace("_", " ").title()
+        p_val = row["p_holm"]
+        p_str = f"{p_val:.2e}" if p_val < 0.001 else f"{p_val:.3f}"
+        latex_rows.append(
+            f"{model_disp} & {corr_disp} & {row['Clean_224']:.1f}\\% & {row['Clean_448']:.1f}\\% & {row['Delta_Clean']:+.2f} & "
+            f"{row['Deg_224']:.1f}\\% & {row['Deg_448']:.1f}\\% & {row['Delta_Deg']:+.2f} & "
+            f"\\textbf{{{row['DiD_pp']:+.2f}}} & [{row['CI_95_low']:+.2f}, {row['CI_95_high']:+.2f}] & "
+            f"{row['z']:.1f} & {p_str} \\\\"
+        )
     
     latex_table = r"""\begin{table*}[t]
 \centering
 \small
 \caption{\textbf{Main Difference-in-Differences (DiD) Analysis Across Architectures and Corruptions.}
 Evaluates resolution scaling ($224 \to 448$) on Clean versus Degraded inputs (severity 3).
-DiD measures the excess rescue benefit attributable to input resolution under degradation. $95\%$ bootstrap CIs from 500 resamples.}
+DiD measures the excess rescue benefit attributable to input resolution under degradation. $95\%$ analytic paired CIs and Holm-adjusted $p$-values across the 12 primary tests.}
 \label{tab:main_did}
-\begin{tabular}{llccccccccc}
+\begin{tabular}{llcccccccccc}
 \toprule
-\textbf{Architecture} & \textbf{Corruption} & \textbf{Clean 224} & \textbf{Clean 448} & $\Delta_{\text{Clean}}$ & \textbf{Deg 224} & \textbf{Deg 448} & $\Delta_{\text{Deg}}$ & \textbf{DiD (pp)} & \textbf{95\% CI} & \textbf{McNemar $p$} \\
+\textbf{Architecture} & \textbf{Corruption} & \textbf{Clean 224} & \textbf{Clean 448} & $\Delta_{\text{Clean}}$ & \textbf{Deg 224} & \textbf{Deg 448} & $\Delta_{\text{Deg}}$ & \textbf{DiD (pp)} & \textbf{95\% CI} & $z$ & $p_{\text{Holm}}$ \\
 \midrule
 """ + "\n".join(latex_rows) + r"""
 \bottomrule
