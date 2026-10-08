@@ -112,6 +112,11 @@ def evaluate_g0a_checkpoints(
         else:
             model = create_model_instance(model_key, resolution=native_res, pretrained=pretrained, device=device)
 
+        if torch.cuda.device_count() > 1:
+            eval_model = nn.DataParallel(model)
+        else:
+            eval_model = model
+
         correct_count = 0
         total_eval = 0
 
@@ -140,9 +145,9 @@ def evaluate_g0a_checkpoints(
             with torch.no_grad():
                 if device.type == "cuda":
                     with torch.cuda.amp.autocast():
-                        logits = model(batch_t)
+                        logits = eval_model(batch_t)
                 else:
-                    logits = model(batch_t)
+                    logits = eval_model(batch_t)
             preds = logits.argmax(dim=-1)
             correct_count += int((preds == labels_t).sum().item())
             total_eval += len(batch_labels)
@@ -282,6 +287,7 @@ def run_bn_recalibration_control(
             )
 
             # Evaluate on eval set
+            eval_model = nn.DataParallel(model_cur) if torch.cuda.device_count() > 1 else model_cur
             for b_start in range(0, n_eval, batch_size):
                 b_end = min(b_start + batch_size, n_eval)
                 b_ids = eval_image_ids[b_start:b_end]
@@ -317,9 +323,9 @@ def run_bn_recalibration_control(
                 with torch.no_grad():
                     if device.type == "cuda":
                         with torch.cuda.amp.autocast():
-                            logits = model_cur(norm_in)
+                            logits = eval_model(norm_in)
                     else:
-                        logits = model_cur(norm_in)
+                        logits = eval_model(norm_in)
                 preds = logits.argmax(dim=-1).cpu().numpy()
 
                 for i, iid in enumerate(valid_ids):
