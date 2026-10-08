@@ -1,0 +1,16 @@
+{
+  "id": "anshulsingh45/knobs-k8-m7-v2",
+  "title": "knobs-k8-m7-v2",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "anshulsingh45/knobs-code"
+  ],
+  "competition_sources": [
+    "imagenet-object-localization-challenge"
+  ]
+}
