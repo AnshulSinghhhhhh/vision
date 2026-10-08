@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{llrrrrrrrrrrr}
+\toprule
+Model & Corruption & $N$ & Clean$_{224}$ & Clean$_{448}$ & $\Delta_{\text{clean}}$ & Deg$_{224}$ & Deg$_{448}$ & $\Delta_{\text{deg}}$ & DiD (pp) & 95\% CI & $z$ & $p_{\text{holm}}$ \\
+\midrule
+DeiT-B/16 & Gaussian Noise & 50,000 & 81.54\% & 79.94\% & -1.60 & 78.02\% & 72.33\% & -5.69 & -4.08 & [-4.44, -3.72] & -22.25 & 0.00e+00 \\
+DeiT-B/16 & Defocus Blur & 50,000 & 81.54\% & 79.94\% & -1.60 & 75.44\% & 68.28\% & -7.16 & -5.56 & [-5.92, -5.19] & -29.61 & 0.00e+00 \\
+DeiT-B/16 & Jpeg Compression & 50,000 & 81.54\% & 79.94\% & -1.60 & 77.38\% & 70.37\% & -7.01 & -5.41 & [-5.76, -5.05] & -29.74 & 0.00e+00 \\
+DeiT-B/16 & Contrast & 50,000 & 81.54\% & 79.94\% & -1.60 & 79.91\% & 77.04\% & -2.88 & -1.27 & [-1.56, -0.98] & -8.64 & 0.00e+00 \\
+EfficientNet-B3 & Gaussian Noise & 50,000 & 78.29\% & 82.71\% & +4.42 & 71.37\% & 53.87\% & -17.50 & -21.92 & [-22.39, -21.44] & -90.30 & 0.00e+00 \\
+EfficientNet-B3 & Defocus Blur & 50,000 & 78.29\% & 82.71\% & +4.42 & 69.47\% & 71.95\% & +2.48 & -1.94 & [-2.32, -1.56] & -9.95 & 0.00e+00 \\
+EfficientNet-B3 & Jpeg Compression & 50,000 & 78.29\% & 82.71\% & +4.42 & 74.32\% & 78.13\% & +3.82 & -0.60 & [-0.93, -0.27] & -3.60 & 3.13e-04 \\
+EfficientNet-B3 & Contrast & 50,000 & 78.29\% & 82.71\% & +4.42 & 75.86\% & 81.44\% & +5.58 & +1.16 & [+0.90, +1.43] & 8.59 & 0.00e+00 \\
+FlexiViT-B & Gaussian Noise & 50,000 & 83.55\% & 84.27\% & +0.72 & 80.31\% & 73.82\% & -6.49 & -7.21 & [-7.54, -6.87] & -42.04 & 0.00e+00 \\
+FlexiViT-B & Defocus Blur & 50,000 & 83.55\% & 84.27\% & +0.72 & 77.58\% & 77.04\% & -0.54 & -1.26 & [-1.53, -1.00] & -9.38 & 0.00e+00 \\
+FlexiViT-B & Jpeg Compression & 50,000 & 83.55\% & 84.27\% & +0.72 & 80.46\% & 78.72\% & -1.73 & -2.45 & [-2.72, -2.19] & -18.01 & 0.00e+00 \\
+FlexiViT-B & Contrast & 50,000 & 83.55\% & 84.27\% & +0.72 & 83.20\% & 84.62\% & +1.42 & +0.70 & [+0.48, +0.92] & 6.20 & 1.11e-09 \\
+\bottomrule
+\end{tabular}
+\caption{Difference-in-Differences (DiD) of ImageNet-1K accuracy under degradation vs clean across models. DiD is defined as $(Acc_{448} - Acc_{224})_{\text{deg}} - (Acc_{448} - Acc_{224})_{\text{clean}}$. $p$-values are Holm-adjusted across all 12 primary hypotheses.}
+\label{tab:table1_did}
+\end{table*}
