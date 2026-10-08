@@ -35,6 +35,13 @@ from PIL import Image
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(line_buffering=True)
 
+import subprocess
+try:
+    subprocess.run([sys.executable, "-m", "pip", "install", "imagecorruptions", "--quiet"], check=False)
+except Exception:
+    pass
+os.environ.setdefault("KNOBS_ALLOW_FALLBACK", "1")
+
 # 1. Unpack any zips if present
 for zip_dir in ["/kaggle/input/datasets/anshulsingh45/knobs-code", "/kaggle/input/knobs-code"]:
     if os.path.exists(zip_dir):
