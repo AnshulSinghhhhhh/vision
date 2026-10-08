@@ -279,3 +279,73 @@ def preprocess_image_448(
         "crop_size": crop_size,
     }
     return arr, meta
+
+
+def balanced_subset(
+    ids: List[str],
+    meta: Dict[str, Any],
+    n: int,
+    seed: int = 0,
+) -> List[str]:
+    """Returns a class-balanced, deterministic subset of image IDs.
+    
+    Args:
+        ids: List of candidate image IDs.
+        meta: Metadata dictionary mapping image_id to dict with 'class_idx'
+              (or mapping image_id to integer class index).
+        n: Total number of images requested. Typically a multiple of 1000
+           (giving n // 1000 images per class for 1,000 ImageNet classes).
+           If n is not a multiple of 1000, n // 1000 images are allocated per class,
+           and the remainder (n % 1000) is allocated one image each to the first
+           (n % 1000) classes in a deterministic class permutation.
+        seed: Random seed for deterministic sampling.
+        
+    Returns:
+        List of selected image IDs.
+    """
+    if n <= 0:
+        return []
+    if n > len(ids):
+        raise ValueError(f"Requested n={n} exceeds total available images {len(ids)}")
+
+    # Group candidate image IDs by class
+    by_class: Dict[int, List[str]] = {}
+    for img_id in ids:
+        rec = meta[img_id]
+        cls_idx = rec["class_idx"] if isinstance(rec, dict) else int(rec)
+        if cls_idx not in by_class:
+            by_class[cls_idx] = []
+        by_class[cls_idx].append(img_id)
+
+    # Sort each class list by image_id to ensure determinism before permutation
+    for cls_idx in by_class:
+        by_class[cls_idx].sort()
+
+    classes = sorted(by_class.keys())
+    num_classes = len(classes)
+    if num_classes == 0:
+        return []
+
+    base_per_class = n // num_classes
+    remainder = n % num_classes
+
+    # Determine extra allocation if n is not an exact multiple
+    rng = np.random.RandomState(seed)
+    class_order = rng.permutation(classes).tolist()
+    extra_set = set(class_order[:remainder])
+
+    selected_ids = []
+    for cls_idx in classes:
+        needed = base_per_class + (1 if cls_idx in extra_set else 0)
+        available = by_class[cls_idx]
+        if len(available) < needed:
+            raise ValueError(
+                f"Class {cls_idx} has {len(available)} available images, "
+                f"but {needed} are required for balanced subset."
+            )
+        cls_rng = np.random.RandomState(seed * 10007 + cls_idx)
+        perm = cls_rng.permutation(len(available))
+        chosen = [available[i] for i in perm[:needed]]
+        selected_ids.extend(chosen)
+
+    return selected_ids

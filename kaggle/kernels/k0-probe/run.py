@@ -132,9 +132,8 @@ if not IMAGE_DIR:
 # 5. G0-A Native Checkpoint Verification
 print("\n=== G0-A: Native Checkpoint Verification ===")
 g0_a_results = {}
-native_eval_sample = 2000  # First 2000 images of PILOT
-
-eval_ids = pilot_image_ids[:native_eval_sample]
+# Evaluate the full PILOT (5,000 images, exactly 5 per class, class-balanced by construction)
+eval_ids = list(pilot_image_ids)
 eval_records = [val_metadata[img_id] for img_id in eval_ids if img_id in val_metadata]
 
 for model_key, model_tag in MODEL_TAGS.items():
@@ -179,10 +178,11 @@ for model_key, model_tag in MODEL_TAGS.items():
                 total_count += len(batch_labels)
                 
     measured_top1 = (correct_count / max(1, total_count)) * 100.0
-    se = np.sqrt((ref_acc / 100.0) * (1.0 - ref_acc / 100.0) / total_count) * 100.0
-    tolerance = 2.0 * se
+    p_meas = measured_top1 / 100.0
+    se_meas = np.sqrt(max(0.0, p_meas * (1.0 - p_meas) / max(1, total_count))) * 100.0
+    tolerance = 2.0 * se_meas
     diff = abs(measured_top1 - ref_acc)
-    passed = bool(diff <= tolerance + 1.0)
+    passed = bool(diff <= tolerance)
     
     print(f"{model_key}: Measured Top-1 = {measured_top1:.2f}%, Reference = {ref_acc:.2f}%, Diff = {diff:.2f}%, 2*SE = {tolerance:.2f}%, Pass = {passed}")
     
@@ -191,8 +191,11 @@ for model_key, model_tag in MODEL_TAGS.items():
         "measured_top1": measured_top1,
         "reference_top1": ref_acc,
         "diff": diff,
+        "se_measured": se_meas,
         "tolerance_2se": tolerance,
         "passed": passed,
+        "total_images": total_count,
+        "subset_definition": "full_pilot_5000_class_balanced",
     }
     
     del model

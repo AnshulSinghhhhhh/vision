@@ -199,53 +199,73 @@ df_mech = pd.DataFrame(mech_records)
 df_mech.to_parquet("/kaggle/working/mech_probes_results.parquet", index=False)
 print(f"Saved {len(df_mech)} records for M1-M4 probes")
 
-# 6. M7 Filter-Matched Information Control on SUB10K (first 2,000 images)
+# 6. M7 Filter-Matched Information Control on MECH (all 2,000 images, class-balanced by construction)
 print("\n=== Executing M7 Filter-Matched Information Control ===")
 m7_records = []
-m7_sample = mech_image_ids[:1000]
+m7_sample = list(mech_image_ids)  # All 2,000 MECH images
 
-for idx, img_id in enumerate(m7_sample):
-    img_path = os.path.join(IMAGE_DIR, f"{img_id}.JPEG")
-    if not os.path.exists(img_path):
+batch_size = 32
+conditions = ["clean", "gaussian_noise", "defocus_blur"]
+
+for b_start in range(0, len(m7_sample), batch_size):
+    b_end = min(b_start + batch_size, len(m7_sample))
+    batch_ids = m7_sample[b_start:b_end]
+
+    batch_items = []
+    for img_id in batch_ids:
+        img_path = os.path.join(IMAGE_DIR, f"{img_id}.JPEG")
+        if not os.path.exists(img_path):
+            continue
+        pil_img = Image.open(img_path)
+        arr_448, _ = preprocess_image_448(pil_img)
+        label = val_metadata[img_id]["class_idx"]
+        batch_items.append((img_id, arr_448, label))
+
+    if not batch_items:
         continue
-    pil_img = Image.open(img_path)
-    arr_448, _ = preprocess_image_448(pil_img)
-    label = val_metadata[img_id]["class_idx"]
-    
-    for cond_name in ["clean", "gaussian_noise", "defocus_blur"]:
-        if cond_name == "clean":
-            corr = arr_448
-        else:
-            corr = apply_corruption(arr_448, image_id=img_id, corruption_name=cond_name, severity=3)
-            
-        t_448 = torch.from_numpy(corr).permute(2, 0, 1).unsqueeze(0).float() / 255.0
-        # M7 Suite: A (448 orig), B (448 filtered), C (224 down), D (224->448 up)
-        m7_suite = generate_m7_suite(t_448)
-        
-        for suite_key, suite_tensor in m7_suite.items():
-            suite_tensor = suite_tensor.to(device)
-            # Evaluate DeiT-B
-            norm_deit = normalize_tensor(suite_tensor, model_tag=MODEL_TAGS["deit_base"])
+
+    for cond_name in conditions:
+        for suite_key in ["A", "B", "C", "D"]:
+            suite_tensors = []
+            labels = []
+            curr_img_ids = []
+            for img_id, arr_448, label in batch_items:
+                if cond_name == "clean":
+                    corr = arr_448
+                else:
+                    corr = apply_corruption(arr_448, image_id=img_id, corruption_name=cond_name, severity=3)
+                t_448 = torch.from_numpy(corr).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+                m7_suite = generate_m7_suite(t_448)
+                suite_tensors.append(m7_suite[suite_key])
+                labels.append(label)
+                curr_img_ids.append(img_id)
+
+            batch_tensor = torch.cat(suite_tensors, dim=0).to(device)
+
+            norm_deit = normalize_tensor(batch_tensor, model_tag=MODEL_TAGS["deit_base"])
             with torch.no_grad():
                 with torch.cuda.amp.autocast():
                     out_deit = model_deit(norm_deit)
-            pred_deit = int(out_deit.argmax(dim=-1).item())
-            
-            # Evaluate EfficientNet-B3
-            norm_eff = normalize_tensor(suite_tensor, model_tag=MODEL_TAGS["efficientnet_b3"])
+            preds_deit = out_deit.argmax(dim=-1).cpu().numpy()
+
+            norm_eff = normalize_tensor(batch_tensor, model_tag=MODEL_TAGS["efficientnet_b3"])
             with torch.no_grad():
                 with torch.cuda.amp.autocast():
                     out_eff = model_eff(norm_eff)
-            pred_eff = int(out_eff.argmax(dim=-1).item())
-            
-            m7_records.append({
-                "image_id": img_id,
-                "condition": cond_name,
-                "suite_condition": suite_key,
-                "deit_correct": bool(pred_deit == label),
-                "eff_correct": bool(pred_eff == label),
-            })
-            
+            preds_eff = out_eff.argmax(dim=-1).cpu().numpy()
+
+            for img_id, pred_deit, pred_eff, label in zip(curr_img_ids, preds_deit, preds_eff, labels):
+                m7_records.append({
+                    "image_id": img_id,
+                    "condition": cond_name,
+                    "suite_condition": suite_key,
+                    "deit_correct": bool(pred_deit == label),
+                    "eff_correct": bool(pred_eff == label),
+                })
+
+    if b_end % 200 == 0 or b_end == len(m7_sample):
+        print(f"Processed M7 {b_end}/{len(m7_sample)} images ({time.time() - start_wall_time:.1f}s)")
+
 df_m7 = pd.DataFrame(m7_records)
 df_m7.to_parquet("/kaggle/working/m7_information_control_results.parquet", index=False)
 print(f"Saved {len(df_m7)} records for M7 information control")
