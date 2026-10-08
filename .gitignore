@@ -64,3 +64,5 @@ cache/
 data/
 downloads/
 scratch/
+analysis/out/.cache/
+
