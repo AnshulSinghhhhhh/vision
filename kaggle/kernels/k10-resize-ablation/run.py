@@ -138,9 +138,6 @@ def run_resize_ablation(
         ("deit_base", model_deit),
     ]
 
-    if torch.cuda.device_count() > 1:
-        models = [(name, nn.DataParallel(m)) for name, m in models]
-
     operators = [
         ("bilinear_antialias", [224, 320, 384]),
         ("bilinear_no_antialias", [224, 320, 384]),
@@ -219,7 +216,7 @@ def run_resize_ablation(
                         norm_in = normalize_tensor(t_resized, model_tag=tag)
                         with torch.no_grad():
                             if device.type == "cuda":
-                                with torch.cuda.amp.autocast():
+                                with torch.amp.autocast("cuda"):
                                     logits = model(norm_in)
                             else:
                                 logits = model(norm_in)

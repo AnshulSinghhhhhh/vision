@@ -102,7 +102,7 @@ def measure_throughput_img_per_s(
         start = time.time()
         for _ in range(timed_iters):
             if device.type == "cuda":
-                with torch.cuda.amp.autocast():
+                with torch.amp.autocast("cuda"):
                     _ = model(dummy_norm)
             else:
                 _ = model(dummy_norm)
@@ -296,7 +296,7 @@ def run_tome_matched(
 
                 with torch.no_grad():
                     if device.type == "cuda":
-                        with torch.cuda.amp.autocast():
+                        with torch.amp.autocast("cuda"):
                             logits = model(norm_in)
                     else:
                         logits = model(norm_in)

@@ -29,7 +29,7 @@ DEFAULT_REFERENCES = {
     "deit_base_patch16_224.fb_in1k": 81.8,
     "deit_base_patch16_384.fb_in1k": 82.9,
     "efficientnet_b3.ra2_in1k": 81.5,
-    "flexivit_base.1200ep_in1k": 82.5,
+    "flexivit_base.1200ep_in1k": 84.68,
 }
 
 

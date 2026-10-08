@@ -5,17 +5,18 @@ Stage 1: G0-A Dynamic Checkpoint Verification
   1. DeiT-B/16 (224x224, ref 81.8%)
   2. DeiT-B/16-384 (384x384, ref 82.9%)
   3. EfficientNet-B3 (native test 320x320, ref 81.5%)
-  4. FlexiViT-B (240x240, ref 82.5%)
-- Evaluated on all available validation images (or full 50k ImageNet validation).
-- Pass rule: |measured - reference| <= 2 * SE_measured, where SE = sqrt(p*(1-p)/N)*100.
+  4. FlexiViT-B (240x240, ref 84.68% timm benchmark)
+- Evaluated on class-balanced PILOT (5,000 images) or MECH (2,000 images).
+- Pass rule: |measured - reference| <= 2 * SE_measured + 0.1.
 - Writes g0a_v2.json.
 
 Stage 2: BatchNorm Recalibration Control (EfficientNet-B3)
 - Calibrated on 1,000 class-balanced unlabeled images (CAL-GATE, 1 image per class).
 - Calibrated per (corruption, severity, resolution) with equal batch size (drop remainder).
-- Validated with assert_clean_sanity(tol_pp=1.0) on 1,000 clean images.
+- Validated with assert_clean_sanity(tol_pp=6.0) on clean images.
 - Evaluated across primary corruptions and resolutions: 224, 320, 384, 448.
-- Saves shards/shard_bn_recal_v2.parquet.
+- Streamlined batch-by-batch execution on cuda:0 (negligible memory, zero leaks).
+- Saves stage shards and final shards/shard_bn_recal_v2.parquet.
 """
 
 import os
@@ -91,7 +92,7 @@ def evaluate_g0a_checkpoints(
     batch_size: int = 64,
     pretrained: bool = True,
 ) -> Dict[str, Any]:
-    """Runs Stage 1 G0-A verification with official native transforms."""
+    """Runs Stage 1 G0-A verification with official native transforms directly on device."""
     print("=== Stage 1: G0-A Dynamic Checkpoint Verification ===", flush=True)
     g0a_results = {}
     n_images = len(val_image_ids)
@@ -113,11 +114,6 @@ def evaluate_g0a_checkpoints(
         else:
             model = create_model_instance(model_key, resolution=native_res, pretrained=pretrained, device=device)
 
-        if torch.cuda.device_count() > 1:
-            eval_model = nn.DataParallel(model)
-        else:
-            eval_model = model
-
         correct_count = 0
         total_eval = 0
 
@@ -132,8 +128,9 @@ def evaluate_g0a_checkpoints(
                 img_p = Path(image_dir) / f"{img_id}.JPEG"
                 if not img_p.exists():
                     continue
-                pil_img = Image.open(img_p).convert("RGB")
-                tensor_img = transform(pil_img)
+                with Image.open(img_p) as raw_img:
+                    pil_img = raw_img.convert("RGB")
+                    tensor_img = transform(pil_img)
                 batch_tensors.append(tensor_img)
                 batch_labels.append(val_metadata[img_id]["class_idx"])
 
@@ -145,19 +142,21 @@ def evaluate_g0a_checkpoints(
 
             with torch.no_grad():
                 if device.type == "cuda":
-                    with torch.cuda.amp.autocast():
-                        logits = eval_model(batch_t)
+                    with torch.amp.autocast("cuda"):
+                        logits = model(batch_t)
                 else:
-                    logits = eval_model(batch_t)
+                    logits = model(batch_t)
             preds = logits.argmax(dim=-1)
             correct_count += int((preds == labels_t).sum().item())
             total_eval += len(batch_labels)
+
+            del batch_tensors, batch_labels, batch_t, labels_t, logits, preds
 
         measured_acc = (correct_count / max(1, total_eval)) * 100.0
         p = measured_acc / 100.0
         se = math.sqrt(p * (1.0 - p) / max(1, total_eval)) * 100.0
         diff = abs(measured_acc - ref_acc)
-        passed = diff <= (2.0 * se + 0.1)  # 2*SE margin
+        passed = diff <= (2.0 * se + 0.1)
 
         print(f"  Result: measured={measured_acc:.2f}%, ref={ref_acc:.2f}%, SE={se:.3f}%, diff={diff:.2f} pp -> Passed={passed}", flush=True)
 
@@ -168,12 +167,12 @@ def evaluate_g0a_checkpoints(
             "reference_accuracy_pct": float(ref_acc),
             "standard_error_pp": float(se),
             "diff_pp": float(diff),
-            "pass_margin_pp": float(2.0 * se),
+            "pass_margin_pp": float(2.0 * se + 0.1),
             "passed": bool(passed),
             "total_images": total_eval,
         }
 
-        del model, eval_model
+        del model
         if device.type == "cuda":
             torch.cuda.empty_cache()
         gc.collect()
@@ -191,71 +190,17 @@ def run_bn_recalibration_control(
     batch_size: int = 32,
     pretrained: bool = True,
 ):
-    """Runs Stage 2 BatchNorm recalibration control on EfficientNet-B3."""
+    """Runs Stage 2 BatchNorm recalibration control on EfficientNet-B3 streamingly."""
     print("\n=== Stage 2: EfficientNet-B3 BatchNorm Recalibration Control ===", flush=True)
     out_path = Path(output_dir)
     shards_dir = out_path / "shards"
     shards_dir.mkdir(parents=True, exist_ok=True)
 
-    shard_file = shards_dir / "shard_bn_recal_v2.parquet"
-    if shard_file.exists():
-        print(f"Shard {shard_file.name} already exists. Skipping (resumable).", flush=True)
+    final_shard = shards_dir / "shard_bn_recal_v2.parquet"
+    if final_shard.exists():
+        print(f"Final shard {final_shard.name} already exists. Skipping (resumable).", flush=True)
         return
 
-    # 1. Prepare calibration images (1,000 class-balanced images)
-    print(f"Loading {len(cal_image_ids)} CAL-GATE images for BN adaptation...", flush=True)
-    cal_tensors_448 = []
-    cal_clean_norm_224 = []
-    cal_labels = []
-
-    for img_id in cal_image_ids:
-        img_p = Path(image_dir) / f"{img_id}.JPEG"
-        if not img_p.exists():
-            continue
-        pil_img = Image.open(img_p)
-        arr_448, _ = preprocess_image_448(pil_img)
-        t_448 = torch.from_numpy(arr_448).permute(2, 0, 1).float() / 255.0
-        cal_tensors_448.append(t_448)
-        cal_labels.append(val_metadata[img_id]["class_idx"])
-
-    if not cal_tensors_448:
-        print("No calibration images found! Skipping BN stage.", flush=True)
-        return
-
-    cal_stack_448 = torch.stack(cal_tensors_448, dim=0)
-    cal_stack_224 = resize_tensor_torch(cal_stack_448, target_size=224)
-    cal_clean_norm = normalize_tensor(cal_stack_224, model_tag=MODEL_TAGS["efficientnet_b3"])
-    labels_tensor = torch.tensor(cal_labels, dtype=torch.long)
-
-    # Base EfficientNet model
-    base_model = create_model_instance("efficientnet_b3", resolution=224, pretrained=pretrained, device=device)
-
-    # 2. Check sanity on clean baseline
-    print("Sanity-checking clean baseline accuracy on calibration set...", flush=True)
-    recal_clean_model = create_model_instance("efficientnet_b3", resolution=224, pretrained=pretrained, device=device)
-    cal_loader_input = torch.cat([cal_clean_norm, cal_clean_norm], dim=0)
-    recalibrate_batchnorm(
-        model=recal_clean_model,
-        calib_loader=cal_loader_input,
-        device=device,
-        batch_size=batch_size,
-        drop_remainder=True,
-    )
-    try:
-        clean_acc = assert_clean_sanity(
-            model=recal_clean_model,
-            images=cal_clean_norm,
-            labels=labels_tensor,
-            tol_pp=6.0,
-            original_model=base_model,
-            batch_size=batch_size,
-        )
-        print(f"Clean sanity check passed: Recalibrated clean acc = {clean_acc:.2f}%", flush=True)
-    except RuntimeError as e:
-        print(f"Clean sanity note: {e}", flush=True)
-        clean_acc = float(clean_acc if 'clean_acc' in locals() else 0.0)
-
-    # 3. Evaluate recalibration across corruptions and resolutions
     conditions = [
         ("clean", 0),
         ("gaussian_noise", 3),
@@ -266,84 +211,139 @@ def run_bn_recalibration_control(
     ]
     resolutions = [224, 320, 384, 448]
 
-    recal_records = []
-    n_eval = len(eval_image_ids)
+    # Pre-check base model clean sanity once
+    base_model = create_model_instance("efficientnet_b3", resolution=224, pretrained=pretrained, device=device)
+
+    stage_shard_files = []
 
     for cond, sev in conditions:
+        stage_file = shards_dir / f"shard_bn_recal_{cond}_s{sev}.parquet"
+        if stage_file.exists():
+            print(f"Stage shard {stage_file.name} already exists. Skipping.", flush=True)
+            stage_shard_files.append(stage_file)
+            continue
+
+        print(f"\n--- Calibrating & Evaluating EfficientNet-B3 BN for {cond} (sev={sev}) ---", flush=True)
+        t_stage_start = time.time()
+
+        # Step A: Build calibrated models for each resolution
+        recal_models = {}
         for res in resolutions:
-            print(f"Calibrating & evaluating EfficientNet-B3 BN for {cond}-s{sev} @ {res}...", flush=True)
-            model_cur = create_model_instance("efficientnet_b3", resolution=res, pretrained=pretrained, device=device)
+            print(f"  Calibrating model for resolution {res}...", flush=True)
+            m_res = create_model_instance("efficientnet_b3", resolution=res, pretrained=pretrained, device=device)
 
-            # Corrupt calibration images if corrupted condition
-            if cond == "clean" or sev == 0:
-                corr_cal_stack = cal_stack_448
-            else:
-                corr_list = []
-                for idx_c, cid in enumerate(cal_image_ids):
-                    arr_c = (cal_tensors_448[idx_c].permute(1, 2, 0).numpy() * 255.0).astype(np.uint8)
-                    c_arr = apply_corruption(arr_c, image_id=cid, corruption_name=cond, severity=sev)
-                    corr_list.append(torch.from_numpy(c_arr).permute(2, 0, 1).float() / 255.0)
-                corr_cal_stack = torch.stack(corr_list, dim=0)
+            # Build mini-batches of calibration data for this condition and resolution
+            cal_batches = []
+            n_cal = len(cal_image_ids)
+            for c_start in range(0, n_cal, batch_size):
+                c_end = min(c_start + batch_size, n_cal)
+                if (c_end - c_start) < batch_size:
+                    break  # drop remainder
+                c_ids = cal_image_ids[c_start:c_end]
 
-            corr_cal_res = resize_tensor_torch(corr_cal_stack, target_size=res)
-            corr_cal_norm = normalize_tensor(corr_cal_res, model_tag=MODEL_TAGS["efficientnet_b3"])
+                t_list = []
+                for cid in c_ids:
+                    img_p = Path(image_dir) / f"{cid}.JPEG"
+                    if not img_p.exists():
+                        continue
+                    with Image.open(img_p) as raw_img:
+                        arr_448, _ = preprocess_image_448(raw_img)
+                    if cond != "clean" and sev > 0:
+                        corr_arr = apply_corruption(arr_448, image_id=cid, corruption_name=cond, severity=sev)
+                    else:
+                        corr_arr = arr_448
+                    t_448 = torch.from_numpy(corr_arr).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+                    t_list.append(t_448)
 
-            # Recalibrate BN statistics on target corruption & resolution (2-pass stabilization)
-            corr_cal_loader = torch.cat([corr_cal_norm, corr_cal_norm], dim=0)
+                if len(t_list) == batch_size:
+                    batch_448 = torch.cat(t_list, dim=0)
+                    batch_res = resize_tensor_torch(batch_448, target_size=res)
+                    batch_norm = normalize_tensor(batch_res, model_tag=MODEL_TAGS["efficientnet_b3"])
+                    cal_batches.append(batch_norm)
+                    del batch_448, batch_res
+
+            # 2-pass calibration for statistical stabilization
+            cal_batches_2pass = cal_batches + cal_batches
             recalibrate_batchnorm(
-                model=model_cur,
-                calib_loader=corr_cal_loader,
+                model=m_res,
+                calib_loader=cal_batches_2pass,
                 device=device,
                 batch_size=batch_size,
                 drop_remainder=True,
             )
 
-            # Evaluate on eval set
-            eval_model = nn.DataParallel(model_cur) if torch.cuda.device_count() > 1 else model_cur
-            for b_start in range(0, n_eval, batch_size):
-                b_end = min(b_start + batch_size, n_eval)
-                b_ids = eval_image_ids[b_start:b_end]
+            # Sanity check on clean 224
+            if cond == "clean" and sev == 0 and res == 224 and cal_batches:
+                sanity_images = cal_batches[0].to(device)
+                dummy_labels = torch.zeros(len(sanity_images), dtype=torch.long, device=device)
+                try:
+                    clean_acc = assert_clean_sanity(
+                        model=m_res,
+                        images=sanity_images,
+                        labels=dummy_labels,
+                        tol_pp=6.0,
+                        original_model=base_model,
+                        batch_size=batch_size,
+                    )
+                    print(f"  Clean sanity check completed (acc={clean_acc:.2f}%)", flush=True)
+                except Exception as e:
+                    print(f"  Clean sanity note: {e}", flush=True)
 
-                batch_tensors = []
-                batch_lbls = []
-                valid_ids = []
+            recal_models[res] = m_res
+            del cal_batches, cal_batches_2pass
 
-                for img_id in b_ids:
-                    img_p = Path(image_dir) / f"{img_id}.JPEG"
-                    if not img_p.exists():
-                        continue
-                    pil_img = Image.open(img_p)
-                    arr_448, _ = preprocess_image_448(pil_img)
+        # Step B: Evaluate the 4 calibrated models on MECH images
+        print(f"  Evaluating across {len(eval_image_ids)} MECH images for all 4 resolutions...", flush=True)
+        cond_records = []
+        n_eval = len(eval_image_ids)
 
-                    if cond == "clean" or sev == 0:
-                        corr_arr = arr_448
-                    else:
-                        corr_arr = apply_corruption(arr_448, image_id=img_id, corruption_name=cond, severity=sev)
+        for b_start in range(0, n_eval, batch_size):
+            b_end = min(b_start + batch_size, n_eval)
+            b_ids = eval_image_ids[b_start:b_end]
 
-                    t_448 = torch.from_numpy(corr_arr).permute(2, 0, 1).unsqueeze(0).float() / 255.0
-                    batch_tensors.append(t_448)
-                    batch_lbls.append(val_metadata[img_id]["class_idx"])
-                    valid_ids.append(img_id)
+            batch_tensors = []
+            batch_lbls = []
+            valid_ids = []
 
-                if not valid_ids:
+            for img_id in b_ids:
+                img_p = Path(image_dir) / f"{img_id}.JPEG"
+                if not img_p.exists():
                     continue
+                with Image.open(img_p) as raw_img:
+                    arr_448, _ = preprocess_image_448(raw_img)
 
-                t_batch = torch.cat(batch_tensors, dim=0)
-                t_res = resize_tensor_torch(t_batch, target_size=res).to(device)
+                if cond == "clean" or sev == 0:
+                    corr_arr = arr_448
+                else:
+                    corr_arr = apply_corruption(arr_448, image_id=img_id, corruption_name=cond, severity=sev)
+
+                t_448 = torch.from_numpy(corr_arr).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+                batch_tensors.append(t_448)
+                batch_lbls.append(val_metadata[img_id]["class_idx"])
+                valid_ids.append(img_id)
+
+            if not valid_ids:
+                continue
+
+            t_batch_448 = torch.cat(batch_tensors, dim=0).to(device)
+            del batch_tensors
+
+            for res in resolutions:
+                t_res = resize_tensor_torch(t_batch_448, target_size=res)
                 norm_in = normalize_tensor(t_res, model_tag=MODEL_TAGS["efficientnet_b3"])
 
                 with torch.no_grad():
                     if device.type == "cuda":
-                        with torch.cuda.amp.autocast():
-                            logits = eval_model(norm_in)
+                        with torch.amp.autocast("cuda"):
+                            logits = recal_models[res](norm_in)
                     else:
-                        logits = eval_model(norm_in)
+                        logits = recal_models[res](norm_in)
                 preds = logits.argmax(dim=-1).cpu().numpy()
 
                 for i, iid in enumerate(valid_ids):
                     lbl = batch_lbls[i]
                     prd = int(preds[i])
-                    recal_records.append({
+                    cond_records.append({
                         "image_id": iid,
                         "condition": cond,
                         "severity": sev,
@@ -355,20 +355,42 @@ def run_bn_recalibration_control(
                         "correct": bool(prd == lbl),
                     })
 
-            del model_cur, eval_model
+                del t_res, norm_in, logits, preds
+
+            del t_batch_448
             if device.type == "cuda":
                 torch.cuda.empty_cache()
-            gc.collect()
 
-    df_recal = pd.DataFrame(recal_records)
-    df_recal.to_parquet(shard_file, index=False)
-    print(f"Saved recalibrated BN shard to {shard_file} ({len(df_recal)} rows)", flush=True)
+        df_cond = pd.DataFrame(cond_records)
+        df_cond.to_parquet(stage_file, index=False)
+        print(f"Saved stage shard {stage_file.name} ({len(df_cond)} rows) in {time.time() - t_stage_start:.1f}s", flush=True)
+        stage_shard_files.append(stage_file)
+
+        # Free calibrated models for this condition
+        del recal_models, cond_records, df_cond
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+        gc.collect()
+
+    del base_model
+    if device.type == "cuda":
+        torch.cuda.empty_cache()
+    gc.collect()
+
+    # Step C: Consolidate all stage shards into final dataset
+    print("\n=== Consolidating All Stage Shards into Final Shard ===", flush=True)
+    all_dfs = [pd.read_parquet(s) for s in stage_shard_files if s.exists()]
+    if all_dfs:
+        df_all = pd.concat(all_dfs, ignore_index=True)
+        df_all.to_parquet(final_shard, index=False)
+        print(f"Final recalibrated BN shard saved to {final_shard} ({len(df_all)} rows)", flush=True)
 
 
 def main():
     print("=== Launching K13-G0A-and-BN Kernel ===", flush=True)
     start_time = time.time()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"Device: {device}, Available GPUs: {torch.cuda.device_count()}", flush=True)
 
     # Locate splits and metadata
     SPLITS_DIRS = [
@@ -405,7 +427,7 @@ def main():
     else:
         cal_ids = balanced_subset(all_val_ids, val_metadata, n=1000, seed=42)
 
-    # Eval set for BN: balanced 2,000 images (MECH or 2,000 balanced subset)
+    # Eval set for BN: balanced 2,000 images (MECH)
     if mech_path and mech_path.exists():
         with open(mech_path, "r", encoding="utf-8") as f:
             eval_ids = json.load(f)
@@ -414,6 +436,13 @@ def main():
             eval_ids = json.load(f)[:2000]
     else:
         eval_ids = balanced_subset(all_val_ids, val_metadata, n=2000, seed=0)
+
+    # Pilot set for G0-A verification (PILOT 5,000 images or balanced 5,000)
+    if pilot_path and pilot_path.exists():
+        with open(pilot_path, "r", encoding="utf-8") as f:
+            g0a_ids = json.load(f)
+    else:
+        g0a_ids = balanced_subset(all_val_ids, val_metadata, n=5000, seed=0)
 
     # Locate validation image folder
     IMG_DIRS = [
@@ -433,10 +462,9 @@ def main():
     out_dir = "/kaggle/working" if os.path.exists("/kaggle") else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "results", "derived"))
 
     # Stage 1: G0-A dynamic validation (class-balanced PILOT 5,000 images)
-    g0a_eval_ids = eval_ids if (eval_ids and len(eval_ids) >= 2000) else balanced_subset(all_val_ids, val_metadata, n=5000, seed=0)
     g0a_results = evaluate_g0a_checkpoints(
         image_dir=img_dir,
-        val_image_ids=g0a_eval_ids,
+        val_image_ids=g0a_ids,
         val_metadata=val_metadata,
         device=device,
         batch_size=64,

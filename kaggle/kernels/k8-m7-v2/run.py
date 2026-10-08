@@ -144,14 +144,6 @@ def run_m7_v2(
     m_flex_ft_448 = create_model_instance("flexivit_base", resolution=448, arm="F-t", pretrained=pretrained, device=device)
     m_flex_ft_224 = create_model_instance("flexivit_base", resolution=224, arm="F-t", pretrained=pretrained, device=device)
 
-    if torch.cuda.device_count() > 1:
-        m_deit = nn.DataParallel(m_deit)
-        m_eff = nn.DataParallel(m_eff)
-        m_flex_fp_448 = nn.DataParallel(m_flex_fp_448)
-        m_flex_fp_224 = nn.DataParallel(m_flex_fp_224)
-        m_flex_ft_448 = nn.DataParallel(m_flex_ft_448)
-        m_flex_ft_224 = nn.DataParallel(m_flex_ft_224)
-
     stages = [
         ("clean", 0),
         ("gaussian_noise", 3),
@@ -245,7 +237,7 @@ def run_m7_v2(
                     norm_in = normalize_tensor(batch_in, model_tag=tag)
                     with torch.no_grad():
                         if device.type == "cuda":
-                            with torch.cuda.amp.autocast():
+                            with torch.amp.autocast("cuda"):
                                 logits = model(norm_in)
                         else:
                             logits = model(norm_in)
