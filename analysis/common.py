@@ -32,6 +32,8 @@ def get_cache_dir() -> str:
 def load_all_raw_data(force_reload: bool = False) -> pd.DataFrame:
     """Loads all parquet shards from results/raw, deduplicating records.
     
+    Preserves all distinct experimental variants across operator (K10),
+    suite_condition (K8), config_name (K12), and band (K9).
     Caches the combined DataFrame to analysis/out/.cache/all_raw.parquet.
     """
     cache_path = os.path.join(get_cache_dir(), "all_raw.parquet")
@@ -51,9 +53,17 @@ def load_all_raw_data(force_reload: bool = False) -> pd.DataFrame:
     dfs = [pd.read_parquet(f) for f in all_files]
     df = pd.concat(dfs, ignore_index=True)
 
-    # Deduplicate in case of overlapping shard writes
-    subset_cols = [c for c in ["image_id", "condition", "severity", "model", "arm", "resolution"] if c in df.columns]
+    # Deduplicate preserving all distinct experimental variants
+    dedup_candidates = [
+        "image_id", "condition", "severity", "model", "arm", "resolution",
+        "operator", "suite_condition", "config_name", "band"
+    ]
+    subset_cols = [c for c in dedup_candidates if c in df.columns]
+    before_count = len(df)
     df = df.drop_duplicates(subset=subset_cols)
+    after_count = len(df)
+    print(f"[load_all_raw_data] Loaded {before_count:,} rows, deduplicated to {after_count:,} rows "
+          f"({before_count - after_count:,} duplicates dropped) using keys: {subset_cols}")
     
     # Cache for rapid access
     df.to_parquet(cache_path, index=False)
@@ -72,6 +82,10 @@ def load_clean_and_corrupted(
     severity: Optional[int] = None,
     model: Optional[str] = None,
     arm: str = "standard",
+    operator: Optional[str] = None,
+    suite_condition: Optional[str] = None,
+    config_name: Optional[str] = None,
+    band: Optional[str] = None,
     force_reload: bool = False,
 ) -> pd.DataFrame:
     """Loads merged clean and corrupted evaluation records for matched images.
@@ -86,12 +100,20 @@ def load_clean_and_corrupted(
         severity: Specific severity level (e.g. 3) or None for all available.
         model: Model name (e.g. 'deit_base') or None for all models.
         arm: Arm name (default 'standard').
+        operator: Optional operator filter (e.g. for K10). None means baseline (NaN).
+        suite_condition: Optional suite_condition filter (e.g. for K8). None means baseline (NaN).
+        config_name: Optional config_name filter (e.g. for K12). None means baseline (NaN).
+        band: Optional band filter (e.g. for K9). None means baseline (NaN).
         force_reload: Whether to bypass cache.
         
     Returns:
         pd.DataFrame: Merged clean and corrupted evaluations.
     """
-    cache_tag = f"merged_{corruption or 'all'}_s{severity if severity is not None else 'all'}_{model or 'all'}_{arm}.parquet"
+    op_tag = f"_op_{operator}" if operator else ""
+    sc_tag = f"_sc_{suite_condition}" if suite_condition else ""
+    cfg_tag = f"_cfg_{config_name}" if config_name else ""
+    band_tag = f"_band_{band}" if band else ""
+    cache_tag = f"merged_{corruption or 'all'}_s{severity if severity is not None else 'all'}_{model or 'all'}_{arm}{op_tag}{sc_tag}{cfg_tag}{band_tag}.parquet"
     cache_path = os.path.join(get_cache_dir(), cache_tag)
     if not force_reload and os.path.exists(cache_path):
         return pd.read_parquet(cache_path)
@@ -111,6 +133,25 @@ def load_clean_and_corrupted(
         m_arm = _normalize_arm_for_model(m, arm)
         # Clean subset for model
         clean_mask = (df_raw["model"] == m) & (df_raw["condition"] == "clean") & (df_raw["arm"] == m_arm)
+        # Filter clean by operator/suite/config/band if specified, else use baseline clean
+        if "operator" in df_raw.columns:
+            if operator is not None and (df_raw[clean_mask]["operator"] == operator).any():
+                clean_mask &= (df_raw["operator"] == operator)
+            else:
+                clean_mask &= df_raw["operator"].isna()
+        if "suite_condition" in df_raw.columns:
+            if suite_condition is not None and (df_raw[clean_mask]["suite_condition"] == suite_condition).any():
+                clean_mask &= (df_raw["suite_condition"] == suite_condition)
+            else:
+                clean_mask &= df_raw["suite_condition"].isna()
+        if "config_name" in df_raw.columns:
+            if config_name is not None and (df_raw[clean_mask]["config_name"] == config_name).any():
+                clean_mask &= (df_raw["config_name"] == config_name)
+            else:
+                clean_mask &= df_raw["config_name"].isna()
+        if "band" in df_raw.columns:
+            clean_mask &= (df_raw["band"] == band) if band is not None else df_raw["band"].isna()
+
         df_clean_m = df_raw[clean_mask]
         if df_clean_m.empty:
             continue
@@ -118,7 +159,7 @@ def load_clean_and_corrupted(
         # Pivot clean
         # Assert no duplicates for (image_id, resolution)
         dup_clean = df_clean_m.duplicated(subset=["image_id", "resolution"])
-        assert not dup_clean.any(), f"Duplicates found in clean data for model {m}"
+        assert not dup_clean.any(), f"Duplicates found in clean data for model {m}: {df_clean_m[dup_clean]}"
 
         c_pivot = df_clean_m.pivot(index="image_id", columns="resolution", values="correct")
         # Ensure standard resolution columns exist
@@ -133,12 +174,21 @@ def load_clean_and_corrupted(
             sev_candidates = [severity] if severity is not None else sorted(df_raw[df_raw["condition"] == c]["severity"].unique())
             for s in sev_candidates:
                 deg_mask = (df_raw["model"] == m) & (df_raw["condition"] == c) & (df_raw["severity"] == s) & (df_raw["arm"] == m_arm)
+                if "operator" in df_raw.columns:
+                    deg_mask &= (df_raw["operator"] == operator) if operator is not None else df_raw["operator"].isna()
+                if "suite_condition" in df_raw.columns:
+                    deg_mask &= (df_raw["suite_condition"] == suite_condition) if suite_condition is not None else df_raw["suite_condition"].isna()
+                if "config_name" in df_raw.columns:
+                    deg_mask &= (df_raw["config_name"] == config_name) if config_name is not None else df_raw["config_name"].isna()
+                if "band" in df_raw.columns:
+                    deg_mask &= (df_raw["band"] == band) if band is not None else df_raw["band"].isna()
+
                 df_deg = df_raw[deg_mask]
                 if df_deg.empty:
                     continue
 
                 dup_deg = df_deg.duplicated(subset=["image_id", "resolution"])
-                assert not dup_deg.any(), f"Duplicates found in degraded data for model {m}, {c} s{s}"
+                assert not dup_deg.any(), f"Duplicates found in degraded data for model {m}, {c} s{s}: {df_deg[dup_deg]}"
 
                 d_pivot = df_deg.pivot(index="image_id", columns="resolution", values="correct")
                 for r in [224, 320, 384, 448]:
@@ -156,6 +206,14 @@ def load_clean_and_corrupted(
                 merged["condition"] = c
                 merged["severity"] = s
                 merged["arm"] = arm
+                if operator is not None:
+                    merged["operator"] = operator
+                if suite_condition is not None:
+                    merged["suite_condition"] = suite_condition
+                if config_name is not None:
+                    merged["config_name"] = config_name
+                if band is not None:
+                    merged["band"] = band
 
                 merged_chunks.append(merged)
 
@@ -163,16 +221,17 @@ def load_clean_and_corrupted(
         raise ValueError(f"No matching data found for corruption={corruption}, severity={severity}, model={model}, arm={arm}")
 
     res_df = pd.concat(merged_chunks, ignore_index=True)
-    # Reorder columns
-    col_order = ["image_id", "model", "condition", "severity", "arm",
-                 "c_224", "c_320", "c_384", "c_448",
-                 "d_224", "d_320", "d_384", "d_448"]
-    res_df = res_df[col_order]
+    # Order columns
+    std_cols = ["image_id", "model", "condition", "severity", "arm",
+                "c_224", "c_320", "c_384", "c_448",
+                "d_224", "d_320", "d_384", "d_448"]
+    extra_cols = [col for col in res_df.columns if col not in std_cols]
+    res_df = res_df[std_cols + extra_cols]
 
     # Report complete rows
-    complete_count = res_df.dropna().shape[0]
+    complete_count = res_df[["c_224", "c_320", "c_384", "c_448", "d_224", "d_320", "d_384", "d_448"]].dropna().shape[0]
     total_count = res_df.shape[0]
-    print(f"[load_clean_and_corrupted] Loaded {total_count} rows ({complete_count} complete 4-resolution rows) "
+    print(f"[load_clean_and_corrupted] Loaded {total_count:,} matched images ({complete_count:,} complete 4-resolution rows) "
           f"for corruption={corruption or 'all'}, severity={severity if severity is not None else 'all'}, model={model or 'all'}")
 
     res_df.to_parquet(cache_path, index=False)
@@ -181,5 +240,5 @@ def load_clean_and_corrupted(
 
 if __name__ == "__main__":
     print("Testing analysis.common loader...")
-    df = load_clean_and_corrupted(corruption="gaussian_noise", severity=3, model="deit_base")
+    df = load_clean_and_corrupted(corruption="gaussian_noise", severity=3, model="deit_base", force_reload=True)
     print(f"Sample:\n{df.head(2)}")

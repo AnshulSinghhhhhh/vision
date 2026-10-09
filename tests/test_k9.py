@@ -14,6 +14,68 @@ from knobs.corrupt import (
 )
 
 
+def test_mask_partition_of_unity():
+    """Verify that annular band masks partition the frequency space [0, 224] cyc/img."""
+    h, w = 448, 448
+    u = np.fft.fftfreq(h) * h
+    v = np.fft.fftfreq(w) * w
+    U, V = np.meshgrid(u, v, indexing="ij")
+    R = np.sqrt(U**2 + V**2)
+
+    bands = ["low", "mid", "high"]
+    masks = []
+    for band in bands:
+        r_lo, r_hi = FREQ_BANDS[band]
+        if r_hi < h // 2:
+            m = (R >= r_lo) & (R < r_hi)
+        else:
+            m = (R >= r_lo) & (R <= r_hi)
+        masks.append(m)
+
+    # Disjointness: no two masks overlap
+    assert not (masks[0] & masks[1]).any(), "Overlap between low and mid masks"
+    assert not (masks[1] & masks[2]).any(), "Overlap between mid and high masks"
+    assert not (masks[0] & masks[2]).any(), "Overlap between low and high masks"
+
+    # Union covers all radii up to 224
+    union_mask = masks[0] | masks[1] | masks[2]
+    within_nyquist = R <= (h // 2)
+    assert np.array_equal(union_mask[within_nyquist], np.ones_like(union_mask[within_nyquist], dtype=bool))
+
+
+def test_parseval_and_rms_invariance_across_bands():
+    """Verify Parseval energy conservation and spatial RMS invariance across frequency bands.
+    
+    By Parseval's theorem, spatial energy equals normalized spectral energy.
+    Because independent Fourier coefficients with random phases yield spatial Gaussian
+    marginals with standard deviation target_rms, spatial clipping acts identically on
+    the 1D marginal distributions regardless of frequency band, keeping post-clip RMS equal.
+    """
+    shape = (448, 448, 3)
+    target_rms = 45.9  # severity 3 target
+    clean = np.full(shape, 128, dtype=np.uint8)
+
+    post_clip_rms_values = []
+    for band in ["low", "mid", "high"]:
+        noise, pre_rms = generate_fft_bandlimited_noise(shape=shape, band=band, target_rms=target_rms, seed=42)
+        # 1. Parseval check: spatial variance equals target_rms^2 within 1%
+        spatial_rms = np.sqrt(np.mean(noise**2))
+        assert abs(spatial_rms - target_rms) / target_rms < 0.01
+
+        # 2. Check spatial Gaussian marginal kurtosis ~ 3 (normal distribution)
+        kurtosis = np.mean(noise**4) / (np.mean(noise**2)**2)
+        assert abs(kurtosis - 3.0) < 0.2, f"Band {band} non-Gaussian marginal (kurtosis={kurtosis:.2f})"
+
+        # 3. Simulate image corruption addition + clip
+        corrupted = np.clip(clean.astype(float) + noise, 0, 255)
+        post_rms = np.sqrt(np.mean((corrupted - clean)**2))
+        post_clip_rms_values.append(post_rms)
+
+    # Across low, mid, high: post-clip RMS should be within 0.5 units of each other (~41.5)
+    max_diff = max(post_clip_rms_values) - min(post_clip_rms_values)
+    assert max_diff < 0.5, f"Post-clip RMS differs across bands by {max_diff:.3f} > 0.5: {post_clip_rms_values}"
+
+
 def test_annular_power_distribution():
     """Verify that each band has >= 95% of its power inside its annulus."""
     shape = (448, 448, 3)

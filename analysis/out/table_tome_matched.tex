@@ -1,0 +1,43 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+Condition & Configuration & Res & ToMe $r$ & GFLOPs & Img/s & Acc (\%) \\
+\midrule
+\multicolumn{7}{l}{\textit{Clean}} \\
+ & Standard 448 & 448 & 0 & 157.0 & 103.4 & 80.80\% \\
+ & ToMe $r=32$ (448) & 448 & 32 & 115.0 & 118.6 & 80.60\% \\
+ & Standard 384 & 384 & 0 & 111.0 & 141.1 & 81.98\% \\
+ & ToMe $r=64$ (448) & 448 & 64 & 76.3 & 169.2 & 80.02\% \\
+ & Standard 320 & 320 & 0 & 74.5 & 206.1 & 82.28\% \\
+ & Standard 224 & 224 & 0 & 35.1 & 438.4 & 82.42\% \\
+\midrule
+\multicolumn{7}{l}{\textit{Gaussian Noise (s3)}} \\
+ & Standard 448 & 448 & 0 & 157.0 & 103.4 & 73.16\% \\
+ & ToMe $r=32$ (448) & 448 & 32 & 115.0 & 118.6 & 73.04\% \\
+ & Standard 384 & 384 & 0 & 111.0 & 141.1 & 75.56\% \\
+ & ToMe $r=64$ (448) & 448 & 64 & 76.3 & 169.2 & 70.62\% \\
+ & Standard 320 & 320 & 0 & 74.5 & 206.1 & 78.10\% \\
+ & Standard 224 & 224 & 0 & 35.1 & 438.4 & 78.20\% \\
+\midrule
+\multicolumn{7}{l}{\textit{Gaussian Noise (s5)}} \\
+ & Standard 448 & 448 & 0 & 157.0 & 103.4 & 52.16\% \\
+ & ToMe $r=32$ (448) & 448 & 32 & 115.0 & 118.6 & 50.60\% \\
+ & Standard 384 & 384 & 0 & 111.0 & 141.1 & 64.68\% \\
+ & ToMe $r=64$ (448) & 448 & 64 & 76.3 & 169.2 & 47.42\% \\
+ & Standard 320 & 320 & 0 & 74.5 & 206.1 & 69.54\% \\
+ & Standard 224 & 224 & 0 & 35.1 & 438.4 & 73.56\% \\
+\midrule
+\multicolumn{7}{l}{\textit{Defocus Blur (s3)}} \\
+ & Standard 448 & 448 & 0 & 157.0 & 103.4 & 66.64\% \\
+ & ToMe $r=32$ (448) & 448 & 32 & 115.0 & 118.6 & 65.48\% \\
+ & Standard 384 & 384 & 0 & 111.0 & 141.1 & 68.72\% \\
+ & ToMe $r=64$ (448) & 448 & 64 & 76.3 & 169.2 & 63.98\% \\
+ & Standard 320 & 320 & 0 & 74.5 & 206.1 & 71.64\% \\
+ & Standard 224 & 224 & 0 & 35.1 & 438.4 & 74.08\% \\
+\bottomrule
+\end{tabular}
+\caption{Compute-matched comparison on DeiT-B/16 between resolution reduction and Token Merging (ToMe) at 448 px across clean and degraded conditions ($N=5{,}000$). At matched compute ($\sim$75 GFLOPs), resolution reduction to 320 px outperforms ToMe $r=64$ at 448 px by +22.12 pp under Gaussian noise s5 while delivering 1.22$\times$ higher inference throughput.}
+\label{tab:tome_matched}
+\end{table}

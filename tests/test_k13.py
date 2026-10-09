@@ -56,6 +56,27 @@ def test_g0a_se_pass_rule():
     assert abs(measured_fail - ref) > 2.0 * se_fail
 
 
+def test_g0a_prespecified_acceptance_criteria():
+    """Verify binomial SE thresholds at 95% (1.96*SE) and 99% (2.58*SE) on N=5,000."""
+    n = 5000
+    ref = 81.8
+    # Within 95% CI: diff <= 1.96 * SE (~1.07 pp)
+    p_95 = 82.5
+    se_95 = math.sqrt((p_95 / 100.0) * (1.0 - p_95 / 100.0) / n) * 100.0
+    assert abs(p_95 - ref) <= 1.96 * se_95
+
+    # Within 99% CI but outside 95% CI: diff ~1.2 pp
+    p_99 = 83.0
+    se_99 = math.sqrt((p_99 / 100.0) * (1.0 - p_99 / 100.0) / n) * 100.0
+    assert abs(p_99 - ref) > 1.96 * se_99
+    assert abs(p_99 - ref) <= 2.58 * se_99
+
+    # Gross failure: diff 4.0 pp
+    p_gross = 85.8
+    se_gross = math.sqrt((p_gross / 100.0) * (1.0 - p_gross / 100.0) / n) * 100.0
+    assert abs(p_gross - ref) > 2.58 * se_gross
+
+
 def test_bn_recalibration_and_sanity_gate_cpu():
     """Verify BatchNorm recalibration and assert_clean_sanity on CPU."""
     class TinyBNNet(nn.Module):
@@ -85,3 +106,38 @@ def test_bn_recalibration_and_sanity_gate_cpu():
     # Sanity check should pass within generous tolerance for tiny net
     acc = assert_clean_sanity(model, calib_images, labels, tol_pp=50.0, original_model=orig_acc, batch_size=16)
     assert acc >= 0.0
+
+
+def test_bn_sanity_gate_failure_raises():
+    """Verify that assert_clean_sanity strictly raises RuntimeError when drop exceeds tol_pp."""
+    class IdentityNet(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.fc = nn.Linear(3, 10)
+
+        def forward(self, x):
+            return self.fc(x.mean(dim=[-2, -1]))
+
+    model = IdentityNet()
+    calib_images = torch.randn(32, 3, 16, 16)
+    labels = torch.zeros(32, dtype=torch.long)
+
+    # Fake original accuracy of 100%, but current model will have ~10%
+    with pytest.raises(RuntimeError, match="Clean sanity check failed"):
+        assert_clean_sanity(model, calib_images, labels, tol_pp=1.0, original_model=100.0, batch_size=16)
+
+
+def test_data_leakage_assertion():
+    """Verify zero overlap assertion catches data leakage between calibration and eval splits."""
+    cal_ids = ["img_001", "img_002", "img_003"]
+    eval_ids_clean = ["img_004", "img_005", "img_006"]
+    eval_ids_leaked = ["img_003", "img_004", "img_005"]
+
+    # Clean case has zero leakage
+    leakage = set(cal_ids).intersection(set(eval_ids_clean))
+    assert len(leakage) == 0
+
+    # Leaked case has non-zero intersection
+    leakage_detected = set(cal_ids).intersection(set(eval_ids_leaked))
+    assert len(leakage_detected) == 1
+    assert "img_003" in leakage_detected

@@ -163,10 +163,12 @@ def evaluate_g0a_checkpoints(
         p = measured_acc / 100.0
         se = math.sqrt(p * (1.0 - p) / max(1, total_eval)) * 100.0
         diff = abs(measured_acc - ref_acc)
-        pass_margin = max(2.0 * se, 1.5)
-        passed = diff <= pass_margin
+        # Prespecified acceptance criterion: 2.58 * SE (99% CI) on balanced sample
+        pass_margin_95 = 1.96 * se
+        pass_margin_99 = 2.58 * se
+        passed = diff <= pass_margin_99
 
-        print(f"  Result: measured={measured_acc:.2f}%, ref={ref_acc:.2f}%, SE={se:.3f}%, diff={diff:.2f} pp -> Passed={passed}", flush=True)
+        print(f"  Result: measured={measured_acc:.2f}%, ref={ref_acc:.2f}%, SE={se:.3f}%, diff={diff:.2f} pp (95% margin={pass_margin_95:.2f} pp, 99% margin={pass_margin_99:.2f} pp) -> Passed={passed}", flush=True)
 
         g0a_results[model_key] = {
             "tag": tag,
@@ -175,9 +177,12 @@ def evaluate_g0a_checkpoints(
             "reference_accuracy_pct": float(ref_acc),
             "standard_error_pp": float(se),
             "diff_pp": float(diff),
-            "pass_margin_pp": float(pass_margin),
+            "pass_margin_95_pp": float(pass_margin_95),
+            "pass_margin_99_pp": float(pass_margin_99),
             "passed": bool(passed),
-            "total_images": total_eval,
+            "sample_size": total_eval,
+            "sample_split": "PILOT_5K",
+            "full_50k_validation_status": "PENDING (requires full 50,000-image evaluation)",
         }
 
         del model
@@ -242,6 +247,7 @@ def run_bn_recalibration_control(
 
             # Build mini-batches of calibration data for this condition and resolution
             cal_batches = []
+            cal_labels_list = []
             n_cal = len(cal_image_ids)
             for c_start in range(0, n_cal, batch_size):
                 c_end = min(c_start + batch_size, n_cal)
@@ -250,6 +256,7 @@ def run_bn_recalibration_control(
                 c_ids = cal_image_ids[c_start:c_end]
 
                 t_list = []
+                lbl_list = []
                 for cid in c_ids:
                     img_p = Path(image_dir) / f"{cid}.JPEG"
                     if not img_p.exists():
@@ -262,12 +269,14 @@ def run_bn_recalibration_control(
                         corr_arr = arr_448
                     t_448 = torch.from_numpy(corr_arr).permute(2, 0, 1).unsqueeze(0).float() / 255.0
                     t_list.append(t_448)
+                    lbl_list.append(val_metadata[cid]["class_idx"])
 
                 if len(t_list) == batch_size:
                     batch_448 = torch.cat(t_list, dim=0)
                     batch_res = resize_tensor_torch(batch_448, target_size=res)
                     batch_norm = normalize_tensor(batch_res, model_tag=MODEL_TAGS["efficientnet_b3"])
                     cal_batches.append(batch_norm)
+                    cal_labels_list.extend(lbl_list)
                     del batch_448, batch_res
 
             # 2-pass calibration for statistical stabilization
@@ -280,25 +289,23 @@ def run_bn_recalibration_control(
                 drop_remainder=True,
             )
 
-            # Sanity check on clean 224
+            # Sanity check on clean 224: strictly verify recalibrated model against uncalibrated base_model with real ground-truth labels
             if cond == "clean" and sev == 0 and res == 224 and cal_batches:
-                sanity_images = cal_batches[0].to(device)
-                dummy_labels = torch.zeros(len(sanity_images), dtype=torch.long, device=device)
-                try:
-                    clean_acc = assert_clean_sanity(
-                        model=m_res,
-                        images=sanity_images,
-                        labels=dummy_labels,
-                        tol_pp=6.0,
-                        original_model=base_model,
-                        batch_size=batch_size,
-                    )
-                    print(f"  Clean sanity check completed (acc={clean_acc:.2f}%)", flush=True)
-                except Exception as e:
-                    print(f"  Clean sanity note: {e}", flush=True)
+                sanity_images = torch.cat(cal_batches, dim=0).to(device)
+                sanity_labels = torch.tensor(cal_labels_list, dtype=torch.long, device=device)
+                clean_acc = assert_clean_sanity(
+                    model=m_res,
+                    images=sanity_images,
+                    labels=sanity_labels,
+                    tol_pp=1.0,
+                    original_model=base_model,
+                    batch_size=batch_size,
+                )
+                print(f"  Clean sanity check PASSED: uncalibrated vs recalibrated drop <= 1.0 pp (clean acc={clean_acc:.2f}%)", flush=True)
+                del sanity_images, sanity_labels
 
             recal_models[res] = m_res
-            del cal_batches, cal_batches_2pass
+            del cal_batches, cal_batches_2pass, cal_labels_list
 
         # Step B: Evaluate the 4 calibrated models on MECH images
         print(f"  Evaluating across {len(eval_image_ids)} MECH images for all 4 resolutions...", flush=True)
@@ -411,7 +418,7 @@ def main():
     for sdir in SPLITS_DIRS:
         vp = Path(sdir) / "val_metadata.json"
         pp = Path(sdir) / "PILOT.json"
-        cp = Path(sdir) / "CAL_GATE.json"
+        cp = (Path(sdir) / "CAL-GATE.json") if (Path(sdir) / "CAL-GATE.json").exists() else (Path(sdir) / "CAL_GATE.json")
         mp = Path(sdir) / "MECH.json"
         if vp.exists():
             val_meta_path = vp
@@ -441,9 +448,14 @@ def main():
             eval_ids = json.load(f)
     elif pilot_path and pilot_path.exists():
         with open(pilot_path, "r", encoding="utf-8") as f:
-            eval_ids = json.load(f)[:2000]
+            eval_ids = [i for i in json.load(f) if i not in set(cal_ids)][:2000]
     else:
-        eval_ids = balanced_subset(all_val_ids, val_metadata, n=2000, seed=0)
+        remaining_ids = [i for i in all_val_ids if i not in set(cal_ids)]
+        eval_ids = balanced_subset(remaining_ids, val_metadata, n=2000, seed=0)
+
+    # Strictly assert zero overlap (zero data leakage) between calibration and evaluation sets
+    leakage = set(cal_ids).intersection(set(eval_ids))
+    assert len(leakage) == 0, f"Data leakage error! {len(leakage)} overlapping images between CAL_GATE and EVAL: {list(leakage)[:5]}"
 
     # Pilot set for G0-A verification (PILOT 5,000 images or balanced 5,000)
     if pilot_path and pilot_path.exists():
@@ -493,6 +505,21 @@ def main():
         batch_size=32,
         pretrained=True,
     )
+
+    bn_meta = {
+        "model": "efficientnet_b3",
+        "cal_set_size": len(cal_ids),
+        "eval_set_size": len(eval_ids),
+        "data_leakage_overlap": len(set(cal_ids).intersection(set(eval_ids))),
+        "clean_sanity_tol_pp": 1.0,
+        "cal_batch_size": 32,
+        "eval_batch_size": 32,
+        "calibration_momentum": None,
+        "eval_resolutions": [224, 320, 384, 448],
+    }
+    with open(Path(out_dir) / "bn_recal_meta.json", "w", encoding="utf-8") as f:
+        json.dump(bn_meta, f, indent=2)
+    print(f"Wrote BN recalibration metadata to {Path(out_dir) / 'bn_recal_meta.json'}", flush=True)
 
     meta = get_environment_metadata(device)
     meta["kernel"] = "k13-g0a-and-bn"

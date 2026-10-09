@@ -227,6 +227,18 @@ def generate_all_matched_tables(out_dir: str = None):
         df = df.dropna(subset=["resolution"])
         df["resolution"] = df["resolution"].astype(int)
 
+    # Filter to baseline control rows (exclude ablation/mechanism rows from K8, K9, K10, K12)
+    c = pd.Series(True, index=df.index)
+    if "operator" in df.columns:
+        c &= df["operator"].isna()
+    if "suite_condition" in df.columns:
+        c &= df["suite_condition"].isna()
+    if "config_name" in df.columns:
+        c &= df["config_name"].isna()
+    if "band" in df.columns:
+        c &= df["band"].isna()
+    df = df[c]
+
     t2 = generate_table2_flexivit(df, out_dir)
     t3 = generate_table3_deit384(df, out_dir)
     t4 = generate_table4_tome(df, out_dir)

@@ -39,6 +39,18 @@ def compute_effective_sigma_table(out_dir: str = None) -> pd.DataFrame:
         df = df.dropna(subset=["resolution"])
         df["resolution"] = df["resolution"].astype(int)
 
+    # Filter to baseline runs (exclude ablation and mechanism rows)
+    c = pd.Series(True, index=df.index)
+    if "operator" in df.columns:
+        c &= df["operator"].isna()
+    if "suite_condition" in df.columns:
+        c &= df["suite_condition"].isna()
+    if "config_name" in df.columns:
+        c &= df["config_name"].isna()
+    if "band" in df.columns:
+        c &= df["band"].isna()
+    df = df[c]
+
     rows = []
 
     for model in MODELS:
