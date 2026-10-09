@@ -39,30 +39,40 @@ except Exception:
     pass
 
 # 1. Unpack any zips if present on Kaggle
-for zip_dir in ["/kaggle/input/datasets/anshulsingh45/knobs-code", "/kaggle/input/knobs-code"]:
+for zip_dir in ["/kaggle/input/datasets/anshulsingh45/knobs-code", "/kaggle/input/knobs-code", "/kaggle/input"]:
     if os.path.exists(zip_dir):
-        for f in os.listdir(zip_dir):
-            if f.endswith(".zip"):
-                zpath = os.path.join(zip_dir, f)
-                dest = os.path.join("/tmp", f[:-4])
-                if not os.path.exists(dest):
-                    try:
-                        with zipfile.ZipFile(zpath, "r") as zf:
-                            zf.extractall(dest)
-                        print(f"Unpacked {f} to {dest}", flush=True)
-                    except Exception as e:
-                        print(f"Error unpacking {f}: {e}", flush=True)
+        for root, dirs, files in os.walk(zip_dir):
+            for f in files:
+                if f.endswith(".zip"):
+                    zpath = os.path.join(root, f)
+                    dest = os.path.join("/tmp", f[:-4])
+                    if not os.path.exists(dest):
+                        try:
+                            with zipfile.ZipFile(zpath, "r") as zf:
+                                zf.extractall(dest)
+                            print(f"Unpacked {f} to {dest}", flush=True)
+                        except Exception as e:
+                            print(f"Error unpacking {f}: {e}", flush=True)
 
 CANDIDATE_PATHS = [
-    "/tmp/knobs-code",
-    "/tmp/src",
-    "/kaggle/input/datasets/anshulsingh45/knobs-code",
-    "/kaggle/input/knobs-code",
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "src")),
+    "/tmp/knobs-code/src",
+    "/tmp/knobs-code-staging/src",
+    "/tmp/src",
+    "/kaggle/input/datasets/anshulsingh45/knobs-code/src",
+    "/kaggle/input/knobs-code/src",
 ]
+for base in ["/tmp", "/kaggle/input"]:
+    if os.path.exists(base):
+        for root, dirs, _ in os.walk(base):
+            if "knobs" in dirs and os.path.exists(os.path.join(root, "knobs", "__init__.py")):
+                if root not in CANDIDATE_PATHS:
+                    CANDIDATE_PATHS.append(root)
+
 for p in CANDIDATE_PATHS:
     if os.path.exists(p) and p not in sys.path:
         sys.path.insert(0, p)
+        print(f"Added knobs path to sys.path: {p}", flush=True)
 
 from knobs.corrupt import apply_corruption, compute_seed, SeedContext, CORRUPTION_BACKEND
 from knobs.data import preprocess_image_448, balanced_subset
@@ -235,9 +245,11 @@ def main():
 
     SPLITS_DIRS = [
         os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "splits")),
+        "/tmp/knobs-code-staging/splits",
+        "/tmp/knobs-code/splits",
+        "/tmp/splits",
         "/kaggle/input/datasets/anshulsingh45/knobs-code/splits",
         "/kaggle/input/knobs-code/splits",
-        "/tmp/splits",
     ]
     full_path, val_meta_path = None, None
     for sdir in SPLITS_DIRS:
@@ -246,6 +258,18 @@ def main():
         if fp.exists() and vp.exists():
             full_path, val_meta_path = fp, vp
             break
+
+    if not full_path or not val_meta_path:
+        for base in ["/tmp", "/kaggle/input"]:
+            if os.path.exists(base):
+                for root, dirs, _ in os.walk(base):
+                    fp = Path(root) / "FULL.json"
+                    vp = Path(root) / "val_metadata.json"
+                    if fp.exists() and vp.exists():
+                        full_path, val_meta_path = fp, vp
+                        break
+            if full_path:
+                break
 
     if not full_path or not val_meta_path:
         raise FileNotFoundError("Could not find FULL.json or val_metadata.json in search paths")

@@ -13,9 +13,21 @@ import shutil
 import subprocess
 from typing import Dict, Any, Optional
 
-# Ensure prints flush immediately
+import builtins
+
+# Monkey-patch builtins.open to force UTF-8 on Windows before Kaggle CLI or libraries open log files
+_orig_open = builtins.open
+def _utf8_open(file, mode='r', *args, **kwargs):
+    if 'b' not in mode:
+        kwargs.setdefault('encoding', 'utf-8')
+    return _orig_open(file, mode, *args, **kwargs)
+builtins.open = _utf8_open
+
+# Ensure prints flush immediately and support UTF-8 on Windows
 if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(line_buffering=True)
+    sys.stdout.reconfigure(line_buffering=True, encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(line_buffering=True, encoding="utf-8", errors="replace")
 
 CODE_DATASET_SLUG = "knobs-code"
 
