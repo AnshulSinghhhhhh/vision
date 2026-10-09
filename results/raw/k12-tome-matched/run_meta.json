@@ -1,0 +1,51 @@
+{
+  "git_commit": "c1a8cb839339ef57081aa2826a6fc8b27e5569e1-dirty",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "torch_version": "2.11.0+cu128",
+  "timm_version": "1.0.29",
+  "pillow_version": "12.3.0",
+  "imagecorruptions_version": "installed",
+  "corruption_backend": "imagecorruptions",
+  "cuda_available": true,
+  "gpu_name": "Tesla T4",
+  "timestamp": "2026-10-09T00:58:12Z",
+  "kernel": "k12-tome-matched",
+  "configs_profile": {
+    "res_448_base": {
+      "resolution": 448,
+      "r_tome": 0,
+      "gflops": 156.990308352,
+      "throughput_img_per_s": 103.4148019274836
+    },
+    "tome_r32_448": {
+      "resolution": 448,
+      "r_tome": 32,
+      "gflops": 115.021545472,
+      "throughput_img_per_s": 118.62063309244682
+    },
+    "res_384_base": {
+      "resolution": 384,
+      "r_tome": 0,
+      "gflops": 110.968700928,
+      "throughput_img_per_s": 141.05541757818608
+    },
+    "tome_r64_448": {
+      "resolution": 448,
+      "r_tome": 64,
+      "gflops": 76.259885056,
+      "throughput_img_per_s": 169.22000637454056
+    },
+    "res_320_base": {
+      "resolution": 320,
+      "r_tome": 0,
+      "gflops": 74.518757376,
+      "throughput_img_per_s": 206.06438308296697
+    },
+    "res_224_base": {
+      "resolution": 224,
+      "r_tome": 0,
+      "gflops": 35.127656448,
+      "throughput_img_per_s": 438.40684007253986
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "git_commit": "2668a8ba35a913f1af6341819babe9dfe0723d90-dirty",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "torch_version": "2.11.0+cu128",
+  "timm_version": "1.0.29",
+  "pillow_version": "12.3.0",
+  "imagecorruptions_version": "unavailable",
+  "corruption_backend": "fallback",
+  "cuda_available": true,
+  "gpu_name": "Tesla T4",
+  "timestamp": "2026-10-08T23:35:52Z",
+  "kernel": "k9-freqnoise-v2",
+  "hypothesis_prediction": "If the spectral story holds, low-band noise gives little 448-vs-384 drop for EfficientNet and high-band noise gives most of it."
+}

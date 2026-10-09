@@ -1,0 +1,86 @@
+[{"stream_name":"stdout","time":9.51097687,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 8.4 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":11.641050542,"data":"Added knobs to sys.path from: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stderr","time":21.433023233,"data":"/usr/local/lib/python3.13/dist-packages/imagecorruptions/corruptions.py:17: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools\u003c81.\n"}
+,{"stream_name":"stderr","time":21.433051771,"data":"  from pkg_resources import resource_filename\n"}
+,{"stream_name":"stdout","time":21.628857463,"data":"=== Launching K13-G0A-and-BN Kernel ===\n"}
+,{"stream_name":"stdout","time":21.92116586,"data":"Device: cuda:0, Available GPUs: 2\n"}
+,{"stream_name":"stdout","time":22.404255371,"data":"=== Stage 1: G0-A Dynamic Checkpoint Verification ===\n"}
+,{"stream_name":"stdout","time":22.404352155,"data":"\n"}
+,{"stream_name":"stdout","time":22.404360028,"data":"Verifying deit_base (deit_base_patch16_224.fb_in1k) at native resolution 224...\n"}
+,{"stream_name":"stderr","time":24.058495036,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":122.374292036,"data":"  Result: measured=82.64%, ref=81.80%, SE=0.536%, diff=0.84 pp -\u003e Passed=True\n"}
+,{"stream_name":"stdout","time":122.641657841,"data":"\n"}
+,{"stream_name":"stdout","time":122.641694149,"data":"Verifying deit_base_384 (deit_base_patch16_384.fb_in1k) at native resolution 384...\n"}
+,{"stream_name":"stdout","time":222.329353619,"data":"  Result: measured=84.02%, ref=82.90%, SE=0.518%, diff=1.12 pp -\u003e Passed=True\n"}
+,{"stream_name":"stdout","time":222.596991715,"data":"\n"}
+,{"stream_name":"stdout","time":222.597034844,"data":"Verifying efficientnet_b3 (efficientnet_b3.ra2_in1k) at native resolution 320...\n"}
+,{"stream_name":"stdout","time":295.497859941,"data":"  Result: measured=82.86%, ref=81.50%, SE=0.533%, diff=1.36 pp -\u003e Passed=True\n"}
+,{"stream_name":"stdout","time":295.759776067,"data":"\n"}
+,{"stream_name":"stdout","time":295.759812155,"data":"Verifying flexivit_base (flexivit_base.1200ep_in1k) at native resolution 240...\n"}
+,{"stream_name":"stdout","time":357.539203894,"data":"  Result: measured=85.48%, ref=84.68%, SE=0.498%, diff=0.80 pp -\u003e Passed=True\n"}
+,{"stream_name":"stdout","time":357.79169929,"data":"Wrote G0-A verification results to /kaggle/working/g0a_v2.json\n"}
+,{"stream_name":"stdout","time":357.791733028,"data":"\n"}
+,{"stream_name":"stdout","time":357.791738449,"data":"=== Stage 2: EfficientNet-B3 BatchNorm Recalibration Control ===\n"}
+,{"stream_name":"stdout","time":358.231019611,"data":"\n"}
+,{"stream_name":"stdout","time":358.231050279,"data":"--- Calibrating \u0026 Evaluating EfficientNet-B3 BN for clean (sev=0) ---\n"}
+,{"stream_name":"stdout","time":358.231056212,"data":"  Calibrating model for resolution 224...\n"}
+,{"stream_name":"stdout","time":381.918909723,"data":"  Clean sanity check completed (acc=3.12%)\n"}
+,{"stream_name":"stdout","time":381.918984729,"data":"  Calibrating model for resolution 320...\n"}
+,{"stream_name":"stdout","time":406.2842778,"data":"  Calibrating model for resolution 384...\n"}
+,{"stream_name":"stdout","time":436.158685725,"data":"  Calibrating model for resolution 448...\n"}
+,{"stream_name":"stdout","time":469.918027173,"data":"  Evaluating across 2000 MECH images for all 4 resolutions...\n"}
+,{"stream_name":"stdout","time":557.999546155,"data":"Saved stage shard shard_bn_recal_clean_s0.parquet (8000 rows) in 199.8s\n"}
+,{"stream_name":"stdout","time":558.251468601,"data":"\n"}
+,{"stream_name":"stdout","time":558.251499175,"data":"--- Calibrating \u0026 Evaluating EfficientNet-B3 BN for gaussian_noise (sev=3) ---\n"}
+,{"stream_name":"stdout","time":558.251505455,"data":"  Calibrating model for resolution 224...\n"}
+,{"stream_name":"stdout","time":595.041900769,"data":"  Calibrating model for resolution 320...\n"}
+,{"stream_name":"stdout","time":636.640692987,"data":"  Calibrating model for resolution 384...\n"}
+,{"stream_name":"stdout","time":683.721243112,"data":"  Calibrating model for resolution 448...\n"}
+,{"stream_name":"stdout","time":735.945836822,"data":"  Evaluating across 2000 MECH images for all 4 resolutions...\n"}
+,{"stream_name":"stdout","time":820.50883351,"data":"Saved stage shard shard_bn_recal_gaussian_noise_s3.parquet (8000 rows) in 262.3s\n"}
+,{"stream_name":"stdout","time":820.76633702,"data":"\n"}
+,{"stream_name":"stdout","time":820.766372316,"data":"--- Calibrating \u0026 Evaluating EfficientNet-B3 BN for gaussian_noise (sev=5) ---\n"}
+,{"stream_name":"stdout","time":820.76638525,"data":"  Calibrating model for resolution 224...\n"}
+,{"stream_name":"stdout","time":856.413860713,"data":"  Calibrating model for resolution 320...\n"}
+,{"stream_name":"stdout","time":898.306216822,"data":"  Calibrating model for resolution 384...\n"}
+,{"stream_name":"stdout","time":945.110040268,"data":"  Calibrating model for resolution 448...\n"}
+,{"stream_name":"stdout","time":997.716180472,"data":"  Evaluating across 2000 MECH images for all 4 resolutions...\n"}
+,{"stream_name":"stdout","time":1081.655684763,"data":"Saved stage shard shard_bn_recal_gaussian_noise_s5.parquet (8000 rows) in 260.9s\n"}
+,{"stream_name":"stdout","time":1081.906750849,"data":"\n"}
+,{"stream_name":"stdout","time":1081.906802946,"data":"--- Calibrating \u0026 Evaluating EfficientNet-B3 BN for defocus_blur (sev=3) ---\n"}
+,{"stream_name":"stdout","time":1081.906809845,"data":"  Calibrating model for resolution 224...\n"}
+,{"stream_name":"stdout","time":1115.827114669,"data":"  Calibrating model for resolution 320...\n"}
+,{"stream_name":"stdout","time":1156.147024324,"data":"  Calibrating model for resolution 384...\n"}
+,{"stream_name":"stdout","time":1201.654852077,"data":"  Calibrating model for resolution 448...\n"}
+,{"stream_name":"stdout","time":1252.424384835,"data":"  Evaluating across 2000 MECH images for all 4 resolutions...\n"}
+,{"stream_name":"stdout","time":1333.89513529,"data":"Saved stage shard shard_bn_recal_defocus_blur_s3.parquet (8000 rows) in 252.0s\n"}
+,{"stream_name":"stdout","time":1334.146403193,"data":"\n"}
+,{"stream_name":"stdout","time":1334.146436808,"data":"--- Calibrating \u0026 Evaluating EfficientNet-B3 BN for jpeg_compression (sev=3) ---\n"}
+,{"stream_name":"stdout","time":1334.146443089,"data":"  Calibrating model for resolution 224...\n"}
+,{"stream_name":"stderr","time":1334.640303555,"data":"/kaggle/src/script.py:263: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)\n"}
+,{"stream_name":"stderr","time":1334.640339514,"data":"  t_448 = torch.from_numpy(corr_arr).permute(2, 0, 1).unsqueeze(0).float() / 255.0\n"}
+,{"stream_name":"stdout","time":1353.17581393,"data":"  Calibrating model for resolution 320...\n"}
+,{"stream_name":"stdout","time":1378.281429621,"data":"  Calibrating model for resolution 384...\n"}
+,{"stream_name":"stdout","time":1408.44962582,"data":"  Calibrating model for resolution 448...\n"}
+,{"stream_name":"stdout","time":1443.45857274,"data":"  Evaluating across 2000 MECH images for all 4 resolutions...\n"}
+,{"stream_name":"stdout","time":1493.659930995,"data":"Saved stage shard shard_bn_recal_jpeg_compression_s3.parquet (8000 rows) in 159.5s\n"}
+,{"stream_name":"stdout","time":1493.908623157,"data":"\n"}
+,{"stream_name":"stdout","time":1493.908660079,"data":"--- Calibrating \u0026 Evaluating EfficientNet-B3 BN for contrast (sev=3) ---\n"}
+,{"stream_name":"stdout","time":1493.908673599,"data":"  Calibrating model for resolution 224...\n"}
+,{"stream_name":"stdout","time":1520.15253943,"data":"  Calibrating model for resolution 320...\n"}
+,{"stream_name":"stdout","time":1552.680307166,"data":"  Calibrating model for resolution 384...\n"}
+,{"stream_name":"stdout","time":1589.940379043,"data":"  Calibrating model for resolution 448...\n"}
+,{"stream_name":"stdout","time":1632.706854569,"data":"  Evaluating across 2000 MECH images for all 4 resolutions...\n"}
+,{"stream_name":"stdout","time":1698.282287481,"data":"Saved stage shard shard_bn_recal_contrast_s3.parquet (8000 rows) in 204.4s\n"}
+,{"stream_name":"stdout","time":1698.757428609,"data":"\n"}
+,{"stream_name":"stdout","time":1698.757463158,"data":"=== Consolidating All Stage Shards into Final Shard ===\n"}
+,{"stream_name":"stdout","time":1698.879196249,"data":"Final recalibrated BN shard saved to /kaggle/working/shards/shard_bn_recal_v2.parquet (48000 rows)\n"}
+,{"stream_name":"stdout","time":1698.90879182,"data":"Wrote run metadata to /kaggle/working/run_meta.json\n"}
+,{"stream_name":"stdout","time":1698.908818455,"data":"K13-G0A-and-BN finished in 1677.3s\n"}
+,{"stream_name":"stderr","time":1704.035367196,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1704.03540839,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1704.251010622,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1704.251030497,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1705.03993177,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1705.941678079,"data":"[NbConvertApp] Writing 361072 bytes to __results__.html\n"}
+]

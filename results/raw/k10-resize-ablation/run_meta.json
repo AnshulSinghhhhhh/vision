@@ -1,0 +1,29 @@
+{
+  "git_commit": "c1a8cb839339ef57081aa2826a6fc8b27e5569e1-dirty",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "torch_version": "2.11.0+cu128",
+  "timm_version": "1.0.29",
+  "pillow_version": "12.3.0",
+  "imagecorruptions_version": "installed",
+  "corruption_backend": "imagecorruptions",
+  "cuda_available": true,
+  "gpu_name": "Tesla T4",
+  "timestamp": "2026-10-09T00:24:26Z",
+  "kernel": "k10-resize-ablation",
+  "gain_table": {
+    "bilinear_antialias@224": 0.31303641200065613,
+    "bilinear_antialias@320": 0.48136940598487854,
+    "bilinear_antialias@384": 0.5663639903068542,
+    "bilinear_no_antialias@224": 0.5000904202461243,
+    "bilinear_no_antialias@320": 0.6799930334091187,
+    "bilinear_no_antialias@384": 0.6619691252708435,
+    "bicubic_antialias@224": 0.40463101863861084,
+    "bicubic_antialias@320": 0.5817713737487793,
+    "bicubic_antialias@384": 0.698521077632904,
+    "area@224": 0.4999832808971405,
+    "area@320": 0.46680596470832825,
+    "area@384": 0.49971121549606323,
+    "gaussian_prefilter_448@448": 0.32693883776664734,
+    "identity_448@448": 1.0
+  }
+}
