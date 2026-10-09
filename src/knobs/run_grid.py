@@ -99,13 +99,9 @@ def get_environment_metadata(device: torch.device) -> Dict[str, Any]:
     
     import timm
     import PIL
-    from knobs.corrupt import CORRUPTION_BACKEND
+    from knobs.corrupt import CORRUPTION_BACKEND, IMAGECORRUPTIONS_VERSION
 
-    try:
-        import imagecorruptions
-        ic_version = getattr(imagecorruptions, "__version__", "installed")
-    except Exception:
-        ic_version = "unavailable"
+    ic_version = IMAGECORRUPTIONS_VERSION if IMAGECORRUPTIONS_VERSION is not None else "unavailable"
     
     return {
         "git_commit": get_git_commit_hash(),

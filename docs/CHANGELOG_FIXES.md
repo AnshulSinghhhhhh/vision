@@ -1,4 +1,4 @@
-# Changelog: Pipeline & Correctness Hardening (A1–A9)
+# Changelog: Pipeline & Correctness Hardening (A1–A10)
 
 This document records the exact pipeline corrections, fixes, and quantitative impact on manuscript results implemented during Phase A hardening.
 
@@ -11,3 +11,4 @@ This document records the exact pipeline corrections, fixes, and quantitative im
 - **A7 (Latency Harness Standardization)**: Latency benchmarking docstring contradicted code (50/200 vs 15/40 iterations) and lacked memory format optimization; standardized harness to 15 warmup and 40 timed iterations, added `channels_last` memory format, `torch.inference_mode()`, and GFLOPs reporting; verified that EfficientNet batch-1 interactive latency is launch-bound on GPU.
 - **A8 (Git Commit Provenance Tracking)**: Kernels were pushed without embedding current git commit hash, hindering reproducibility; updated `push_and_wait.py` to write `GIT_COMMIT` artifact into code dataset and added commit fallback search in `run_grid.py`; all run outputs now store exact git provenance without modifying metrics.
 - **A9 (Deterministic Frequency Noise Seeding)**: Frequency-controlled noise used arbitrary random state without per-image seeds and K5 failed to save incremental progress; added deterministic SHA-256 per-image seeding (`compute_seed`) and incremental Parquet shard saving; ensures exact bit-level reproduction across all frequency noise ablations.
+- **A10 (Defocus Implementation Audit & Provenance Verification)**: Identified cross-kernel defocus blur discrepancy between headline kernels (k2–k4: 76.30% at 224 on PILOT) and verified runs (k12: 74.08%; 95.7% per-image agreement). Early headline kernels k0–k7 lacked recorded git commit and corruption backend, silently falling back to a Gaussian filter rather than ImageNet-C's disk PSF defocus. Headline defocus is flagged as unverified; verified ImageNet-C defocus is grounded in K8 ($N=2000$), with a scaled confirmation planned in k14 ($N=10,000$). Added backend guards (`tests/test_backend_guard.py`) and documented findings in `results/PROVENANCE.md`.

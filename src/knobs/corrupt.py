@@ -25,10 +25,16 @@ try:
     import imagecorruptions
     from imagecorruptions import corrupt as ic_corrupt
     CORRUPTION_BACKEND = "imagecorruptions"
+    try:
+        from importlib.metadata import version as _get_version
+        IMAGECORRUPTIONS_VERSION = _get_version("imagecorruptions")
+    except Exception:
+        IMAGECORRUPTIONS_VERSION = getattr(imagecorruptions, "__version__", "installed")
 except Exception:
     imagecorruptions = None
     ic_corrupt = None
     CORRUPTION_BACKEND = "fallback"
+    IMAGECORRUPTIONS_VERSION = "unavailable"
 
 FALLBACK_GAUSSIAN_NOISE_SIGMAS = [0.08, 0.12, 0.18, 0.26, 0.38]
 FALLBACK_CONTRAST_FACTORS = [0.4, 0.3, 0.2, 0.1, 0.05]
