@@ -134,17 +134,21 @@ def push_and_wait_kernel(
     accelerator: str = "NvidiaTeslaT4",
     poll_interval_sec: int = 60,
     timeout_sec: int = 14400,  # 4 hours
+    skip_push: bool = False,
 ) -> bool:
-    """Pushes a kernel, polls its execution until completion, and downloads outputs."""
+    """Pushes a kernel (if not skip_push), polls its execution until completion, and downloads outputs."""
     os.makedirs(output_dir, exist_ok=True)
     
     # 1. Push kernel
-    push_cmd = ["kaggle", "kernels", "push", "-p", kernel_dir]
-    if accelerator:
-        push_cmd.extend(["--accelerator", accelerator])
-        
-    print(f"Pushing kernel from {kernel_dir} with accelerator {accelerator}...")
-    run_cmd(push_cmd)
+    if not skip_push:
+        push_cmd = ["kaggle", "kernels", "push", "-p", kernel_dir]
+        if accelerator:
+            push_cmd.extend(["--accelerator", accelerator])
+            
+        print(f"Pushing kernel from {kernel_dir} with accelerator {accelerator}...")
+        run_cmd(push_cmd)
+    else:
+        print(f"Skipping push (--wait-only); polling existing kernel {kernel_slug}...")
     
     # 2. Poll status
     start_time = time.time()
@@ -163,11 +167,13 @@ def push_and_wait_kernel(
         if "complete" in stdout.lower():
             print(f"Kernel {kernel_slug} completed successfully!")
             break
-        elif "error" in stdout.lower() or "fail" in stdout.lower():
+        elif "kernelworkerstatus.error" in stdout.lower() or "kernelworkerstatus.failed" in stdout.lower() or "status: error" in stdout.lower():
             print(f"Kernel {kernel_slug} failed with status: {stdout}")
             # Still download output logs for debugging
             download_kernel_outputs(kernel_slug, output_dir)
             return False
+        elif status_res.returncode != 0 or "connection" in stdout.lower() or "ssl" in stdout.lower():
+            print(f"[RETRY] Transient connection/polling issue encountered, retrying in {poll_interval_sec}s...", flush=True)
             
         time.sleep(poll_interval_sec)
         
@@ -241,9 +247,13 @@ if __name__ == "__main__":
     if not os.path.exists(meta_file):
         raise FileNotFoundError(f"Missing kernel-metadata.json in {kernel_dir}")
 
-    # Push code dataset if not skipped
-    if not skip_code_push:
+    wait_only = "--wait-only" in sys.argv
+
+    # Push code dataset if not skipped and not wait_only
+    if not skip_code_push and not wait_only:
         package_and_push_code_dataset(repo_root, staging_dir)
+    elif wait_only:
+        print("Wait-only mode enabled: skipping code dataset push.")
     else:
         print("Skipping code dataset push as requested (--skip-code-push).")
     
@@ -259,5 +269,5 @@ if __name__ == "__main__":
             accel_override = sys.argv[i + 1]
 
     accel = accel_override if accel_override is not None else (meta.get("accelerator", "NvidiaTeslaT4") if meta.get("enable_gpu", True) else "")
-    success = push_and_wait_kernel(kernel_dir, kernel_slug, output_dir, accelerator=accel)
+    success = push_and_wait_kernel(kernel_dir, kernel_slug, output_dir, accelerator=accel, skip_push=wait_only)
     sys.exit(0 if success else 1)
