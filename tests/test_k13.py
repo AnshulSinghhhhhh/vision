@@ -1,6 +1,7 @@
 import os
 import sys
 import math
+import json
 import importlib.util
 from pathlib import Path
 import torch
@@ -141,3 +142,30 @@ def test_data_leakage_assertion():
     leakage_detected = set(cal_ids).intersection(set(eval_ids_leaked))
     assert len(leakage_detected) == 1
     assert "img_003" in leakage_detected
+
+
+def test_50k_g0a_v2_results_and_acceptance():
+    """Verify all 4 models in g0a_v2.json meet 50k binomial acceptance criteria."""
+    from knobs.models import DEFAULT_REFERENCES
+    g0a_path = repo_root / "results" / "raw" / "k13-g0a-and-bn" / "g0a_v2.json"
+    assert g0a_path.exists(), f"Missing g0a_v2.json at {g0a_path}"
+    with open(g0a_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    for m_key in ["deit_base", "deit_base_384", "efficientnet_b3", "flexivit_base"]:
+        assert m_key in data, f"Missing model {m_key} in g0a_v2.json"
+        entry = data[m_key]
+        tag = entry["tag"]
+        assert tag in DEFAULT_REFERENCES
+        assert entry["sample_size"] == 50000
+        assert entry["full_50k_validation_status"] == "COMPLETED"
+        assert entry["passed"] is True
+
+        # Statistically verify 95% binomial bound
+        measured = entry["measured_accuracy_pct"]
+        ref = DEFAULT_REFERENCES[tag]
+        se = entry["standard_error_pp"]
+        margin_95 = 1.96 * se
+        assert abs(measured - ref) <= margin_95 + 1e-4, (
+            f"{m_key} diff {abs(measured - ref):.3f} pp exceeds 95% CI bound {margin_95:.3f} pp"
+        )

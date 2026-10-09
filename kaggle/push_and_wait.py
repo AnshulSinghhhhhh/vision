@@ -53,6 +53,11 @@ def package_and_push_code_dataset(
         if os.path.exists(splits_dest):
             shutil.rmtree(splits_dest)
         shutil.copytree(splits_src, splits_dest)
+
+    # Stage g0a_v2.json if it exists
+    g0a_src = os.path.join(repo_root, "results", "raw", "k13-g0a-and-bn", "g0a_v2.json")
+    if os.path.exists(g0a_src):
+        shutil.copy2(g0a_src, os.path.join(staging_dir, "g0a_v2.json"))
     
     # Write GIT_COMMIT provenance file
     try:

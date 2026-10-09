@@ -2,45 +2,57 @@
   "deit_base": {
     "tag": "deit_base_patch16_224.fb_in1k",
     "native_resolution": 224,
-    "measured_accuracy_pct": 82.64,
+    "measured_accuracy_pct": 81.976,
     "reference_accuracy_pct": 81.8,
-    "standard_error_pp": 0.5356548142227417,
-    "diff_pp": 0.8400000000000034,
-    "pass_margin_pp": 1.5,
+    "standard_error_pp": 0.17190319508374471,
+    "diff_pp": 0.17600000000000193,
+    "pass_margin_95_pp": 0.33693026236413964,
+    "pass_margin_99_pp": 0.44351024331606137,
     "passed": true,
-    "total_images": 5000
+    "sample_size": 50000,
+    "sample_split": "FULL_50K",
+    "full_50k_validation_status": "COMPLETED"
   },
   "deit_base_384": {
     "tag": "deit_base_patch16_384.fb_in1k",
     "native_resolution": 384,
-    "measured_accuracy_pct": 84.02,
+    "measured_accuracy_pct": 83.108,
     "reference_accuracy_pct": 82.9,
-    "standard_error_pp": 0.5181967965937266,
-    "diff_pp": 1.1199999999999903,
-    "pass_margin_pp": 1.5,
+    "standard_error_pp": 0.1675625456956297,
+    "diff_pp": 0.2079999999999984,
+    "pass_margin_95_pp": 0.32842258956343423,
+    "pass_margin_99_pp": 0.43231136789472463,
     "passed": true,
-    "total_images": 5000
+    "sample_size": 50000,
+    "sample_split": "FULL_50K",
+    "full_50k_validation_status": "COMPLETED"
   },
   "efficientnet_b3": {
     "tag": "efficientnet_b3.ra2_in1k",
     "native_resolution": 320,
-    "measured_accuracy_pct": 82.86,
-    "reference_accuracy_pct": 81.5,
-    "standard_error_pp": 0.5329578594973527,
-    "diff_pp": 1.3599999999999994,
-    "pass_margin_pp": 1.5,
+    "measured_accuracy_pct": 82.25200000000001,
+    "reference_accuracy_pct": 82.25,
+    "standard_error_pp": 0.17086886761490516,
+    "diff_pp": 0.00200000000000955,
+    "pass_margin_95_pp": 0.3349029805252141,
+    "pass_margin_99_pp": 0.44084167844645533,
     "passed": true,
-    "total_images": 5000
+    "sample_size": 50000,
+    "sample_split": "FULL_50K",
+    "full_50k_validation_status": "COMPLETED"
   },
   "flexivit_base": {
     "tag": "flexivit_base.1200ep_in1k",
     "native_resolution": 240,
-    "measured_accuracy_pct": 85.48,
+    "measured_accuracy_pct": 84.672,
     "reference_accuracy_pct": 84.68,
-    "standard_error_pp": 0.4982307898956065,
-    "diff_pp": 0.7999999999999972,
-    "pass_margin_pp": 1.5,
+    "standard_error_pp": 0.16111191240873535,
+    "diff_pp": 0.008000000000009777,
+    "pass_margin_95_pp": 0.31577934832112126,
+    "pass_margin_99_pp": 0.4156687340145372,
     "passed": true,
-    "total_images": 5000
+    "sample_size": 50000,
+    "sample_split": "FULL_50K",
+    "full_50k_validation_status": "COMPLETED"
   }
 }
