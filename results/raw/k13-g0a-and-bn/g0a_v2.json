@@ -33,7 +33,7 @@
     "measured_accuracy_pct": 82.25200000000001,
     "reference_accuracy_pct": 82.25,
     "standard_error_pp": 0.17086886761490516,
-    "diff_pp": 0.00200000000000955,
+    "diff_pp": 0.0020000000000095497,
     "pass_margin_95_pp": 0.3349029805252141,
     "pass_margin_99_pp": 0.44084167844645533,
     "passed": true,

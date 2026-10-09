@@ -1,0 +1,16 @@
+{
+  "model": "efficientnet_b3",
+  "cal_set_size": 1000,
+  "eval_set_size": 2000,
+  "data_leakage_overlap": 0,
+  "clean_sanity_tol_pp": 1.0,
+  "cal_batch_size": 32,
+  "eval_batch_size": 32,
+  "calibration_momentum": null,
+  "eval_resolutions": [
+    224,
+    320,
+    384,
+    448
+  ]
+}
