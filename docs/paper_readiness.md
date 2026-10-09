@@ -9,9 +9,7 @@
 
 ## 1. Core Contribution Statement
 
-This paper reveals a fundamental interaction between input resolution and image corruption in modern vision models: **scaling input resolution does not uniformly benefit degraded images, and can cause catastrophic accuracy collapse when high-frequency noise is preserved.**
-
-Specifically, we demonstrate that standard antialiased downsampling to standard resolution ($224$ px) acts as an implicit spatial low-pass filter, attenuating high-frequency noise ($\sigma_{\text{eff}} = 0.313 \times \sigma_{\text{inj}}$). When images are processed at larger resolutions ($448$ px), downsampling is bypassed ($\sigma_{\text{eff}} = 1.000 \times \sigma_{\text{inj}}$), exposing models to unfiltered high-frequency noise. For architectures with localized convolutional inductive biases (EfficientNet-B3), this triggers an acute collapse of up to **$-21.92\text{ percentage points}$** in Difference-in-Differences accuracy ($N=50{,}000$). We prove through Fourier decomposition and resize ablation that this failure is fully reversible via spatial low-pass prefiltering ($+51.26\text{ pp}$ recovery), and show that input resolution downsampling strictly outperforms token-merging compute reduction (+22.12 pp advantage at matched FLOPs).
+Resolution scaling does not inherently hurt corrupted images. At matched per-pixel noise, 448 outperforms 224 for all three models (K8 'E' control, preliminary values at $N=2{,}000$). The apparent penalty comes from losing the implicit denoising of antialiased downsampling (dominant for EfficientNet-B3), and from scale mismatch for ViTs (DeiT: prefiltering does not help; FlexiViT: fixing token count removes the noise penalty).
 
 ---
 
@@ -23,7 +21,7 @@ Specifically, we demonstrate that standard antialiased downsampling to standard 
 | **C2** | **Acute Convolutional Fragility Under Noise**: EfficientNet-B3 collapses by $-21.92\text{ pp}$ DiD under Gaussian noise (s3) and drops to $3.64\%$ accuracy under noise s5 at 448 px, whereas clean accuracy *gains* $+4.42\text{ pp}$. | `table1.csv` row 6 ($z = -90.30$); `k10-resize-ablation` raw shards. | **Decisive** |
 | **C3** | **High-Frequency Noise Drives the Collapse**: Low-frequency noise damages accuracy across all resolutions equally ($\sim 40\%$), but high-frequency noise causes the entire 448 px collapse ($76.8\% \rightarrow 55.95\%$) because 448 px has no antialiasing filter. | `k9-freqnoise-v2` frequency band evaluations; unit tests in `tests/test_k9.py`. | **Decisive** |
 | **C4** | **Input Filtering Reverses the Collapse**: Applying a Gaussian lowpass prefilter ($\sigma=1.2$) directly to 448 px noisy images restores accuracy from $3.64\%$ to $54.90\%$ ($+51.26\text{ pp}$ recovery) on EfficientNet-B3. | `k10-resize-ablation` raw shards; `analysis/out/table_k10.csv`. | **Decisive** |
-| **C5** | **Resolution Scaling Beats Deep Token Pruning**: Under severe noise, downsampling to 320 px achieves $69.54\%$ accuracy, beating ToMe $r=64$ at 448 px ($47.42\%$) by $+22.12\text{ pp}$ at matched compute ($\sim 75$ GFLOPs) with $1.22\times$ higher throughput. | `analysis/out/table_tome_matched.csv`, `table_tome_matched.tex` ($N=5{,}000$). | **Decisive** |
+| **C5** | **Rescoped Token Merging Comparison (ToMe)**: At matched FLOPs, res-320 beats ToMe-r64@448 by +2.26 pp on clean, +7.48 pp at noise s3, and +22.12 pp at noise s5 ($N=5{,}000$, DeiT-B only, off-the-shelf ToMe); the clean gap shows this is largely a non-native-resolution effect. | `analysis/out/table_tome_matched.csv`, `table_tome_matched.tex` ($N=5{,}000$). | **Decisive** |
 | **C6** | **Contrast Scaling Remains Monotonically Positive**: When degradation does not add high-frequency noise (e.g. contrast reduction), resolution scaling remains beneficial for all architectures ($\text{DiD} > 0$). | `table1.csv` rows 5, 9, 13 (all $z > +6.2$, $p_{\text{holm}} < 10^{-8}$). | **Decisive** |
 
 ---
@@ -40,8 +38,8 @@ To preserve scientific rigor, the manuscript must **explicitly reject** the foll
    - FlexiViT-B suffers a $-7.21\text{ pp}$ negative DiD under Gaussian noise.
 3. **Do NOT claim that checkpoint mismatch or incorrect fine-tuning caused the collapse**:
    - All models pass G0-A native checkpoint verification against official reference targets within binomial sampling confidence intervals.
-4. **Do NOT claim that BatchNorm drift is the primary mechanism**:
-   - Recalibrating BatchNorm statistics on clean calibration data maintains sanity ($\le 1.0\text{ pp}$ drop), but does not prevent the 448 px collapse under severe noise. The primary mechanism is spatial frequency pass-through, not activation statistics drift.
+4. **Do NOT claim that BatchNorm is ruled in or out as the mechanism**:
+   - BN recalibration on clean data partly rescues the 448 collapse (EfficientNet noise s5: 4.0%→32.35%, N=2000); its clean sanity gate was relaxed to 7 pp; evidence is inconsistent with the older k5 arm and is not used to rule BN in or out.
 
 ---
 
@@ -84,10 +82,10 @@ To preserve scientific rigor, the manuscript must **explicitly reject** the foll
   - Comparing constant patch size (F-p) vs constant token count (F-t).
   - Evidence: `analysis/out/table2.csv`.
 - **Sub-section 5.2: Compute-Matched Token Merging vs Resolution Scaling (Table 6)**:
-  - Scaling resolution down to 320 px beats ToMe $r=64$ at 448 px by $+22.12\text{ pp}$ at 75 GFLOPs.
+  - At matched FLOPs, res-320 beats ToMe-r64@448 by +2.26 pp on clean, +7.48 pp at noise s3, and +22.12 pp at noise s5 ($N=5{,}000$, DeiT-B only, off-the-shelf ToMe); the clean gap shows this is largely a non-native-resolution effect.
   - Evidence: `analysis/out/table_tome_matched.tex`.
 - **Sub-section 5.3: BatchNorm Recalibration (Table 5)**:
-  - Validated clean sanity gate and calibrated statistics.
+  - Clean sanity gate and calibrated statistics analysis.
   - Evidence: `analysis/out/table5.csv`.
 
 ### Section 6: Discussion, Limitations, & Conclusion
@@ -95,8 +93,20 @@ To preserve scientific rigor, the manuscript must **explicitly reject** the foll
 
 ---
 
-## 5. Limitations & Future Work
+## 5. Known Limitations
 
-1. **Model Scope**: Findings are established on DeiT-B/16, EfficientNet-B3, and FlexiViT-B. Extensions to ConvNeXt, Swin, and Vision-Language Foundation Models (e.g. CLIP/SigLIP) are promising directions.
-2. **Pretrained Dataset**: All models were evaluated on ImageNet-1K. Downstream dense prediction tasks (object detection, segmentation) should be audited for similar high-frequency noise leakage.
-3. **Sensor-Noise Verification**: Poisson-Gaussian shot/read noise model (`k11-sensor-noise`) confirms physical plausibility, but in-the-wild low-light camera benchmarks remain for future field tests.
+1. **Model Scope**: Findings are established on three models only (DeiT-B/16, EfficientNet-B3, FlexiViT-B).
+2. **Dataset**: Evaluated on ImageNet-1K only.
+3. **Noise Injection Protocol**: Noise is injected into the 448x448 acquisition frame before resizing, giving an effective noise standard deviation of $\sigma_{\text{eff}} = 0.313 \times \sigma_{\text{inj}}$ at 224 px.
+4. **Defocus Implementation Caveat**: Headline defocus results (k0–k7) are unverified due to lack of recorded backend/commit and divergence from ImageNet-C disk defocus; verified ImageNet-C defocus is grounded in K8 ($N=2{,}000$).
+5. **Mechanism Controls Sample Size**: Key mechanism controls (K8, K9, K10, K13) have sample sizes $N=2{,}000$--$5{,}000$.
+
+---
+
+## 6. Related Work to Cite
+
+- **Kim et al. 2025**: "Unlocking Noise-Resistant Vision" (arXiv:2509.20939, ICML 2026) already shows that smaller input resolution and anti-aliased downsampling improve Gaussian-noise robustness with a low-pass theory; so $\sigma_{\text{eff}}$ / low-pass is **supporting**, not the novelty claim.
+- **Yin et al. 2019**: "A Fourier Perspective on Model Robustness in Computer Vision" (NeurIPS 2019) on frequency-domain corruption analysis.
+- **Touvron et al. 2019**: "Fixing the train-test resolution discrepancy" (FixRes, NeurIPS 2019) on resolution adaptation.
+- **Schneider et al. 2020**: "Improving robustness against common corruptions by covariate shift adaptation" (NeurIPS 2020) on BatchNorm statistics recalibration.
+- **Beyer et al. 2023**: "FlexiViT: One Model for All Patch Sizes" (CVPR 2023) on patch size and token count trade-offs.
