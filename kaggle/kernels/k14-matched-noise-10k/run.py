@@ -121,15 +121,19 @@ def run_k14(
     print(f"=== Initializing K14 Models on {device} ===", flush=True)
     models_dict = {}
     for model_key, arm_key, init_res in MODELS:
-        print(f"Loading {model_key} (arm: {arm_key})...", flush=True)
+        print(f"Loading {model_key} (arm: {arm_key}, res: {init_res})...", flush=True)
         m = create_model_instance(model_key, resolution=init_res, arm=arm_key, pretrained=pretrained, device=device)
         m.eval()
-        models_dict[(model_key, arm_key)] = m
+        models_dict[(model_key, arm_key, init_res)] = m
+        if model_key == "flexivit_base":
+            print(f"Loading {model_key} (arm: {arm_key}, res: 224)...", flush=True)
+            m224 = create_model_instance(model_key, resolution=224, arm=arm_key, pretrained=pretrained, device=device)
+            m224.eval()
+            models_dict[(model_key, arm_key, 224)] = m224
 
     all_shards = []
 
     for model_key, arm_key, _ in MODELS:
-        model = models_dict[(model_key, arm_key)]
         model_tag = MODEL_TAGS.get(model_key, model_key)
 
         for cond_name, severity, allowed_suites in CONDITIONS_SUITES:
@@ -137,8 +141,13 @@ def run_k14(
             all_shards.append(shard_file)
 
             if shard_file.exists():
-                print(f"[RESUME] Skipping completed shard: {shard_file.name}", flush=True)
-                continue
+                try:
+                    existing_df = pd.read_parquet(shard_file)
+                    if len(existing_df) > 0:
+                        print(f"[RESUME] Skipping completed shard: {shard_file.name} ({len(existing_df)} rows)", flush=True)
+                        continue
+                except Exception:
+                    pass
 
             print(f"\n--- Running: {model_key} ({arm_key}) on {cond_name} s{severity} ({len(image_ids)} images) ---", flush=True)
             cond_records = []
@@ -191,12 +200,15 @@ def run_k14(
                         in_t = suite[s_name].to(device)
                         in_norm = normalize_tensor(in_t, model_tag)
                         
+                        in_res = in_t.shape[-1]
+                        active_model = models_dict.get((model_key, arm_key, in_res), models_dict[(model_key, arm_key, 448)])
+                        
                         with torch.inference_mode():
                             if device.type == "cuda":
                                 with torch.amp.autocast("cuda"):
-                                    logits = model(in_norm)
+                                    logits = active_model(in_norm)
                             else:
-                                logits = model(in_norm)
+                                logits = active_model(in_norm)
                             pred = int(torch.argmax(logits, dim=1).item())
 
                         cond_records.append({
@@ -242,7 +254,16 @@ def run_k14(
 
 def main():
     print("=== Launching K14-Matched-Noise-10k Kernel ===", flush=True)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        device = torch.device("cuda:0")
+    else:
+        try:
+            import torch_xla.core.xla_model as xm
+            device = xm.xla_device()
+            print(f"Device set to TPU via PyTorch XLA: {device}", flush=True)
+        except Exception:
+            device = torch.device("cpu")
+            print(f"Running on host CPU ({torch.get_num_threads()} threads)", flush=True)
 
     SPLITS_DIRS = [
         os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "splits")),
