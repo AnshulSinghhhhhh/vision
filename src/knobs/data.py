@@ -14,7 +14,8 @@ import os
 import csv
 import json
 import hashlib
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any, Union
+from pathlib import Path
 import numpy as np
 from PIL import Image
 
@@ -235,7 +236,7 @@ def create_stratified_splits(
 
 
 def preprocess_image_448(
-    img: Image.Image,
+    img: Union[Image.Image, str, Path],
     target_short: int = 512,
     crop_size: int = 448,
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
@@ -247,6 +248,10 @@ def preprocess_image_448(
     - np.ndarray: uint8 RGB image of shape (448, 448, 3)
     - dict: metadata including native dimensions and crop offsets
     """
+    if isinstance(img, (str, Path)):
+        with Image.open(img) as pil_img:
+            return preprocess_image_448(pil_img, target_short=target_short, crop_size=crop_size)
+
     if img.mode != "RGB":
         img = img.convert("RGB")
         

@@ -158,7 +158,8 @@ def run_k15(
                         if not img_path.exists():
                             continue
                         try:
-                            clean_arr_448, _ = preprocess_image_448(str(img_path))
+                            with Image.open(img_path) as pil_img:
+                                clean_arr_448, _ = preprocess_image_448(pil_img)
                             corr_arr_448 = apply_corruption(clean_arr_448, img_id, cond_name, severity)
                             corr_t_448 = torch.from_numpy(corr_arr_448).permute(2, 0, 1).float().unsqueeze(0) / 255.0
                             
