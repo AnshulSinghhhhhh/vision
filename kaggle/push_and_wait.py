@@ -241,6 +241,11 @@ if __name__ == "__main__":
         meta = json.load(f)
     kernel_slug = meta["id"]
     
-    accel = meta.get("accelerator", "NvidiaTeslaT4") if meta.get("enable_gpu", True) else ""
+    accel_override = None
+    for i, a in enumerate(sys.argv):
+        if a == "--accelerator" and i + 1 < len(sys.argv):
+            accel_override = sys.argv[i + 1]
+
+    accel = accel_override if accel_override is not None else (meta.get("accelerator", "NvidiaTeslaT4") if meta.get("enable_gpu", True) else "")
     success = push_and_wait_kernel(kernel_dir, kernel_slug, output_dir, accelerator=accel)
     sys.exit(0 if success else 1)
