@@ -1,0 +1,46 @@
+{
+  "deit_base": {
+    "tag": "deit_base_patch16_224.fb_in1k",
+    "native_resolution": 224,
+    "measured_accuracy_pct": 82.64,
+    "reference_accuracy_pct": 81.8,
+    "standard_error_pp": 0.5356548142227417,
+    "diff_pp": 0.8400000000000034,
+    "pass_margin_pp": 1.5,
+    "passed": true,
+    "total_images": 5000
+  },
+  "deit_base_384": {
+    "tag": "deit_base_patch16_384.fb_in1k",
+    "native_resolution": 384,
+    "measured_accuracy_pct": 84.02,
+    "reference_accuracy_pct": 82.9,
+    "standard_error_pp": 0.5181967965937266,
+    "diff_pp": 1.1199999999999903,
+    "pass_margin_pp": 1.5,
+    "passed": true,
+    "total_images": 5000
+  },
+  "efficientnet_b3": {
+    "tag": "efficientnet_b3.ra2_in1k",
+    "native_resolution": 320,
+    "measured_accuracy_pct": 82.86,
+    "reference_accuracy_pct": 81.5,
+    "standard_error_pp": 0.5329578594973527,
+    "diff_pp": 1.3599999999999994,
+    "pass_margin_pp": 1.5,
+    "passed": true,
+    "total_images": 5000
+  },
+  "flexivit_base": {
+    "tag": "flexivit_base.1200ep_in1k",
+    "native_resolution": 240,
+    "measured_accuracy_pct": 85.48,
+    "reference_accuracy_pct": 84.68,
+    "standard_error_pp": 0.4982307898956065,
+    "diff_pp": 0.7999999999999972,
+    "pass_margin_pp": 1.5,
+    "passed": true,
+    "total_images": 5000
+  }
+}

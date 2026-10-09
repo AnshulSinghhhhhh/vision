@@ -1,0 +1,13 @@
+{
+  "git_commit": "c1a8cb839339ef57081aa2826a6fc8b27e5569e1-dirty",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "torch_version": "2.11.0+cu128",
+  "timm_version": "1.0.29",
+  "pillow_version": "12.3.0",
+  "imagecorruptions_version": "installed",
+  "corruption_backend": "imagecorruptions",
+  "cuda_available": true,
+  "gpu_name": "Tesla T4",
+  "timestamp": "2026-10-08T23:58:27Z",
+  "kernel": "k13-g0a-and-bn"
+}
