@@ -156,6 +156,8 @@ def evaluate_g0a_checkpoints(
             preds = logits.argmax(dim=-1)
             correct_count += int((preds == labels_t).sum().item())
             total_eval += len(batch_labels)
+            if total_eval % 5000 == 0 or total_eval == n_images:
+                print(f"    Progress: {total_eval}/{n_images} images evaluated (current acc={100.0 * correct_count / max(1, total_eval):.2f}%)", flush=True)
 
             del batch_tensors, batch_labels, batch_t, labels_t, logits, preds
 
@@ -181,8 +183,8 @@ def evaluate_g0a_checkpoints(
             "pass_margin_99_pp": float(pass_margin_99),
             "passed": bool(passed),
             "sample_size": total_eval,
-            "sample_split": "PILOT_5K",
-            "full_50k_validation_status": "PENDING (requires full 50,000-image evaluation)",
+            "sample_split": "FULL_50K" if total_eval >= 50000 else f"PILOT_{total_eval}",
+            "full_50k_validation_status": "COMPLETED" if total_eval >= 50000 else "PENDING (requires full 50,000-image evaluation)",
         }
 
         del model
@@ -414,17 +416,19 @@ def main():
         "/kaggle/input/knobs-code/splits",
         "/tmp/splits",
     ]
-    val_meta_path, pilot_path, cal_path, mech_path = None, None, None, None
+    val_meta_path, pilot_path, cal_path, mech_path, full_path = None, None, None, None, None
     for sdir in SPLITS_DIRS:
         vp = Path(sdir) / "val_metadata.json"
         pp = Path(sdir) / "PILOT.json"
         cp = (Path(sdir) / "CAL-GATE.json") if (Path(sdir) / "CAL-GATE.json").exists() else (Path(sdir) / "CAL_GATE.json")
         mp = Path(sdir) / "MECH.json"
+        fp = Path(sdir) / "FULL.json"
         if vp.exists():
             val_meta_path = vp
             pilot_path = pp if pp.exists() else None
             cal_path = cp if cp.exists() else None
             mech_path = mp if mp.exists() else None
+            full_path = fp if fp.exists() else None
             break
 
     if not val_meta_path:
@@ -457,12 +461,17 @@ def main():
     leakage = set(cal_ids).intersection(set(eval_ids))
     assert len(leakage) == 0, f"Data leakage error! {len(leakage)} overlapping images between CAL_GATE and EVAL: {list(leakage)[:5]}"
 
-    # Pilot set for G0-A verification (PILOT 5,000 images or balanced 5,000)
-    if pilot_path and pilot_path.exists():
+    # G0-A verification: use FULL 50,000 ImageNet validation set!
+    if full_path and full_path.exists():
+        with open(full_path, "r", encoding="utf-8") as f:
+            g0a_ids = json.load(f)
+    elif len(all_val_ids) >= 50000:
+        g0a_ids = all_val_ids
+    elif pilot_path and pilot_path.exists():
         with open(pilot_path, "r", encoding="utf-8") as f:
             g0a_ids = json.load(f)
     else:
-        g0a_ids = balanced_subset(all_val_ids, val_metadata, n=5000, seed=0)
+        g0a_ids = all_val_ids
 
     # Locate validation image folder
     IMG_DIRS = [
