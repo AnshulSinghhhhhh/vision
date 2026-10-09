@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Resolution Selector Oracle Headroom. Condition-level oracle chooses the optimal fixed resolution per condition/severity. Per-image oracle is the theoretical maximum over all 4 forward passes (strictly not achievable with a pre-classification selector).}
+\label{tab:oracle_headroom}
+\small
+\begin{tabular}{llcccccc}
+\toprule
+Pool & Model & Best Fixed Res & Best Fixed Acc (\%) & Cond. Oracle Acc (\%) & Gain (pp) & Per-Image Oracle* (\%) & Gain* (pp) \\
+\midrule
+Clean + Sev-3 (50k) & DeiT-B/16 & 224 & 78.46 & 78.50 & +0.05 & 83.08* & +4.62* \\
+Clean + Sev-3 (50k) & EfficientNet-B3 & 384 & 77.86 & 78.04 & +0.19 & 82.99* & +5.14* \\
+Severity Mixture (Pilot) & DeiT-B/16 & 224 & 76.09 & 76.09 & +0.01 & 80.65* & +4.56* \\
+Severity Mixture (Pilot) & EfficientNet-B3 & 320 & 71.69 & 72.15 & +0.46 & 78.21* & +6.52* \\
+\bottomrule
+\multicolumn{8}{l}{\footnotesize *Strictly not achievable; represents best of 4 forward passes.}
+\end{tabular}
+\end{table}

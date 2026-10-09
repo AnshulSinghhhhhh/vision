@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\caption{Paired Difference-in-Differences on Verified K8 ImageNet-C Corruptions ($N=2{,}000$). DiD is $(\Delta_{\text{deg}} - \Delta_{\text{clean}})$, with analytic standard errors and 95\% CIs.}
+\label{tab:defocus_did_k8}
+\small
+\begin{tabular}{llcccccc}
+\toprule
+Model & Condition & Clean 224 & Clean 448 & Deg 224 & Deg 448 & DiD (pp) & 95\% CI \\
+\midrule
+DeiT-B/16 & Defocus Blur (s3) & 80.8 & 79.3 & 72.5 & 64.3 & -6.75 & $[-8.71, -4.79]$ \\
+DeiT-B/16 & Gaussian Noise (s3) & 80.8 & 79.3 & 76.8 & 71.7 & -3.75 & $[-5.63, -1.87]$ \\
+EfficientNet-B3 & Defocus Blur (s3) & 76.4 & 81.5 & 65.2 & 67.5 & -2.70 & $[-4.83, -0.57]$ \\
+EfficientNet-B3 & Gaussian Noise (s3) & 76.4 & 81.5 & 69.8 & 53.0 & -21.80 & $[-24.21, -19.39]$ \\
+FlexiViT-B (F-p) & Defocus Blur (s3) & 83.2 & 83.8 & 76.5 & 76.5 & -0.70 & $[-2.10, +0.70]$ \\
+FlexiViT-B (F-p) & Gaussian Noise (s3) & 83.2 & 83.8 & 80.5 & 73.6 & -7.50 & $[-9.23, -5.77]$ \\
+\bottomrule
+\end{tabular}
+\end{table}

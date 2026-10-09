@@ -1,0 +1,5 @@
+pool,pool_display,model,model_display,N_evaluations,best_fixed_res,best_fixed_acc,condition_oracle_acc,condition_oracle_gain_pp,per_image_oracle_acc,per_image_oracle_gain_pp,per_image_achievable
+clean_plus_s3_50k,Clean + Sev-3 (50k),deit_base,DeiT-B/16,250000,224,78.46,78.5,0.05,83.08,4.62,Not achievable (best of 4 passes)
+clean_plus_s3_50k,Clean + Sev-3 (50k),efficientnet_b3,EfficientNet-B3,250000,384,77.86,78.04,0.19,82.99,5.14,Not achievable (best of 4 passes)
+severity_mixture_pilot,Severity Mixture (Pilot),deit_base,DeiT-B/16,35000,224,76.09,76.09,0.01,80.65,4.56,Not achievable (best of 4 passes)
+severity_mixture_pilot,Severity Mixture (Pilot),efficientnet_b3,EfficientNet-B3,35000,320,71.69,72.15,0.46,78.21,6.52,Not achievable (best of 4 passes)

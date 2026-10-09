@@ -1,28 +1,137 @@
-condition,filter_suite,deit_acc,effnet_acc,is_mock,data_source,N
-clean,A_orig448,81.0,82.89999999999999,False,measured_k6,1000
-clean,B_filtered448,80.9,83.0,False,measured_k6,1000
-clean,C_down224,83.3,78.5,False,measured_k6,1000
-clean,D_up448,79.5,82.0,False,measured_k6,1000
-clean,B_g0.5,80.6,82.65,True,mock_projection (pending K8),1000
-clean,B_g0.866,80.31,82.47,True,mock_projection (pending K8),1000
-clean,B_g1.5,79.8,82.15,True,mock_projection (pending K8),1000
-clean,B_g2.5,79.0,81.65,True,mock_projection (pending K8),1000
-clean,E_noise_matched,81.0,82.9,True,mock_projection (pending K8),1000
-defocus_blur,A_orig448,70.5,73.4,False,measured_k6,1000
-defocus_blur,B_filtered448,68.60000000000001,72.5,False,measured_k6,1000
-defocus_blur,C_down224,77.2,70.39999999999999,False,measured_k6,1000
-defocus_blur,D_up448,67.80000000000001,70.7,False,measured_k6,1000
-defocus_blur,B_g0.5,70.1,73.15,True,mock_projection (pending K8),1000
-defocus_blur,B_g0.866,69.81,72.97,True,mock_projection (pending K8),1000
-defocus_blur,B_g1.5,69.3,72.65,True,mock_projection (pending K8),1000
-defocus_blur,B_g2.5,68.5,72.15,True,mock_projection (pending K8),1000
-defocus_blur,E_noise_matched,70.5,73.4,True,mock_projection (pending K8),1000
-gaussian_noise,A_orig448,73.0,53.1,False,measured_k6,1000
-gaussian_noise,B_filtered448,72.1,76.2,False,measured_k6,1000
-gaussian_noise,C_down224,79.4,73.6,False,measured_k6,1000
-gaussian_noise,D_up448,69.69999999999999,75.5,False,measured_k6,1000
-gaussian_noise,B_g0.5,72.42,66.44,True,mock_projection (pending K8),1000
-gaussian_noise,B_g0.866,72.0,76.2,True,mock_projection (pending K8),1000
-gaussian_noise,B_g1.5,72.0,76.2,True,mock_projection (pending K8),1000
-gaussian_noise,B_g2.5,72.0,76.2,True,mock_projection (pending K8),1000
-gaussian_noise,E_noise_matched,77.8,76.5,True,mock_projection (pending K8),1000
+model,arm,condition,severity,suite_condition,accuracy,N,ci_low,ci_high
+deit_base,standard,clean,0,A_orig448,79.35,2000,77.58,81.12
+deit_base,standard,clean,0,B_filtered448,78.95,2000,77.16,80.74
+deit_base,standard,clean,0,B_g0.5,79.25,2000,77.47,81.03
+deit_base,standard,clean,0,B_g0.866,78.7,2000,76.91,80.49
+deit_base,standard,clean,0,B_g1.5,76.75,2000,74.9,78.6
+deit_base,standard,clean,0,B_g2.5,69.2,2000,67.18,71.22
+deit_base,standard,clean,0,C_down224,80.75,2000,79.02,82.48
+deit_base,standard,clean,0,D_up448,77.4,2000,75.57,79.23
+deit_base,standard,defocus_blur,3,A_orig448,64.35,2000,62.25,66.45
+deit_base,standard,defocus_blur,3,B_filtered448,62.4,2000,60.28,64.52
+deit_base,standard,defocus_blur,3,B_g0.5,63.2,2000,61.09,65.31
+deit_base,standard,defocus_blur,3,B_g0.866,61.8,2000,59.67,63.93
+deit_base,standard,defocus_blur,3,B_g1.5,60.5,2000,58.36,62.64
+deit_base,standard,defocus_blur,3,B_g2.5,56.25,2000,54.08,58.42
+deit_base,standard,defocus_blur,3,C_down224,72.5,2000,70.54,74.46
+deit_base,standard,defocus_blur,3,D_up448,61.05,2000,58.91,63.19
+deit_base,standard,gaussian_noise,3,A_orig448,71.7,2000,69.73,73.67
+deit_base,standard,gaussian_noise,3,B_filtered448,69.35,2000,67.33,71.37
+deit_base,standard,gaussian_noise,3,B_g0.5,70.95,2000,68.96,72.94
+deit_base,standard,gaussian_noise,3,B_g0.866,68.6,2000,66.57,70.63
+deit_base,standard,gaussian_noise,3,B_g1.5,65.05,2000,62.96,67.14
+deit_base,standard,gaussian_noise,3,B_g2.5,60.6,2000,58.46,62.74
+deit_base,standard,gaussian_noise,3,C_down224,76.85,2000,75.0,78.7
+deit_base,standard,gaussian_noise,3,D_up448,66.0,2000,63.92,68.08
+deit_base,standard,gaussian_noise,3,E_noise_matched,78.2,2000,76.39,80.01
+deit_base,standard,gaussian_noise,5,A_orig448,50.1,2000,47.91,52.29
+deit_base,standard,gaussian_noise,5,B_filtered448,54.6,2000,52.42,56.78
+deit_base,standard,gaussian_noise,5,B_g0.5,55.5,2000,53.32,57.68
+deit_base,standard,gaussian_noise,5,B_g0.866,53.65,2000,51.46,55.84
+deit_base,standard,gaussian_noise,5,B_g1.5,50.95,2000,48.76,53.14
+deit_base,standard,gaussian_noise,5,B_g2.5,46.15,2000,43.97,48.33
+deit_base,standard,gaussian_noise,5,C_down224,72.0,2000,70.03,73.97
+deit_base,standard,gaussian_noise,5,D_up448,50.8,2000,48.61,52.99
+deit_base,standard,gaussian_noise,5,E_noise_matched,75.8,2000,73.92,77.68
+efficientnet_b3,standard,clean,0,A_orig448,81.45,2000,79.75,83.15
+efficientnet_b3,standard,clean,0,B_filtered448,81.65,2000,79.95,83.35
+efficientnet_b3,standard,clean,0,B_g0.5,81.65,2000,79.95,83.35
+efficientnet_b3,standard,clean,0,B_g0.866,81.3,2000,79.59,83.01
+efficientnet_b3,standard,clean,0,B_g1.5,79.3,2000,77.52,81.08
+efficientnet_b3,standard,clean,0,B_g2.5,73.1,2000,71.16,75.04
+efficientnet_b3,standard,clean,0,C_down224,76.4,2000,74.54,78.26
+efficientnet_b3,standard,clean,0,D_up448,80.25,2000,78.51,81.99
+efficientnet_b3,standard,defocus_blur,3,A_orig448,67.55,2000,65.5,69.6
+efficientnet_b3,standard,defocus_blur,3,B_filtered448,65.95,2000,63.87,68.03
+efficientnet_b3,standard,defocus_blur,3,B_g0.5,66.95,2000,64.89,69.01
+efficientnet_b3,standard,defocus_blur,3,B_g0.866,65.35,2000,63.26,67.44
+efficientnet_b3,standard,defocus_blur,3,B_g1.5,62.85,2000,60.73,64.97
+efficientnet_b3,standard,defocus_blur,3,B_g2.5,58.05,2000,55.89,60.21
+efficientnet_b3,standard,defocus_blur,3,C_down224,65.2,2000,63.11,67.29
+efficientnet_b3,standard,defocus_blur,3,D_up448,64.2,2000,62.1,66.3
+efficientnet_b3,standard,gaussian_noise,3,A_orig448,53.0,2000,50.81,55.19
+efficientnet_b3,standard,gaussian_noise,3,B_filtered448,72.85,2000,70.9,74.8
+efficientnet_b3,standard,gaussian_noise,3,B_g0.5,71.65,2000,69.67,73.63
+efficientnet_b3,standard,gaussian_noise,3,B_g0.866,72.95,2000,71.0,74.9
+efficientnet_b3,standard,gaussian_noise,3,B_g1.5,70.65,2000,68.65,72.65
+efficientnet_b3,standard,gaussian_noise,3,B_g2.5,67.2,2000,65.14,69.26
+efficientnet_b3,standard,gaussian_noise,3,C_down224,69.75,2000,67.74,71.76
+efficientnet_b3,standard,gaussian_noise,3,D_up448,72.15,2000,70.19,74.11
+efficientnet_b3,standard,gaussian_noise,3,E_noise_matched,80.0,2000,78.25,81.75
+efficientnet_b3,standard,gaussian_noise,5,A_orig448,3.95,2000,3.1,4.8
+efficientnet_b3,standard,gaussian_noise,5,B_filtered448,53.95,2000,51.77,56.13
+efficientnet_b3,standard,gaussian_noise,5,B_g0.5,41.75,2000,39.59,43.91
+efficientnet_b3,standard,gaussian_noise,5,B_g0.866,53.8,2000,51.62,55.98
+efficientnet_b3,standard,gaussian_noise,5,B_g1.5,54.25,2000,52.07,56.43
+efficientnet_b3,standard,gaussian_noise,5,B_g2.5,51.4,2000,49.21,53.59
+efficientnet_b3,standard,gaussian_noise,5,C_down224,57.6,2000,55.43,59.77
+efficientnet_b3,standard,gaussian_noise,5,D_up448,55.05,2000,52.87,57.23
+efficientnet_b3,standard,gaussian_noise,5,E_noise_matched,74.8,2000,72.9,76.7
+flexivit_base,F-p,clean,0,A_orig448,83.8,2000,82.19,85.41
+flexivit_base,F-p,clean,0,B_filtered448,83.95,2000,82.34,85.56
+flexivit_base,F-p,clean,0,B_g0.5,84.1,2000,82.5,85.7
+flexivit_base,F-p,clean,0,B_g0.866,83.35,2000,81.72,84.98
+flexivit_base,F-p,clean,0,B_g1.5,81.15,2000,79.44,82.86
+flexivit_base,F-p,clean,0,B_g2.5,77.55,2000,75.72,79.38
+flexivit_base,F-p,clean,0,C_down224,83.15,2000,81.51,84.79
+flexivit_base,F-p,clean,0,D_up448,82.1,2000,80.42,83.78
+flexivit_base,F-p,defocus_blur,3,A_orig448,76.5,2000,74.64,78.36
+flexivit_base,F-p,defocus_blur,3,B_filtered448,75.25,2000,73.36,77.14
+flexivit_base,F-p,defocus_blur,3,B_g0.5,76.0,2000,74.13,77.87
+flexivit_base,F-p,defocus_blur,3,B_g0.866,74.6,2000,72.69,76.51
+flexivit_base,F-p,defocus_blur,3,B_g1.5,72.65,2000,70.7,74.6
+flexivit_base,F-p,defocus_blur,3,B_g2.5,68.95,2000,66.92,70.98
+flexivit_base,F-p,defocus_blur,3,C_down224,76.55,2000,74.69,78.41
+flexivit_base,F-p,defocus_blur,3,D_up448,73.45,2000,71.51,75.39
+flexivit_base,F-p,gaussian_noise,3,A_orig448,73.6,2000,71.67,75.53
+flexivit_base,F-p,gaussian_noise,3,B_filtered448,76.05,2000,74.18,77.92
+flexivit_base,F-p,gaussian_noise,3,B_g0.5,75.65,2000,73.77,77.53
+flexivit_base,F-p,gaussian_noise,3,B_g0.866,76.4,2000,74.54,78.26
+flexivit_base,F-p,gaussian_noise,3,B_g1.5,77.15,2000,75.31,78.99
+flexivit_base,F-p,gaussian_noise,3,B_g2.5,73.1,2000,71.16,75.04
+flexivit_base,F-p,gaussian_noise,3,C_down224,80.45,2000,78.71,82.19
+flexivit_base,F-p,gaussian_noise,3,D_up448,77.3,2000,75.46,79.14
+flexivit_base,F-p,gaussian_noise,3,E_noise_matched,82.95,2000,81.3,84.6
+flexivit_base,F-p,gaussian_noise,5,A_orig448,32.45,2000,30.4,34.5
+flexivit_base,F-p,gaussian_noise,5,B_filtered448,60.7,2000,58.56,62.84
+flexivit_base,F-p,gaussian_noise,5,B_g0.5,53.75,2000,51.56,55.94
+flexivit_base,F-p,gaussian_noise,5,B_g0.866,62.5,2000,60.38,64.62
+flexivit_base,F-p,gaussian_noise,5,B_g1.5,65.1,2000,63.01,67.19
+flexivit_base,F-p,gaussian_noise,5,B_g2.5,63.5,2000,61.39,65.61
+flexivit_base,F-p,gaussian_noise,5,C_down224,74.5,2000,72.59,76.41
+flexivit_base,F-p,gaussian_noise,5,D_up448,64.4,2000,62.3,66.5
+flexivit_base,F-p,gaussian_noise,5,E_noise_matched,79.0,2000,77.21,80.79
+flexivit_base,F-t,clean,0,A_orig448,84.5,2000,82.91,86.09
+flexivit_base,F-t,clean,0,B_filtered448,84.4,2000,82.81,85.99
+flexivit_base,F-t,clean,0,B_g0.5,84.7,2000,83.12,86.28
+flexivit_base,F-t,clean,0,B_g0.866,84.25,2000,82.65,85.85
+flexivit_base,F-t,clean,0,B_g1.5,82.3,2000,80.63,83.97
+flexivit_base,F-t,clean,0,B_g2.5,79.0,2000,77.21,80.79
+flexivit_base,F-t,clean,0,C_down224,83.95,2000,82.34,85.56
+flexivit_base,F-t,clean,0,D_up448,83.05,2000,81.41,84.69
+flexivit_base,F-t,defocus_blur,3,A_orig448,78.7,2000,76.91,80.49
+flexivit_base,F-t,defocus_blur,3,B_filtered448,78.0,2000,76.18,79.82
+flexivit_base,F-t,defocus_blur,3,B_g0.5,78.15,2000,76.34,79.96
+flexivit_base,F-t,defocus_blur,3,B_g0.866,77.6,2000,75.77,79.43
+flexivit_base,F-t,defocus_blur,3,B_g1.5,75.85,2000,73.97,77.73
+flexivit_base,F-t,defocus_blur,3,B_g2.5,73.1,2000,71.16,75.04
+flexivit_base,F-t,defocus_blur,3,C_down224,77.65,2000,75.82,79.48
+flexivit_base,F-t,defocus_blur,3,D_up448,76.55,2000,74.69,78.41
+flexivit_base,F-t,gaussian_noise,3,A_orig448,79.9,2000,78.14,81.66
+flexivit_base,F-t,gaussian_noise,3,B_filtered448,80.45,2000,78.71,82.19
+flexivit_base,F-t,gaussian_noise,3,B_g0.5,80.35,2000,78.61,82.09
+flexivit_base,F-t,gaussian_noise,3,B_g0.866,80.8,2000,79.07,82.53
+flexivit_base,F-t,gaussian_noise,3,B_g1.5,79.65,2000,77.89,81.41
+flexivit_base,F-t,gaussian_noise,3,B_g2.5,75.4,2000,73.51,77.29
+flexivit_base,F-t,gaussian_noise,3,C_down224,80.85,2000,79.13,82.57
+flexivit_base,F-t,gaussian_noise,3,D_up448,79.75,2000,77.99,81.51
+flexivit_base,F-t,gaussian_noise,3,E_noise_matched,84.0,2000,82.39,85.61
+flexivit_base,F-t,gaussian_noise,5,A_orig448,67.25,2000,65.19,69.31
+flexivit_base,F-t,gaussian_noise,5,B_filtered448,74.3,2000,72.38,76.22
+flexivit_base,F-t,gaussian_noise,5,B_g0.5,72.05,2000,70.08,74.02
+flexivit_base,F-t,gaussian_noise,5,B_g0.866,74.55,2000,72.64,76.46
+flexivit_base,F-t,gaussian_noise,5,B_g1.5,73.15,2000,71.21,75.09
+flexivit_base,F-t,gaussian_noise,5,B_g2.5,69.5,2000,67.48,71.52
+flexivit_base,F-t,gaussian_noise,5,C_down224,73.75,2000,71.82,75.68
+flexivit_base,F-t,gaussian_noise,5,D_up448,73.4,2000,71.46,75.34
+flexivit_base,F-t,gaussian_noise,5,E_noise_matched,82.4,2000,80.73,84.07

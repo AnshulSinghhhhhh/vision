@@ -10,7 +10,7 @@ def test_effective_sigma_analysis():
 
     expected_cols = [
         "model", "R", "sigma_injected", "noise_gain",
-        "sigma_eff", "measured_acc", "matched_sigma_acc", "excess_loss_pp"
+        "sigma_eff", "measured_acc", "matched_sigma_acc", "excess_loss_pp", "extrapolated"
     ]
     assert list(df.columns) == expected_cols
     assert len(df) == 12
@@ -25,7 +25,15 @@ def test_effective_sigma_analysis():
     # EfficientNet at 448: excess loss is small compared to the full 28.8 pp collapse
     eff448 = df[(df["model"] == "efficientnet_b3") & (df["R"] == 448)].iloc[0]
     assert abs(eff448["excess_loss_pp"]) < 6.0
+    # K10 operators allow interpolation within measured range for EfficientNet
+    assert eff448["extrapolated"] is False or eff448["extrapolated"] == False
 
     # DeiT-B at 448: positive excess retention
     deit448 = df[(df["model"] == "deit_base") & (df["R"] == 448)].iloc[0]
     assert deit448["excess_loss_pp"] > 0.0
+    # K10 operators allow interpolation within measured range for DeiT
+    assert deit448["extrapolated"] is False or deit448["extrapolated"] == False
+
+    # FlexiViT at 448: not in K10, so sigma_eff=0.18 extrapolates beyond measured range (max ~0.10)
+    flex448 = df[(df["model"] == "flexivit_base") & (df["R"] == 448)].iloc[0]
+    assert flex448["extrapolated"] is True or flex448["extrapolated"] == True

@@ -1,21 +1,10 @@
-"""Zero-parameter spectral gate and oracle headroom analysis.
-
-Workflow:
-1. Fit gate thresholds on CAL-GATE (1,000 images).
-2. Freeze gate thresholds.
-3. Evaluate frozen gate on CONFIRM_POOL.
-
-Headroom benchmarks:
-- Fixed-resolution baseline (best fixed setting chosen on CAL-GATE)
-- Zero-parameter spectral gate
-- Condition-level oracle (best resolution per condition)
-- Per-image oracle upper bound (optimistic upper bound, not a deployable method)
-"""
+"""Prototype. Resolution-only. No demonstrated gain: see analysis/out/table_oracle_headroom.csv."""
 
 from typing import Dict, List, Any, Tuple
 import numpy as np
 
 
+# DEPRECATED: Resolution-only selector has no empirical headroom; see analysis/out/table_oracle_headroom.csv
 class ZeroParamSpectralGate:
     """Input-dependent zero-parameter threshold selector based on noise sigma and Laplacian blur."""
     def __init__(self, noise_thresh: float = 0.05, blur_thresh: float = 0.005):
@@ -23,7 +12,7 @@ class ZeroParamSpectralGate:
         self.blur_thresh = blur_thresh
 
     def fit(self, cal_records: List[Dict[str, Any]]):
-        """Fits thresholds on CAL-GATE records to maximize accuracy under a FLOP constraint."""
+        """Sets noise threshold to the 60th percentile of noise_sigma and blur threshold to the 40th percentile of laplacian_var across calibration records (heuristic percentiles, not accuracy optimization)."""
         # Find median noise_sigma and laplacian_var on corrupted images in CAL-GATE
         noise_sigmas = [r["spectral"]["noise_sigma"] for r in cal_records if "spectral" in r]
         lap_vars = [r["spectral"]["laplacian_var"] for r in cal_records if "spectral" in r]
