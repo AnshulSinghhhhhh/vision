@@ -32,14 +32,29 @@ def compute_k14_table(parquet_path: str = None, out_dir: str = None) -> Tuple[pd
             os.path.join(get_repo_root(), "results", "raw", "k14-matched-noise-10k", "shard_matched_noise_10k.parquet"),
             os.path.join(get_repo_root(), "results", "raw", "k14-matched-noise-10k", "shards"),
         ]
+        df = None
         if os.path.exists(raw_candidates[0]):
-            df = pd.read_parquet(raw_candidates[0])
-        elif os.path.exists(raw_candidates[1]):
+            try:
+                candidate_df = pd.read_parquet(raw_candidates[0])
+                if len(candidate_df) > 0:
+                    df = candidate_df
+            except Exception:
+                pass
+
+        if df is None and os.path.exists(raw_candidates[1]):
             shards = [os.path.join(raw_candidates[1], f) for f in os.listdir(raw_candidates[1]) if f.endswith(".parquet")]
-            if shards:
-                df = pd.concat([pd.read_parquet(s) for s in shards], ignore_index=True)
+            dfs = []
+            for s in shards:
+                try:
+                    sdf = pd.read_parquet(s)
+                    if len(sdf) > 0:
+                        dfs.append(sdf)
+                except Exception:
+                    pass
+            if dfs:
+                df = pd.concat(dfs, ignore_index=True)
             else:
-                raise FileNotFoundError("No shards found in k14 folder")
+                raise FileNotFoundError("No valid non-empty shards found in k14 folder")
         else:
             raise FileNotFoundError("K14 results parquet not found")
     else:

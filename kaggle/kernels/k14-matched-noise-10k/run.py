@@ -89,8 +89,6 @@ if CORRUPTION_BACKEND != "imagecorruptions":
 
 
 MODELS = [
-    ("deit_base", "standard", 448),
-    ("efficientnet_b3", "standard", 448),
     ("flexivit_base", "F-p", 448),
 ]
 
