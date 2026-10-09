@@ -133,7 +133,7 @@ def push_and_wait_kernel(
     output_dir: str,
     accelerator: str = "NvidiaTeslaT4",
     poll_interval_sec: int = 60,
-    timeout_sec: int = 14400,  # 4 hours
+    timeout_sec: int = 36000,  # 10 hours
     skip_push: bool = False,
 ) -> bool:
     """Pushes a kernel (if not skip_push), polls its execution until completion, and downloads outputs."""

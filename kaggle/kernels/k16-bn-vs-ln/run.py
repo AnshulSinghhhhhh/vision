@@ -281,7 +281,16 @@ def run_k16(
 
 def main():
     print("=== Launching K16-BN-vs-LN Kernel ===", flush=True)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        device = torch.device("cuda:0")
+    else:
+        try:
+            import torch_xla.core.xla_model as xm
+            device = xm.xla_device()
+            print(f"Device set to TPU via PyTorch XLA: {device}", flush=True)
+        except Exception:
+            device = torch.device("cpu")
+            print(f"Running on host CPU ({torch.get_num_threads()} threads)", flush=True)
 
     SPLITS_DIRS = [
         os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "splits")),
