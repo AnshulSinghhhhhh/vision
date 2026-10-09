@@ -171,3 +171,44 @@ def generate_m7_suite(
     suite["C_down224"] = cond_c
     suite["D_up448"] = cond_d
     return suite
+
+
+def build_m7_v2_suite(
+    clean_tensor_448: torch.Tensor,
+    corrupted_tensor_448: torch.Tensor,
+    condition: str,
+    severity: int,
+    image_id: str,
+    gaussian_sigmas: Optional[List[float]] = None,
+) -> Dict[str, torch.Tensor]:
+    """Builds the expanded M7-v2 suite of representations for a single image.
+
+    Suites:
+    - A_orig448: Original 448 acquisition frame
+    - B_filtered448: 3-tap lowpass filter [1/4, 1/2, 1/4] at 448
+    - B_g{sigma}: Gaussian lowpass filters at 448
+    - C_down224: True 224 downsampling (antialiased bilinear)
+    - D_up448: 224 downsampled then upsampled back to 448
+    - E_noise_matched: Noise injected at 448 scaled by effective noise gain (0.3125 * sigma_inj)
+
+    Returns dictionary mapping condition name to (1, 3, H, W) tensor in [0, 1].
+    """
+    from knobs.corrupt import compute_seed, SeedContext
+    if gaussian_sigmas is None:
+        gaussian_sigmas = [0.5, 0.866, 1.5, 2.5]
+
+    suite = generate_m7_suite(corrupted_tensor_448, filters=gaussian_sigmas)
+
+    if condition == "gaussian_noise" and severity > 0:
+        sigmas_map = {1: 0.08, 2: 0.12, 3: 0.18, 4: 0.26, 5: 0.38}
+        sigma_inj = sigmas_map.get(severity, 0.18)
+        sigma_matched = 0.3125 * sigma_inj
+        seed = compute_seed(image_id, "gaussian_noise_matched", severity)
+        clean_np = (clean_tensor_448.squeeze(0).permute(1, 2, 0).cpu().numpy() * 255.0)
+        with SeedContext(seed):
+            noise = np.random.normal(0, sigma_matched * 255.0, clean_np.shape)
+        matched_np = np.clip(clean_np + noise, 0, 255).astype(np.uint8)
+        e_tensor = torch.from_numpy(matched_np).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+        suite["E_noise_matched"] = e_tensor
+
+    return suite

@@ -200,6 +200,9 @@ REGISTERED_KERNELS = [
     "k11-sensor-noise",
     "k12-tome-matched",
     "k13-g0a-and-bn",
+    "k14-matched-noise-10k",
+    "k15-flexivit-grid",
+    "k16-bn-vs-ln",
 ]
 
 
