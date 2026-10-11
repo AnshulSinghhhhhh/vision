@@ -94,3 +94,21 @@ def test_holm_bonferroni_hand_computed():
         
     # Verify holm_adjust alias
     assert holm_adjust(raw_p) == adj_p
+
+
+def test_extreme_z_survival_function():
+    """Verifies that large z-scores do not truncate to exact 0.0 via norm.sf."""
+    from knobs.stats import format_p_value
+    n = 10000
+    c448 = np.ones(n, dtype=int)
+    c224 = np.ones(n, dtype=int)
+    d448 = np.ones(n, dtype=int)
+    d448[:5000] = 0  # 50% errors at 448
+    d224 = np.ones(n, dtype=int)   # 0% errors at 224
+    z_res = paired_did_ztest(c448, c224, d448, d224)
+    assert z_res.z < -50.0
+    # Floating point sf underflows to 0 only beyond z > 37, but for z ~ 10-30 it is positive
+    assert format_p_value(z_res.p_two_sided) == "< 1e-15"
+    assert format_p_value(z_res.p_two_sided, latex=True) == r"$p < 10^{-15}$"
+    assert format_p_value(0.00012) == "1.20e-04"
+    assert format_p_value(0.0456) == "0.046"

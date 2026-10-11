@@ -41,6 +41,7 @@ from knobs.stats import (
     holm_bonferroni_correction,
     holm_adjust,
     tost_equivalence_test,
+    format_p_value,
 )
 
 
@@ -159,7 +160,7 @@ def generate_table1_did_headline(df: pd.DataFrame, out_dir: str):
         model_disp = "DeiT-B/16" if m == "deit_base" else ("EfficientNet-B3" if m == "efficientnet_b3" else "FlexiViT-B")
         corr_disp = c.replace("_", " ").title()
         p_val = row["p_holm"]
-        p_str = f"{p_val:.2e}" if p_val < 0.001 else f"{p_val:.3f}"
+        p_str = format_p_value(p_val, latex=True)
         latex_rows.append(
             f"{model_disp} & {corr_disp} & {row['Clean_224']:.1f}\\% & {row['Clean_448']:.1f}\\% & {row['Delta_Clean']:+.2f} & "
             f"{row['Deg_224']:.1f}\\% & {row['Deg_448']:.1f}\\% & {row['Delta_Deg']:+.2f} & "

@@ -7,7 +7,7 @@ Outputs analysis/out/table1.csv and analysis/out/table1.tex.
 import os
 import pandas as pd
 from typing import Tuple
-from knobs.stats import paired_did_ztest, holm_adjust
+from knobs.stats import paired_did_ztest, holm_adjust, format_p_value
 from analysis.common import load_clean_and_corrupted, get_out_dir
 
 
@@ -83,7 +83,7 @@ def generate_table1(out_dir: str = None) -> Tuple[pd.DataFrame, str]:
         model_disp = "DeiT-B/16" if m == "deit_base" else ("EfficientNet-B3" if m == "efficientnet_b3" else "FlexiViT-B")
         corr_disp = c.replace("_", " ").title()
         p_val = row["p_holm"]
-        p_str = f"{p_val:.2e}" if p_val < 0.001 else f"{p_val:.3f}"
+        p_str = format_p_value(p_val, latex=True)
         
         line = (
             f"{model_disp} & {corr_disp} & {row['N']:,} & "

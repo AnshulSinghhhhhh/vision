@@ -1,4 +1,4 @@
-"""Analysis for K14: Matched-noise and defocus verification on N=10,000 images.
+"""Analysis for K14: Nominal-gain-matched noise and defocus verification on N=10,000 images.
 
 Reads shards from results/raw/k14-matched-noise-10k/, computes accuracy and paired DiDs
 with 95% CIs across DeiT-B, EfficientNet-B3, and FlexiViT-B (F-p).
@@ -80,7 +80,7 @@ def compute_k14_table(parquet_path: str = None, out_dir: str = None) -> Tuple[pd
     tex_lines = [
         r"\begin{table}[t]",
         r"\centering",
-        r"\caption{K14: Matched-Noise and Defocus Verification ($N=10{,}000$).}",
+        r"\caption{K14: Nominal-Gain-Matched Noise and Defocus Verification ($N=10{,}000$).}",
         r"\label{tab:k14_matched_noise}",
         r"\small",
         r"\begin{tabular}{lllccccc}",

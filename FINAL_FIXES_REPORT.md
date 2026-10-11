@@ -154,29 +154,33 @@ This report documents the comprehensive audit and remediation of the codebase an
 
 All three verification kernels were executed and completed legitimately on Kaggle NVIDIA Tesla T4 GPU workers with raw parquet shards safely downloaded and downstream tables produced:
 
-### 1. K14: Large-Scale Matched-Noise and Defocus Blur Verification ($N=10{,}000$)
-- **Shards Path:** `results/raw/k14-matched-noise-10k/shards/` (12 raw parquet shards).
+### 1. K14: Large-Scale Nominal-Gain-Matched Noise and Defocus Blur Verification ($N=10{,}000$)
+- **Shards Path:** `results/raw/k14-matched-noise-10k/shards/` (12 raw parquet shards; consolidated combined parquet at `shard_matched_noise_10k.parquet` with $N=390{,}000$).
 - **Table:** `analysis/out/table_k14_matched_noise.csv` and `.tex`.
 - **Key Empirical Results:**
   - **EfficientNet-B3 (Gaussian noise s5):**
     - A_orig448: **3.50%** [3.14, 3.86] (complete collapse)
     - B_filtered448 (lowpass prefilter): **53.38%** (+49.88 pp rescue)
     - C_down224 (downsampled): **58.08%**
-    - E_noise_matched (448 px with $\sigma_{\text{matched}} = 0.3125 \times \sigma_{\text{inj}}$): **74.64%** (**+16.56 pp advantage for 448 px over 224 px!**)
+    - E_noise_matched (nominal-gain-matched: 448 px with nominal $\sigma = 0.3125 \times \sigma_{\text{inj}}$): **74.64%** (**+16.56 pp advantage for 448 px over 224 px**)
   - **DeiT-B (Gaussian noise s5):**
     - A_orig448: **50.97%**
     - B_filtered448: **54.84%**
     - C_down224: **71.80%**
-    - E_noise_matched: **75.95%** (**+4.15 pp advantage for 448 px**)
+    - E_noise_matched (nominal-gain-matched): **75.95%** (**+4.15 pp advantage for 448 px**)
   - **FlexiViT-B F-p (Gaussian noise s5):**
     - A_orig448: **31.02%**
     - B_filtered448: **59.62%** (+28.60 pp rescue)
     - C_down224: **73.85%**
-    - E_noise_matched: **78.37%** (**+4.52 pp advantage for 448 px**)
-  - **ImageNet-C Defocus Blur (s3, DiD vs 224):**
-    - FlexiViT-B: **+0.15 pp** (no defocus penalty)
-    - EfficientNet-B3: **+2.66 pp**
-    - DeiT-B: **-7.33 pp**
+    - E_noise_matched (nominal-gain-matched): **78.37%** (**+4.52 pp advantage for 448 px**)
+  - **Nominal-Gain-Matched vs. Residual-Matched Grounding**: Condition E scales injected noise standard deviation by the nominal $0.3125$ downsampling gain; K14 did not record residual noise. K8's blind Immerkaer estimate reveals that this nominal scaling condition results in approximately $1.7\times$ the residual of the downsampled 224 px condition at the same severity ($0.0375$ vs $0.0225$ at s3; $0.0747$ vs $0.0370$ at s5). Therefore, condition E is strictly *nominal-gain-matched*, not *matched residual*.
+  - **Blind Proxy Cross-Severity Contrast**: In K8, the 448 px severity-3 nominal-gain condition (residual $0.0375$) closely matches the 224 px severity-5 downsampled condition (residual $0.0370$). That cross-severity pair favours 448 px by $+6.20\text{ pp}$ (DeiT: $78.20\%$ vs $72.00\%$) and $+22.40\text{ pp}$ (EfficientNet: $80.00\%$ vs $57.60\%$; FlexiViT $+9.35\text{ pp}$). This is a blind proxy, and is labeled as such.
+  - **Verified ImageNet-C Defocus Blur DiD ($N=10{,}000$):**
+    Previous draft versions reported raw $(448 - 224)_{\text{defocus}}$ differences ($+2.66\text{ pp}$ for EfficientNet, $+0.15\text{ pp}$ for FlexiViT, $-7.33\text{ pp}$ for DeiT), not Difference-in-Differences. The verified per-image DiD values $((448 - 224)_{\text{defocus}} - (448 - 224)_{\text{clean}})$ are:
+    - DeiT-B: **$-6.04 \pm 0.84\text{ pp}$**
+    - EfficientNet-B3: **$-1.71 \pm 0.87\text{ pp}$**
+    - FlexiViT-B: **$-0.24 \pm 0.60\text{ pp}$**
+    The pipeline is identical to the headline run, differing only in the verified ImageNet-C disk blur backend. Notably, the fallback headline Table 1 value for FlexiViT ($-1.26\text{ pp}$) falls outside this verified 95% CI $[-0.84, +0.36]$.
 
 ### 2. K15: FlexiViT Resolution $\times$ Patch Size Grid ($N=3{,}000$)
 - **Shards Path:** `results/raw/k15-flexivit-grid/shards/` (24 raw parquet shards).
@@ -186,7 +190,7 @@ All three verification kernels were executed and completed legitimately on Kaggl
   - **Gaussian Noise s5 at 448 px:**
     - Patch 16 (784 tokens): **30.97%** [29.31, 32.62]
     - Patch 32 (196 tokens): **70.10%** [68.46, 71.74] (**+39.13 pp rescue at identical 448 px resolution!**)
-  - Patch 32 at 448 px (196 tokens, 70.10%) closely matches Patch 16 at 224 px (196 tokens, 74.77%), isolating token count / spatial representation scale as the core driver of ViT high-frequency vulnerability.
+  - Comparing Patch 32 at 448 px (196 tokens) to Patch 16 at 224 px (196 tokens): accuracy is tied at s3 ($80.10\%$ vs $80.47\%$, difference $-0.37 \pm 0.75\text{ pp}$), and 4.7 points lower at s5 ($70.10\%$ vs $74.77\%$, difference $-4.67 \pm 1.14\text{ pp}$).
   - **Defocus Blur s3 at 448 px:** Patch 32 (78.47%) outperforms Patch 16 (76.57%) by +1.90 pp.
 
 ### 3. K16: BatchNorm (ResNet-50) vs. LayerNorm (ConvNeXt-Base) Controls ($N=5{,}000$)
@@ -197,10 +201,27 @@ All three verification kernels were executed and completed legitimately on Kaggl
     - A_orig448: **15.26%** [14.26, 16.26]
     - B_filtered448: **27.66%** (+12.40 pp rescue)
     - C_down224: **55.38%**
-    - E_noise_matched: **63.96%** (**+8.58 pp advantage for 448 px**)
+    - E_noise_matched (nominal-gain-matched): **63.96%** (**+8.58 pp advantage for 448 px**)
   - **ConvNeXt-Base (LayerNorm CNN, Gaussian noise s5):**
     - A_orig448: **38.18%** [36.83, 39.53]
     - B_filtered448: **62.24%** (+24.06 pp rescue)
     - C_down224: **73.52%**
-    - E_noise_matched: **80.46%** (**+6.94 pp advantage for 448 px**)
-  - **Conclusion:** Both CNN architectures collapse at 448 px under noise s5 (15.26% and 38.18%), proving that the 448 px vulnerability is not an artifact of BatchNorm alone. Lowpass prefiltering rescues both, and 448 px beats 224 px in both models once noise variance is matched.
+    - E_noise_matched (nominal-gain-matched): **80.46%** (**+6.94 pp advantage for 448 px**)
+  - **Conclusion:** Both CNN architectures collapse at 448 px under noise s5 (15.26% and 38.18%), showing that **BatchNorm is not required for the collapse**. Lowpass prefiltering rescues both, and 448 px beats 224 px in both models once nominal noise variance is matched.
+  - **Confound Note:** ResNet-50 was trained under the Wightman et al. (2021) A1 recipe, whereas ConvNeXt-Base was pre-trained on ImageNet-22k and fine-tuned on ImageNet-1k. The comparison is confounded by pretraining data scale and optimizer differences.
+
+---
+
+## 7. Additional Limitations & Token-Reduction Literature Context
+
+### Known Limitations
+1. **ViT-Only Scope of Token Budget Evidence**: All token-budget and patch-grid evidence (FlexiViT F-p vs F-t, K12 ToMe, K15 patch grid) applies strictly to Vision Transformers; convolutional architectures lack explicit patch token representations.
+2. **Off-the-Shelf DeiT-B and Flat ToMe Schedule**: Token merging evaluations were performed exclusively on off-the-shelf DeiT-B using standard, flat per-layer token merging (Bolya et al., 2023).
+3. **Mechanism Sample Sizes**: Core mechanism evaluations span $N=3{,}000$--$5{,}000$ balanced subsets ($N=10{,}000$ for K14).
+4. **Corruption Specificity**: While high-frequency Gaussian noise produces catastrophic 448 px collapses (up to $-21.92\text{ pp}$ DiD), JPEG compression and contrast show substantially weaker effects (or positive DiD for contrast: $+1.16\text{ pp}$ in EfficientNet-B3).
+
+### Related Work Context: Token Reduction Under Distribution Shift
+- **Cha, Yoon, & Lee (arXiv:2610.07758, Oct 6 2026)**: *"Later Is Better: Token Reduction for ViTs Under Distribution Shift"*.
+  - This preprint demonstrates that training-free token reduction methods for ViTs (including ToMe) suffer disproportionately under distribution shifts (e.g., ImageNet-C) primarily because standard constant/flat per-layer schedules remove tokens prematurely in early layers.
+  - They propose a late-concentrated power-law reduction schedule that preserves up to 99% of the accuracy gap under corruption.
+  - Our K12 / Table 6 ToMe evaluations utilize standard flat reduction schedules (Bolya et al., 2023), explaining why ToMe at 448 px collapses relative to native 320 px. Any general claims regarding token reduction under distribution shift must be qualified: flat reduction schedules collapse, but depth-scheduled token reduction can preserve corruption robustness.

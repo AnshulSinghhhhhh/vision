@@ -84,27 +84,35 @@ To preserve scientific rigor, the manuscript must **explicitly reject** the foll
 - **Sub-section 5.2: FlexiViT Resolution $\times$ Patch Size Grid (K15, Table 7)**:
   - Evaluates FlexiViT-B across $\{224, 320, 448\} \times \{16, 32\}$ on $N=3{,}000$ balanced images across clean, noise s3/s5, and defocus s3.
   - **Key Empirical Finding**: Under Gaussian noise s5 at 448 px, scaling patch size from 16 (784 tokens) to 32 (196 tokens) rescues accuracy from **30.97%** [29.31, 32.62] to **70.10%** [68.46, 71.74] (**+39.13 pp rescue** at identical pixel resolution).
-  - Patch 32 at 448 px (196 tokens, 70.10%) closely matches Patch 16 at 224 px (196 tokens, 74.77%), isolating token count / spatial representation scale as the core driver of ViT high-frequency vulnerability.
+  - Comparing Patch 32 at 448 px to Patch 16 at 224 px (same 196 tokens): accuracy is tied at s3 ($-0.37 \pm 0.75\text{ pp}$), and 4.7 points lower at s5 ($-4.67 \pm 1.14\text{ pp}$), isolating token count / spatial representation scale as the core driver of ViT high-frequency vulnerability while showing a residual 4.7 pp penalty under extreme severity.
   - Evidence: `analysis/out/table_k15_flexivit_grid.csv`, `analysis/out/table_k15_flexivit_grid.tex`.
-- **Sub-section 5.3: Large-Scale Noise-Matched Verification (K14, $N=10{,}000$)**:
-  - Validates all 3 models on $N=10{,}000$ balanced images across suites A (orig-448), B (prefiltered-448), C (down-224), and E (noise-matched-448).
-  - At severe noise (s5), when 448 px is matched to 224's effective noise standard deviation ($\sigma_{\text{matched}} = 0.3125 \times \sigma_{\text{inj}}$), 448 px **beats** 224 px across all architectures:
+- **Sub-section 5.3: Large-Scale Nominal-Gain-Matched Verification & Defocus DiD (K14, $N=10{,}000$)**:
+  - Validates all 3 models on $N=10{,}000$ balanced images across suites A (orig-448), B (prefiltered-448), C (down-224), and E (nominal-gain-matched 448).
+  - **Nominal-Gain vs. Residual Grounding**: Condition E scales injected noise standard deviation by the nominal $0.3125$ downsampling gain; K14 recorded no residual. K8's blind Immerkaer estimate puts this condition at $\approx 1.7\times$ the residual of the downsampled 224 px condition at the same severity. It is strictly *nominal-gain-matched*, not *matched residual*.
+  - At severe noise (s5), when 448 px is nominal-gain-matched ($\sigma_{\text{matched}} = 0.3125 \times \sigma_{\text{inj}}$), 448 px outperforms 224 px across all architectures:
     - EfficientNet-B3: 74.64% vs 58.08% (**+16.56 pp advantage for 448 px**).
     - DeiT-B: 75.95% vs 71.80% (**+4.15 pp advantage for 448 px**).
     - FlexiViT-B: 78.37% vs 73.85% (**+4.52 pp advantage for 448 px**).
-  - Demonstrates definitively that the 448 px collapse under noise is caused by noise frequency gain, not inherently by higher resolution.
+  - **Blind Proxy Cross-Severity Contrast**: In K8, the 448 px s3 condition (residual $0.0375$) closely matches the 224 px s5 condition (residual $0.0370$), favouring 448 px by $+6.20\text{ pp}$ (DeiT) to $+22.40\text{ pp}$ (EfficientNet). This is labeled strictly as a blind proxy.
+  - **Verified ImageNet-C Defocus Blur DiD ($N=10{,}000$)**:
+    - DeiT-B: **$-6.04 \pm 0.84\text{ pp}$**
+    - EfficientNet-B3: **$-1.71 \pm 0.87\text{ pp}$**
+    - FlexiViT-B: **$-0.24 \pm 0.60\text{ pp}$**
+    (Replacing draft raw $(448 - 224)_{\text{defocus}}$ differences $+2.66\text{ pp}$ EfficientNet, $+0.15\text{ pp}$ FlexiViT, $-7.33\text{ pp}$ DeiT. Fallback headline Table 1 FlexiViT value $-1.26\text{ pp}$ falls outside this verified CI).
   - Evidence: `analysis/out/table_k14_matched_noise.csv`, `analysis/out/table_k14_matched_noise.tex`.
 - **Sub-section 5.4: Compute-Matched Token Merging vs Resolution Scaling (Table 6)**:
-  - At matched FLOPs, res-320 beats ToMe-r64@448 by +2.26 pp on clean, +7.48 pp at noise s3, and +22.12 pp at noise s5 ($N=5{,}000$, DeiT-B only, off-the-shelf ToMe); the clean gap shows this is largely a non-native-resolution effect.
+  - At matched FLOPs, res-320 beats ToMe-r64@448 by +2.26 pp on clean, +7.48 pp at noise s3, and +22.12 pp at noise s5 ($N=5{,}000$, DeiT-B only, off-the-shelf flat ToMe schedule); the clean gap shows this is largely a non-native-resolution effect.
+  - Contextualized by Cha et al. (2026), who show flat token reduction schedules front-load error on ImageNet-C.
   - Evidence: `analysis/out/table_tome_matched.tex`.
 - **Sub-section 5.5: BatchNorm Recalibration (Table 5)**:
   - Clean sanity gate and calibrated statistics analysis.
   - Evidence: `analysis/out/table5.csv`.
 - **Sub-section 5.6: BatchNorm vs. LayerNorm CNN Controls (K16, $N=5{,}000$, Table 8)**:
-  - Compares ResNet-50 (BatchNorm CNN) directly against ConvNeXt-Base (LayerNorm CNN) under noise controls on $N=5{,}000$ balanced images across suites A (orig-448), B (prefiltered-448), C (down-224), and E (noise-matched-448).
-  - **Key Empirical Finding**: At severe noise (s5), both CNN architectures suffer substantial collapses at 448 px (ResNet-50 collapses to 15.26%; ConvNeXt-Base collapses to 38.18%), proving that the 448 px degradation penalty is **not** an artifact of BatchNorm alone.
+  - Compares ResNet-50 (BatchNorm CNN) directly against ConvNeXt-Base (LayerNorm CNN) under noise controls on $N=5{,}000$ balanced images across suites A (orig-448), B (prefiltered-448), C (down-224), and E (nominal-gain-matched 448).
+  - **Key Empirical Finding**: At severe noise (s5), both CNN architectures suffer substantial collapses at 448 px (ResNet-50 collapses to 15.26%; ConvNeXt-Base collapses to 38.18%), showing that **BatchNorm is not required for the collapse**.
+  - **Confound Note**: ResNet-50 uses the Wightman et al. (2021) A1 recipe, whereas ConvNeXt-Base was pre-trained on ImageNet-22k and fine-tuned on ImageNet-1k; the comparison is confounded by pretraining scale.
   - Lowpass prefiltering rescues both architectures (+12.40 pp for ResNet-50, +24.06 pp for ConvNeXt-Base).
-  - Under noise-matched conditions ($\sigma_{\text{matched}} = 0.3125 \times \sigma_{\text{inj}}$), 448 px outperforms 224 px in both architectures: ResNet-50 reaches 63.96% (+8.58 pp above 224 px) and ConvNeXt-Base reaches 80.46% (+6.94 pp above 224 px).
+  - Under nominal-gain-matched conditions ($\sigma_{\text{matched}} = 0.3125 \times \sigma_{\text{inj}}$), 448 px outperforms 224 px in both architectures: ResNet-50 reaches 63.96% (+8.58 pp above 224 px) and ConvNeXt-Base reaches 80.46% (+6.94 pp above 224 px).
   - Evidence: `analysis/out/table_k16_bn_vs_ln.csv`, `analysis/out/table_k16_bn_vs_ln.tex`.
 
 ### Section 6: Discussion, Limitations, & Conclusion
@@ -115,16 +123,19 @@ To preserve scientific rigor, the manuscript must **explicitly reject** the foll
 ## 5. Known Limitations
 
 1. **Model Scope**: Primary headline sweeps are established on DeiT-B/16, EfficientNet-B3, and FlexiViT-B, extended with ResNet-50 and ConvNeXt-Base in mechanism verification (K16).
-2. **Dataset**: Evaluated on ImageNet-1K only.
-3. **Noise Injection Protocol**: Noise is injected into the 448x448 acquisition frame before resizing, giving an effective noise standard deviation of $\sigma_{\text{eff}} = 0.313 \times \sigma_{\text{inj}}$ at 224 px.
-4. **Defocus Implementation Caveat**: Headline defocus results (k0–k7) are unverified due to lack of recorded backend/commit and divergence from ImageNet-C disk defocus; verified ImageNet-C defocus is grounded in K8 ($N=2{,}000$) and K14 ($N=10{,}000$).
-5. **Mechanism Controls Sample Size**: Key mechanism controls have sample sizes $N=2{,}000$--$10{,}000$.
+2. **ViT-Only Token Evidence**: Token-budget and patch-grid evidence (FlexiViT F-p vs F-t, K12 ToMe, K15 patch grid) applies strictly to Vision Transformers; convolutional architectures do not operate on explicit patch tokens.
+3. **Off-the-Shelf DeiT-B and Flat ToMe Schedule**: Token merging evaluations were performed exclusively on off-the-shelf DeiT-B using standard, flat per-layer token merging (Bolya et al., 2023).
+4. **Dataset & Subsets**: Evaluated on ImageNet-1K only; mechanism exploration subsets span $N=3{,}000$--$5{,}000$ balanced images ($N=10{,}000$ for K14).
+5. **Corruption Specificity**: While high-frequency Gaussian noise produces acute 448 px collapses (up to $-21.92\text{ pp}$ DiD), JPEG compression and contrast show substantially weaker effects (or positive DiD for contrast: $+1.16\text{ pp}$ in EfficientNet-B3).
+6. **Noise Injection Protocol**: Noise is injected into the 448x448 acquisition frame before resizing, giving an effective noise standard deviation of $\sigma_{\text{eff}} = 0.313 \times \sigma_{\text{inj}}$ at 224 px.
+7. **Defocus Implementation Caveat**: Headline defocus results (k0–k7) used unverified fallback disk approximation; verified ImageNet-C defocus is grounded in K8 ($N=2{,}000$) and K14 ($N=10{,}000$) real ImageNet-C disk blur.
 
 ---
 
 ## 6. Related Work to Cite
 
 - **Kim et al. 2025**: "Unlocking Noise-Resistant Vision" (arXiv:2509.20939, ICML 2026) already shows that smaller input resolution and anti-aliased downsampling improve Gaussian-noise robustness with a low-pass theory; so $\sigma_{\text{eff}}$ / low-pass is **supporting**, not the novelty claim.
+- **Cha, Yoon, & Lee 2026**: "Later Is Better: Token Reduction for ViTs Under Distribution Shift" (KAIST, arXiv:2610.07758, Oct 6 2026) shows that training-free token reduction methods for ViTs suffer under distribution shift largely due to early-layer token dropping, and late-concentrated reduction schedules preserve robustness on ImageNet-C.
 - **Yin et al. 2019**: "A Fourier Perspective on Model Robustness in Computer Vision" (NeurIPS 2019) on frequency-domain corruption analysis.
 - **Touvron et al. 2019**: "Fixing the train-test resolution discrepancy" (FixRes, NeurIPS 2019) on resolution adaptation.
 - **Schneider et al. 2020**: "Improving robustness against common corruptions by covariate shift adaptation" (NeurIPS 2020) on BatchNorm statistics recalibration.

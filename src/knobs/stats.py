@@ -108,7 +108,7 @@ def paired_did_ztest(
         p_two_sided = 1.0 if did_pp == 0.0 else 0.0
     else:
         z = float(did_pp / se_pp)
-        p_two_sided = float(2.0 * (1.0 - stats.norm.cdf(abs(z))))
+        p_two_sided = float(2.0 * stats.norm.sf(abs(z)))
 
     z_crit = float(stats.norm.ppf(1.0 - alpha / 2.0))
     ci_lo = float(did_pp - z_crit * se_pp)
@@ -122,6 +122,15 @@ def paired_did_ztest(
         z=z,
         p_two_sided=p_two_sided,
     )
+
+
+def format_p_value(p: float, threshold: float = 1e-15, latex: bool = False) -> str:
+    """Formats p-values safely avoiding exact 0 prints for extreme z-scores."""
+    if p < threshold:
+        return r"$p < 10^{-15}$" if latex else "< 1e-15"
+    if p < 0.001:
+        return f"{p:.2e}"
+    return f"{p:.3f}"
 
 
 def compute_did_bootstrap(

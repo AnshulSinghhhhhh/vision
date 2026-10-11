@@ -1,0 +1,65 @@
+experiment,contrast,condition,N,estimate_pp,ci95_halfwidth_pp
+FlexiViT fixed patch vs fixed tokens,DiD F-p,gaussian_noise_s1,5000,-1.58,0.74
+FlexiViT fixed patch vs fixed tokens,DiD F-t (256 tokens at every res),gaussian_noise_s1,5000,-0.3,0.6
+FlexiViT fixed patch vs fixed tokens,F-t minus F-p,gaussian_noise_s1,5000,1.28,0.89
+ToMe inside the network (DeiT-B),DiD ToMe-r4 minus DiD standard,gaussian_noise_s1,5000,-0.08,0.8
+ToMe inside the network (DeiT-B),DiD ToMe-r8 minus DiD standard,gaussian_noise_s1,5000,-0.06,0.92
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD native-384 checkpoint,gaussian_noise_s1,5000,0.88,0.81
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD 224 checkpoint interpolated to 384,gaussian_noise_s1,5000,-1.22,0.86
+"Scale mismatch (DeiT-B, test 384 vs 224)",native minus interpolated,gaussian_noise_s1,5000,2.1,0.9
+FlexiViT fixed patch vs fixed tokens,DiD F-p,gaussian_noise_s3,5000,-7.2,1.03
+FlexiViT fixed patch vs fixed tokens,DiD F-t (256 tokens at every res),gaussian_noise_s3,5000,-0.86,0.69
+FlexiViT fixed patch vs fixed tokens,F-t minus F-p,gaussian_noise_s3,5000,6.34,1.14
+ToMe inside the network (DeiT-B),DiD ToMe-r4 minus DiD standard,gaussian_noise_s3,5000,0.22,0.87
+ToMe inside the network (DeiT-B),DiD ToMe-r8 minus DiD standard,gaussian_noise_s3,5000,0.24,1.05
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD native-384 checkpoint,gaussian_noise_s3,5000,0.74,1.01
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD 224 checkpoint interpolated to 384,gaussian_noise_s3,5000,-2.2,1.01
+"Scale mismatch (DeiT-B, test 384 vs 224)",native minus interpolated,gaussian_noise_s3,5000,2.94,1.05
+FlexiViT fixed patch vs fixed tokens,DiD F-p,gaussian_noise_s5,5000,-44.16,1.53
+FlexiViT fixed patch vs fixed tokens,DiD F-t (256 tokens at every res),gaussian_noise_s5,5000,-7.38,1.0
+FlexiViT fixed patch vs fixed tokens,F-t minus F-p,gaussian_noise_s5,5000,36.78,1.65
+ToMe inside the network (DeiT-B),DiD ToMe-r4 minus DiD standard,gaussian_noise_s5,5000,1.68,0.94
+ToMe inside the network (DeiT-B),DiD ToMe-r8 minus DiD standard,gaussian_noise_s5,5000,2.98,1.16
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD native-384 checkpoint,gaussian_noise_s5,5000,-3.48,1.21
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD 224 checkpoint interpolated to 384,gaussian_noise_s5,5000,-8.48,1.26
+"Scale mismatch (DeiT-B, test 384 vs 224)",native minus interpolated,gaussian_noise_s5,5000,5.0,1.31
+FlexiViT fixed patch vs fixed tokens,DiD F-p,jpeg_compression_s3,5000,-2.54,0.84
+FlexiViT fixed patch vs fixed tokens,DiD F-t (256 tokens at every res),jpeg_compression_s3,5000,-0.18,0.62
+FlexiViT fixed patch vs fixed tokens,F-t minus F-p,jpeg_compression_s3,5000,2.36,0.95
+ToMe inside the network (DeiT-B),DiD ToMe-r4 minus DiD standard,jpeg_compression_s3,5000,0.44,0.84
+ToMe inside the network (DeiT-B),DiD ToMe-r8 minus DiD standard,jpeg_compression_s3,5000,0.74,1.0
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD native-384 checkpoint,jpeg_compression_s3,5000,0.84,0.99
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD 224 checkpoint interpolated to 384,jpeg_compression_s3,5000,-2.34,1.02
+"Scale mismatch (DeiT-B, test 384 vs 224)",native minus interpolated,jpeg_compression_s3,5000,3.18,1.05
+FlexiViT fixed patch vs fixed tokens,DiD F-p,contrast_s3,5000,0.82,0.67
+FlexiViT fixed patch vs fixed tokens,DiD F-t (256 tokens at every res),contrast_s3,5000,0.08,0.53
+FlexiViT fixed patch vs fixed tokens,F-t minus F-p,contrast_s3,5000,-0.74,0.75
+ToMe inside the network (DeiT-B),DiD ToMe-r4 minus DiD standard,contrast_s3,5000,0.1,0.81
+ToMe inside the network (DeiT-B),DiD ToMe-r8 minus DiD standard,contrast_s3,5000,0.66,0.96
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD native-384 checkpoint,contrast_s3,5000,0.9,0.84
+"Scale mismatch (DeiT-B, test 384 vs 224)",DiD 224 checkpoint interpolated to 384,contrast_s3,5000,-1.18,0.88
+"Scale mismatch (DeiT-B, test 384 vs 224)",native minus interpolated,contrast_s3,5000,2.08,0.9
+ToMe at 448 vs plain 448 (K12),tome_r32_448 minus res_448_base,clean_s0,5000,-0.2,0.41
+ToMe at 448 vs plain 448 (K12),tome_r32_448 minus res_448_base,gaussian_noise_s3,5000,-0.12,0.57
+ToMe at 448 vs plain 448 (K12),tome_r32_448 minus res_448_base,gaussian_noise_s5,5000,-1.56,0.72
+ToMe at 448 vs plain 448 (K12),tome_r32_448 minus res_448_base,defocus_blur_s3,5000,-1.16,0.5
+ToMe at 448 vs plain 448 (K12),tome_r64_448 minus res_448_base,clean_s0,5000,-0.78,0.59
+ToMe at 448 vs plain 448 (K12),tome_r64_448 minus res_448_base,gaussian_noise_s3,5000,-2.54,0.78
+ToMe at 448 vs plain 448 (K12),tome_r64_448 minus res_448_base,gaussian_noise_s5,5000,-4.74,0.96
+ToMe at 448 vs plain 448 (K12),tome_r64_448 minus res_448_base,defocus_blur_s3,5000,-2.66,0.74
+Matched FLOPs (K12),"res_384_base minus tome_r32_448, minus clean gap",gaussian_noise_s3,5000,1.14,0.97
+Matched FLOPs (K12),"res_384_base minus tome_r32_448, minus clean gap",gaussian_noise_s5,5000,12.7,1.28
+Matched FLOPs (K12),"res_320_base minus tome_r64_448, minus clean gap",gaussian_noise_s3,5000,5.22,1.15
+Matched FLOPs (K12),"res_320_base minus tome_r64_448, minus clean gap",gaussian_noise_s5,5000,19.86,1.46
+FlexiViT patch grid (K15),patch32@448 minus patch16@448 (same pixels),clean_s0,3000,-0.37,0.68
+FlexiViT patch grid (K15),patch32@448 minus patch16@224 (same 196 tokens),clean_s0,3000,0.63,0.78
+FlexiViT patch grid (K15),patch32@448 minus patch16@448 (same pixels),gaussian_noise_s3,3000,6.67,1.14
+FlexiViT patch grid (K15),patch32@448 minus patch16@224 (same 196 tokens),gaussian_noise_s3,3000,-0.37,0.75
+FlexiViT patch grid (K15),patch32@448 minus patch16@448 (same pixels),gaussian_noise_s5,3000,39.13,1.82
+FlexiViT patch grid (K15),patch32@448 minus patch16@224 (same 196 tokens),gaussian_noise_s5,3000,-4.67,1.14
+FlexiViT patch grid (K15),patch32@448 minus patch16@448 (same pixels),defocus_blur_s3,3000,1.9,0.78
+FlexiViT patch grid (K15),patch32@448 minus patch16@224 (same 196 tokens),defocus_blur_s3,3000,1.63,0.7
+FlexiViT patch grid (K15),DiD patch 16,gaussian_noise_s3,3000,-8.03,1.38
+FlexiViT patch grid (K15),DiD patch 16,gaussian_noise_s5,3000,-44.8,1.96
+FlexiViT patch grid (K15),DiD patch 32,gaussian_noise_s3,3000,-0.23,1.23
+FlexiViT patch grid (K15),DiD patch 32,gaussian_noise_s5,3000,-4.27,1.57
