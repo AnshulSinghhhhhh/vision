@@ -1,0 +1,158 @@
+[{"stream_name":"stdout","time":14.566153392,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 25.1 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":31836.300182858,"data":"Added knobs path to sys.path: /kaggle/input/knobs-code/src\n"}
+,{"stream_name":"stderr","time":31848.103068487,"data":"/usr/local/lib/python3.13/dist-packages/imagecorruptions/corruptions.py:17: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools\u003c81.\n"}
+,{"stream_name":"stderr","time":31848.103109308,"data":"  from pkg_resources import resource_filename\n"}
+,{"stream_name":"stdout","time":31849.321076023,"data":"Extracted N=3000 class-balanced images (seed=0)\n"}
+,{"stream_name":"stdout","time":31849.339095841,"data":"\n"}
+,{"stream_name":"stdout","time":31849.339117876,"data":"=== Configuration: flexivit_r224_p16 (grid: 14x14, 196 tokens) ===\n"}
+,{"stream_name":"stdout","time":31849.339142655,"data":"Instantiating model flexivit_base.1200ep_in1k at img_size=224, patch_size=16...\n"}
+,{"stream_name":"stderr","time":31850.886588041,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":31857.900687731,"data":"--- Running flexivit_r224_p16 on clean s0 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":31884.53872066,"data":"  Processed 800/3000 images (26.6s)\n"}
+,{"stream_name":"stdout","time":31910.027229751,"data":"  Processed 1600/3000 images (52.1s)\n"}
+,{"stream_name":"stdout","time":31935.079314786,"data":"  Processed 2400/3000 images (77.2s)\n"}
+,{"stream_name":"stdout","time":31958.013028339,"data":"Saved 3000 records to shard_k15_flexivit_r224_p16_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":31958.27224419,"data":"--- Running flexivit_r224_p16 on gaussian_noise s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":31987.761440333,"data":"  Processed 800/3000 images (29.5s)\n"}
+,{"stream_name":"stdout","time":32019.662625716,"data":"  Processed 1600/3000 images (61.4s)\n"}
+,{"stream_name":"stdout","time":32048.150894913,"data":"  Processed 2400/3000 images (89.9s)\n"}
+,{"stream_name":"stdout","time":32072.282099635,"data":"Saved 3000 records to shard_k15_flexivit_r224_p16_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":32072.532973642,"data":"--- Running flexivit_r224_p16 on gaussian_noise s5 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32103.015362319,"data":"  Processed 800/3000 images (30.5s)\n"}
+,{"stream_name":"stdout","time":32134.202240844,"data":"  Processed 1600/3000 images (61.7s)\n"}
+,{"stream_name":"stdout","time":32164.227038779,"data":"  Processed 2400/3000 images (91.7s)\n"}
+,{"stream_name":"stdout","time":32187.860011276,"data":"Saved 3000 records to shard_k15_flexivit_r224_p16_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":32188.111206833,"data":"--- Running flexivit_r224_p16 on defocus_blur s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32218.361887317,"data":"  Processed 800/3000 images (30.2s)\n"}
+,{"stream_name":"stdout","time":32246.472280497,"data":"  Processed 1600/3000 images (58.4s)\n"}
+,{"stream_name":"stdout","time":32274.646409184,"data":"  Processed 2400/3000 images (86.5s)\n"}
+,{"stream_name":"stdout","time":32296.996151919,"data":"Saved 3000 records to shard_k15_flexivit_r224_p16_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":32297.491462698,"data":"[SKIP] Resolution 224 is NOT divisible by patch size 24 (remainder 8). Skipping configuration.\n"}
+,{"stream_name":"stdout","time":32297.491521391,"data":"\n"}
+,{"stream_name":"stdout","time":32297.491527715,"data":"=== Configuration: flexivit_r224_p32 (grid: 7x7, 49 tokens) ===\n"}
+,{"stream_name":"stdout","time":32297.491551065,"data":"Instantiating model flexivit_base.1200ep_in1k at img_size=224, patch_size=32...\n"}
+,{"stream_name":"stdout","time":32299.096609357,"data":"--- Running flexivit_r224_p32 on clean s0 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32308.626329443,"data":"  Processed 800/3000 images (9.5s)\n"}
+,{"stream_name":"stdout","time":32321.736791415,"data":"  Processed 1600/3000 images (22.6s)\n"}
+,{"stream_name":"stdout","time":32336.735710704,"data":"  Processed 2400/3000 images (37.6s)\n"}
+,{"stream_name":"stdout","time":32344.471792375,"data":"Saved 3000 records to shard_k15_flexivit_r224_p32_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":32344.706591227,"data":"--- Running flexivit_r224_p32 on gaussian_noise s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32371.629071228,"data":"  Processed 800/3000 images (26.9s)\n"}
+,{"stream_name":"stdout","time":32401.695642873,"data":"  Processed 1600/3000 images (57.0s)\n"}
+,{"stream_name":"stdout","time":32429.975707138,"data":"  Processed 2400/3000 images (85.3s)\n"}
+,{"stream_name":"stdout","time":32450.650110829,"data":"Saved 3000 records to shard_k15_flexivit_r224_p32_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":32450.898604526,"data":"--- Running flexivit_r224_p32 on gaussian_noise s5 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32479.889625343,"data":"  Processed 800/3000 images (29.0s)\n"}
+,{"stream_name":"stdout","time":32508.915289131,"data":"  Processed 1600/3000 images (58.0s)\n"}
+,{"stream_name":"stdout","time":32536.286313546,"data":"  Processed 2400/3000 images (85.4s)\n"}
+,{"stream_name":"stdout","time":32556.906494575,"data":"Saved 3000 records to shard_k15_flexivit_r224_p32_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":32557.156668197,"data":"--- Running flexivit_r224_p32 on defocus_blur s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32582.462687738,"data":"  Processed 800/3000 images (25.3s)\n"}
+,{"stream_name":"stdout","time":32608.448452213,"data":"  Processed 1600/3000 images (51.3s)\n"}
+,{"stream_name":"stdout","time":32635.479723568,"data":"  Processed 2400/3000 images (78.3s)\n"}
+,{"stream_name":"stdout","time":32655.314132096,"data":"Saved 3000 records to shard_k15_flexivit_r224_p32_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":32655.808465728,"data":"\n"}
+,{"stream_name":"stdout","time":32655.808502871,"data":"=== Configuration: flexivit_r320_p16 (grid: 20x20, 400 tokens) ===\n"}
+,{"stream_name":"stdout","time":32655.80851331,"data":"Instantiating model flexivit_base.1200ep_in1k at img_size=320, patch_size=16...\n"}
+,{"stream_name":"stdout","time":32657.064157157,"data":"--- Running flexivit_r320_p16 on clean s0 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32673.335471217,"data":"  Processed 800/3000 images (16.3s)\n"}
+,{"stream_name":"stdout","time":32690.288340758,"data":"  Processed 1600/3000 images (33.2s)\n"}
+,{"stream_name":"stdout","time":32708.368043977,"data":"  Processed 2400/3000 images (51.3s)\n"}
+,{"stream_name":"stdout","time":32720.193384212,"data":"Saved 3000 records to shard_k15_flexivit_r320_p16_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":32720.438463302,"data":"--- Running flexivit_r320_p16 on gaussian_noise s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32753.077405472,"data":"  Processed 800/3000 images (32.6s)\n"}
+,{"stream_name":"stdout","time":32786.439376358,"data":"  Processed 1600/3000 images (66.0s)\n"}
+,{"stream_name":"stdout","time":32819.547940621,"data":"  Processed 2400/3000 images (99.1s)\n"}
+,{"stream_name":"stdout","time":32843.104495844,"data":"Saved 3000 records to shard_k15_flexivit_r320_p16_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":32843.355714498,"data":"--- Running flexivit_r320_p16 on gaussian_noise s5 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":32875.147950126,"data":"  Processed 800/3000 images (31.8s)\n"}
+,{"stream_name":"stdout","time":32908.340895172,"data":"  Processed 1600/3000 images (65.0s)\n"}
+,{"stream_name":"stdout","time":32942.112233972,"data":"  Processed 2400/3000 images (98.8s)\n"}
+,{"stream_name":"stdout","time":32969.57987842,"data":"Saved 3000 records to shard_k15_flexivit_r320_p16_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":32969.830528095,"data":"--- Running flexivit_r320_p16 on defocus_blur s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33003.132721564,"data":"  Processed 800/3000 images (33.3s)\n"}
+,{"stream_name":"stdout","time":33033.367523029,"data":"  Processed 1600/3000 images (63.5s)\n"}
+,{"stream_name":"stdout","time":33066.122424057,"data":"  Processed 2400/3000 images (96.3s)\n"}
+,{"stream_name":"stdout","time":33089.410188569,"data":"Saved 3000 records to shard_k15_flexivit_r320_p16_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":33089.915763227,"data":"[SKIP] Resolution 320 is NOT divisible by patch size 24 (remainder 8). Skipping configuration.\n"}
+,{"stream_name":"stdout","time":33089.915800823,"data":"\n"}
+,{"stream_name":"stdout","time":33089.915891698,"data":"=== Configuration: flexivit_r320_p32 (grid: 10x10, 100 tokens) ===\n"}
+,{"stream_name":"stdout","time":33089.915911778,"data":"Instantiating model flexivit_base.1200ep_in1k at img_size=320, patch_size=32...\n"}
+,{"stream_name":"stdout","time":33091.264895461,"data":"--- Running flexivit_r320_p32 on clean s0 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33104.283204901,"data":"  Processed 800/3000 images (13.0s)\n"}
+,{"stream_name":"stdout","time":33118.53950928,"data":"  Processed 1600/3000 images (27.3s)\n"}
+,{"stream_name":"stdout","time":33132.904148441,"data":"  Processed 2400/3000 images (41.6s)\n"}
+,{"stream_name":"stdout","time":33143.401588962,"data":"Saved 3000 records to shard_k15_flexivit_r320_p32_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":33143.64939848,"data":"--- Running flexivit_r320_p32 on gaussian_noise s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33173.141080792,"data":"  Processed 800/3000 images (29.5s)\n"}
+,{"stream_name":"stdout","time":33202.878811558,"data":"  Processed 1600/3000 images (59.2s)\n"}
+,{"stream_name":"stdout","time":33232.978248299,"data":"  Processed 2400/3000 images (89.3s)\n"}
+,{"stream_name":"stdout","time":33255.460199303,"data":"Saved 3000 records to shard_k15_flexivit_r320_p32_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":33255.704263486,"data":"--- Running flexivit_r320_p32 on gaussian_noise s5 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33286.617469873,"data":"  Processed 800/3000 images (30.9s)\n"}
+,{"stream_name":"stdout","time":33317.495603454,"data":"  Processed 1600/3000 images (61.8s)\n"}
+,{"stream_name":"stdout","time":33347.388013405,"data":"  Processed 2400/3000 images (91.7s)\n"}
+,{"stream_name":"stdout","time":33370.700010695,"data":"Saved 3000 records to shard_k15_flexivit_r320_p32_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":33370.947120421,"data":"--- Running flexivit_r320_p32 on defocus_blur s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33400.283886518,"data":"  Processed 800/3000 images (29.3s)\n"}
+,{"stream_name":"stdout","time":33429.371583555,"data":"  Processed 1600/3000 images (58.4s)\n"}
+,{"stream_name":"stdout","time":33458.823837256,"data":"  Processed 2400/3000 images (87.9s)\n"}
+,{"stream_name":"stdout","time":33480.682427039,"data":"Saved 3000 records to shard_k15_flexivit_r320_p32_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":33481.215343166,"data":"\n"}
+,{"stream_name":"stdout","time":33481.215383003,"data":"=== Configuration: flexivit_r448_p16 (grid: 28x28, 784 tokens) ===\n"}
+,{"stream_name":"stdout","time":33481.215389381,"data":"Instantiating model flexivit_base.1200ep_in1k at img_size=448, patch_size=16...\n"}
+,{"stream_name":"stdout","time":33482.455464488,"data":"--- Running flexivit_r448_p16 on clean s0 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33504.661900674,"data":"  Processed 800/3000 images (22.2s)\n"}
+,{"stream_name":"stdout","time":33525.10801677,"data":"  Processed 1600/3000 images (42.7s)\n"}
+,{"stream_name":"stdout","time":33545.882741504,"data":"  Processed 2400/3000 images (63.4s)\n"}
+,{"stream_name":"stdout","time":33560.974392658,"data":"Saved 3000 records to shard_k15_flexivit_r448_p16_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":33561.245723168,"data":"--- Running flexivit_r448_p16 on gaussian_noise s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33598.187318763,"data":"  Processed 800/3000 images (36.9s)\n"}
+,{"stream_name":"stdout","time":33634.793766561,"data":"  Processed 1600/3000 images (73.5s)\n"}
+,{"stream_name":"stdout","time":33672.922228949,"data":"  Processed 2400/3000 images (111.7s)\n"}
+,{"stream_name":"stdout","time":33703.422963217,"data":"Saved 3000 records to shard_k15_flexivit_r448_p16_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":33703.669628645,"data":"--- Running flexivit_r448_p16 on gaussian_noise s5 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33740.223366736,"data":"  Processed 800/3000 images (36.6s)\n"}
+,{"stream_name":"stdout","time":33778.582236969,"data":"  Processed 1600/3000 images (74.9s)\n"}
+,{"stream_name":"stdout","time":33816.303692453,"data":"  Processed 2400/3000 images (112.6s)\n"}
+,{"stream_name":"stdout","time":33845.704688278,"data":"Saved 3000 records to shard_k15_flexivit_r448_p16_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":33845.95539027,"data":"--- Running flexivit_r448_p16 on defocus_blur s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":33882.396609015,"data":"  Processed 800/3000 images (36.4s)\n"}
+,{"stream_name":"stdout","time":33918.921132024,"data":"  Processed 1600/3000 images (73.0s)\n"}
+,{"stream_name":"stdout","time":33958.740239346,"data":"  Processed 2400/3000 images (112.8s)\n"}
+,{"stream_name":"stdout","time":33986.960307214,"data":"Saved 3000 records to shard_k15_flexivit_r448_p16_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":33987.452477802,"data":"[SKIP] Resolution 448 is NOT divisible by patch size 24 (remainder 16). Skipping configuration.\n"}
+,{"stream_name":"stdout","time":33987.45251818,"data":"\n"}
+,{"stream_name":"stdout","time":33987.45252476,"data":"=== Configuration: flexivit_r448_p32 (grid: 14x14, 196 tokens) ===\n"}
+,{"stream_name":"stdout","time":33987.452743645,"data":"Instantiating model flexivit_base.1200ep_in1k at img_size=448, patch_size=32...\n"}
+,{"stream_name":"stdout","time":33988.795385268,"data":"--- Running flexivit_r448_p32 on clean s0 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":34003.912870183,"data":"  Processed 800/3000 images (15.1s)\n"}
+,{"stream_name":"stdout","time":34019.053501169,"data":"  Processed 1600/3000 images (30.3s)\n"}
+,{"stream_name":"stdout","time":34033.673831104,"data":"  Processed 2400/3000 images (44.9s)\n"}
+,{"stream_name":"stdout","time":34043.898728133,"data":"Saved 3000 records to shard_k15_flexivit_r448_p32_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":34044.137155077,"data":"--- Running flexivit_r448_p32 on gaussian_noise s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":34074.094119068,"data":"  Processed 800/3000 images (30.0s)\n"}
+,{"stream_name":"stdout","time":34105.87761603,"data":"  Processed 1600/3000 images (61.7s)\n"}
+,{"stream_name":"stdout","time":34137.790013594,"data":"  Processed 2400/3000 images (93.7s)\n"}
+,{"stream_name":"stdout","time":34159.563908612,"data":"Saved 3000 records to shard_k15_flexivit_r448_p32_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":34159.808308809,"data":"--- Running flexivit_r448_p32 on gaussian_noise s5 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":34191.351157558,"data":"  Processed 800/3000 images (31.5s)\n"}
+,{"stream_name":"stdout","time":34222.549278156,"data":"  Processed 1600/3000 images (62.7s)\n"}
+,{"stream_name":"stdout","time":34252.654791081,"data":"  Processed 2400/3000 images (92.8s)\n"}
+,{"stream_name":"stdout","time":34274.854893049,"data":"Saved 3000 records to shard_k15_flexivit_r448_p32_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":34275.095514154,"data":"--- Running flexivit_r448_p32 on defocus_blur s3 (3000 images) ---\n"}
+,{"stream_name":"stdout","time":34304.789166932,"data":"  Processed 800/3000 images (29.7s)\n"}
+,{"stream_name":"stdout","time":34334.033083073,"data":"  Processed 1600/3000 images (58.9s)\n"}
+,{"stream_name":"stdout","time":34363.154610486,"data":"  Processed 2400/3000 images (88.1s)\n"}
+,{"stream_name":"stdout","time":34383.480128893,"data":"Saved 3000 records to shard_k15_flexivit_r448_p32_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":34383.96018795,"data":"\n"}
+,{"stream_name":"stdout","time":34383.960244184,"data":"=== Consolidating All K15 Shards ===\n"}
+,{"stream_name":"stdout","time":34384.197659144,"data":"Final K15 dataset written to /kaggle/working/shard_flexivit_grid.parquet (72000 rows)\n"}
+,{"stream_name":"stdout","time":34384.235222213,"data":"Wrote run metadata to /kaggle/working/run_meta.json\n"}
+,{"stream_name":"stderr","time":34391.445495532,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":34391.445519773,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":34391.71469783,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":34391.714731014,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":34392.661949395,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":34393.759608115,"data":"[NbConvertApp] Writing 329879 bytes to __results__.html\n"}
+]

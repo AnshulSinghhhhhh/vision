@@ -222,7 +222,11 @@ def generate_all_matched_tables(out_dir: str = None):
     if out_dir is None:
         out_dir = get_out_dir()
 
-    df = load_all_raw_data().copy()
+    needed_cols = [
+        "image_id", "condition", "severity", "model", "arm", "resolution",
+        "correct", "operator", "suite_condition", "config_name", "band"
+    ]
+    df = load_all_raw_data(columns=needed_cols)
     if "resolution" in df.columns:
         df = df.dropna(subset=["resolution"])
         df["resolution"] = df["resolution"].astype(int)

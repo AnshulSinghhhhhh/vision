@@ -1,0 +1,34 @@
+\begin{table}[t]
+\centering
+\caption{K16: BatchNorm (ResNet-50) vs LayerNorm (ConvNeXt-Base) under noise and resolution controls ($N=5{,}000$).}
+\label{tab:k16_bn_vs_ln}
+\small
+\begin{tabular}{llllccc}
+\toprule
+Model & Norm & Condition & Suite & Accuracy (\%) & 95\% CI & $N$ \\
+\midrule
+resnet50 & BatchNorm & clean s0 & A_orig448 & 79.50 & [78.38, 80.62] & 5000 \\
+convnext_base & LayerNorm & clean s0 & A_orig448 & 84.42 & [83.41, 85.43] & 5000 \\
+resnet50 & BatchNorm & clean s0 & B_filtered448 & 78.48 & [77.34, 79.62] & 5000 \\
+convnext_base & LayerNorm & clean s0 & B_filtered448 & 82.86 & [81.82, 83.90] & 5000 \\
+resnet50 & BatchNorm & clean s0 & C_down224 & 79.22 & [78.10, 80.34] & 5000 \\
+convnext_base & LayerNorm & clean s0 & C_down224 & 83.92 & [82.90, 84.94] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s3 & A_orig448 & 51.02 & [49.63, 52.41] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s3 & A_orig448 & 78.54 & [77.40, 79.68] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s3 & B_filtered448 & 60.76 & [59.41, 62.11] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s3 & B_filtered448 & 76.74 & [75.57, 77.91] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s3 & C_down224 & 71.64 & [70.39, 72.89] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s3 & C_down224 & 80.98 & [79.89, 82.07] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s3 & E_noise_matched & 74.80 & [73.60, 76.00] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s3 & E_noise_matched & 82.36 & [81.30, 83.42] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s5 & A_orig448 & 15.26 & [14.26, 16.26] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s5 & A_orig448 & 38.18 & [36.83, 39.53] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s5 & B_filtered448 & 27.66 & [26.42, 28.90] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s5 & B_filtered448 & 62.24 & [60.90, 63.58] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s5 & C_down224 & 55.38 & [54.00, 56.76] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s5 & C_down224 & 73.52 & [72.30, 74.74] & 5000 \\
+resnet50 & BatchNorm & gaussian_noise s5 & E_noise_matched & 63.96 & [62.63, 65.29] & 5000 \\
+convnext_base & LayerNorm & gaussian_noise s5 & E_noise_matched & 80.46 & [79.36, 81.56] & 5000 \\
+\bottomrule
+\end{tabular}
+\end{table}

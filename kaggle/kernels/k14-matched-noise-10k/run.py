@@ -76,7 +76,7 @@ for p in CANDIDATE_PATHS:
 
 from knobs.corrupt import apply_corruption, compute_seed, SeedContext, CORRUPTION_BACKEND
 from knobs.data import preprocess_image_448, balanced_subset
-from knobs.resize import build_m7_v2_suite
+from knobs.resize import build_m7_v2_suite, apply_m7_filter_without_decimation, resize_tensor_torch
 from knobs.models import create_model_instance, normalize_tensor, MODEL_TAGS
 from knobs.run_grid import get_environment_metadata
 
@@ -183,32 +183,46 @@ def run_k14(
                 clean_batch_448 = torch.stack(clean_tensors_list).to(device)
                 corr_batch_448 = torch.stack(corrupted_tensors_list).to(device)
 
-                # Process per-image suite representations
-                for i, img_id in enumerate(valid_ids):
-                    lbl = val_metadata[img_id]["class_idx"]
-                    c_single = clean_batch_448[i:i + 1]
-                    corr_single = corr_batch_448[i:i + 1]
+                # Build batched suite representations
+                for s_name in allowed_suites:
+                    if s_name == "A_orig448":
+                        in_batch = corr_batch_448
+                    elif s_name == "B_filtered448":
+                        in_batch = apply_m7_filter_without_decimation(corr_batch_448)
+                    elif s_name == "C_down224":
+                        in_batch = resize_tensor_torch(corr_batch_448, target_size=224)
+                    elif s_name == "E_noise_matched":
+                        sigmas_map = {1: 0.08, 2: 0.12, 3: 0.18, 4: 0.26, 5: 0.38}
+                        sigma_inj = sigmas_map.get(severity, 0.18)
+                        sigma_matched = 0.3125 * sigma_inj
+                        e_list = []
+                        for j, img_id in enumerate(valid_ids):
+                            seed = compute_seed(img_id, "gaussian_noise_matched", severity)
+                            clean_np = (clean_batch_448[j].permute(1, 2, 0).cpu().numpy() * 255.0)
+                            with SeedContext(seed):
+                                noise = np.random.normal(0, sigma_matched * 255.0, clean_np.shape)
+                            matched_np = np.clip(clean_np + noise, 0, 255).astype(np.uint8)
+                            e_t = torch.from_numpy(matched_np).permute(2, 0, 1).float() / 255.0
+                            e_list.append(e_t)
+                        in_batch = torch.stack(e_list).to(device)
+                    else:
+                        continue
 
-                    # Build suites verbatim
-                    suite = build_m7_v2_suite(c_single, corr_single, cond_name, severity, img_id)
+                    in_res = in_batch.shape[-1]
+                    active_model = models_dict.get((model_key, arm_key, in_res), models_dict[(model_key, arm_key, 448)])
+                    in_norm = normalize_tensor(in_batch, model_tag)
 
-                    for s_name in allowed_suites:
-                        if s_name not in suite:
-                            continue
-                        in_t = suite[s_name].to(device)
-                        in_norm = normalize_tensor(in_t, model_tag)
-                        
-                        in_res = in_t.shape[-1]
-                        active_model = models_dict.get((model_key, arm_key, in_res), models_dict[(model_key, arm_key, 448)])
-                        
-                        with torch.inference_mode():
-                            if device.type == "cuda":
-                                with torch.amp.autocast("cuda"):
-                                    logits = active_model(in_norm)
-                            else:
+                    with torch.inference_mode():
+                        if device.type == "cuda":
+                            with torch.amp.autocast("cuda"):
                                 logits = active_model(in_norm)
-                            pred = int(torch.argmax(logits, dim=1).item())
+                        else:
+                            logits = active_model(in_norm)
+                        preds = torch.argmax(logits, dim=1).cpu().numpy()
 
+                    for j, img_id in enumerate(valid_ids):
+                        lbl = val_metadata[img_id]["class_idx"]
+                        p = int(preds[j])
                         cond_records.append({
                             "image_id": img_id,
                             "condition": cond_name,
@@ -217,8 +231,8 @@ def run_k14(
                             "model": model_key,
                             "arm": arm_key,
                             "label": lbl,
-                            "pred": pred,
-                            "correct": (pred == lbl),
+                            "pred": p,
+                            "correct": (p == lbl),
                         })
 
                 if (b_idx // batch_size + 1) % 25 == 0:

@@ -1,0 +1,176 @@
+[{"stream_name":"stdout","time":14.005678731,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 22.1 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":8377.022074519,"data":"Added knobs path to sys.path: /kaggle/input/datasets/anshulsingh45/knobs-code/src\n"}
+,{"stream_name":"stderr","time":8378.337903856,"data":"/usr/local/lib/python3.13/dist-packages/imagecorruptions/corruptions.py:17: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools\u003c81.\n"}
+,{"stream_name":"stderr","time":8378.337933198,"data":"  from pkg_resources import resource_filename\n"}
+,{"stream_name":"stdout","time":8389.913140181,"data":"=== Launching K14-Matched-Noise-10k Kernel ===\n"}
+,{"stream_name":"stdout","time":8390.709340332,"data":"Extracted N=10000 class-balanced images (seed=0)\n"}
+,{"stream_name":"stdout","time":8390.71042761,"data":"=== Initializing K14 Models on cuda:0 ===\n"}
+,{"stream_name":"stdout","time":8390.710474838,"data":"Loading deit_base (arm: standard)...\n"}
+,{"stream_name":"stderr","time":8392.358584511,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":8395.79424136,"data":"Loading efficientnet_b3 (arm: standard)...\n"}
+,{"stream_name":"stdout","time":8397.716794207,"data":"Loading flexivit_base (arm: F-p)...\n"}
+,{"stream_name":"stdout","time":8402.324352612,"data":"\n"}
+,{"stream_name":"stdout","time":8402.324410377,"data":"--- Running: deit_base (standard) on clean s0 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":8451.671225122,"data":"  Processed 800/10000 images (49.3s)\n"}
+,{"stream_name":"stdout","time":8498.598639418,"data":"  Processed 1600/10000 images (96.3s)\n"}
+,{"stream_name":"stdout","time":8546.414728659,"data":"  Processed 2400/10000 images (144.1s)\n"}
+,{"stream_name":"stdout","time":8595.815296089,"data":"  Processed 3200/10000 images (193.5s)\n"}
+,{"stream_name":"stdout","time":8645.562818762,"data":"  Processed 4000/10000 images (243.2s)\n"}
+,{"stream_name":"stdout","time":8694.625422973,"data":"  Processed 4800/10000 images (292.3s)\n"}
+,{"stream_name":"stdout","time":8744.017650514,"data":"  Processed 5600/10000 images (341.7s)\n"}
+,{"stream_name":"stdout","time":8793.060941261,"data":"  Processed 6400/10000 images (390.7s)\n"}
+,{"stream_name":"stdout","time":8842.297818396,"data":"  Processed 7200/10000 images (440.0s)\n"}
+,{"stream_name":"stdout","time":8891.020720646,"data":"  Processed 8000/10000 images (488.7s)\n"}
+,{"stream_name":"stdout","time":8940.283034364,"data":"  Processed 8800/10000 images (538.0s)\n"}
+,{"stream_name":"stdout","time":8989.720785838,"data":"  Processed 9600/10000 images (587.4s)\n"}
+,{"stream_name":"stdout","time":9015.120002236,"data":"Saved 30000 records to shard_k14_deit_base_standard_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":9015.395514659,"data":"\n"}
+,{"stream_name":"stdout","time":9015.395543124,"data":"--- Running: deit_base (standard) on gaussian_noise s3 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":9104.701295617,"data":"  Processed 800/10000 images (89.3s)\n"}
+,{"stream_name":"stdout","time":9193.507371584,"data":"  Processed 1600/10000 images (178.1s)\n"}
+,{"stream_name":"stdout","time":9282.282197382,"data":"  Processed 2400/10000 images (266.9s)\n"}
+,{"stream_name":"stdout","time":9371.3760442,"data":"  Processed 3200/10000 images (356.0s)\n"}
+,{"stream_name":"stdout","time":9460.134446477,"data":"  Processed 4000/10000 images (444.7s)\n"}
+,{"stream_name":"stdout","time":9549.013730831,"data":"  Processed 4800/10000 images (533.6s)\n"}
+,{"stream_name":"stdout","time":9637.988627045,"data":"  Processed 5600/10000 images (622.6s)\n"}
+,{"stream_name":"stdout","time":9726.627863629,"data":"  Processed 6400/10000 images (711.2s)\n"}
+,{"stream_name":"stdout","time":9815.474875486,"data":"  Processed 7200/10000 images (800.1s)\n"}
+,{"stream_name":"stdout","time":9904.644371091,"data":"  Processed 8000/10000 images (889.2s)\n"}
+,{"stream_name":"stdout","time":9993.485067898,"data":"  Processed 8800/10000 images (978.1s)\n"}
+,{"stream_name":"stdout","time":10082.189347019,"data":"  Processed 9600/10000 images (1066.8s)\n"}
+,{"stream_name":"stdout","time":10126.856406288,"data":"Saved 40000 records to shard_k14_deit_base_standard_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":10127.149772103,"data":"\n"}
+,{"stream_name":"stdout","time":10127.14980801,"data":"--- Running: deit_base (standard) on gaussian_noise s5 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":10216.714373849,"data":"  Processed 800/10000 images (89.6s)\n"}
+,{"stream_name":"stdout","time":10305.344533774,"data":"  Processed 1600/10000 images (178.2s)\n"}
+,{"stream_name":"stdout","time":10394.154257752,"data":"  Processed 2400/10000 images (267.0s)\n"}
+,{"stream_name":"stdout","time":10483.082293325,"data":"  Processed 3200/10000 images (355.9s)\n"}
+,{"stream_name":"stdout","time":10571.854032493,"data":"  Processed 4000/10000 images (444.7s)\n"}
+,{"stream_name":"stdout","time":10660.50693817,"data":"  Processed 4800/10000 images (533.4s)\n"}
+,{"stream_name":"stdout","time":10749.778243004,"data":"  Processed 5600/10000 images (622.6s)\n"}
+,{"stream_name":"stdout","time":10838.726779632,"data":"  Processed 6400/10000 images (711.6s)\n"}
+,{"stream_name":"stdout","time":10927.388173624,"data":"  Processed 7200/10000 images (800.2s)\n"}
+,{"stream_name":"stdout","time":11015.919804132,"data":"  Processed 8000/10000 images (888.8s)\n"}
+,{"stream_name":"stdout","time":11104.643635085,"data":"  Processed 8800/10000 images (977.5s)\n"}
+,{"stream_name":"stdout","time":11193.074706016,"data":"  Processed 9600/10000 images (1065.9s)\n"}
+,{"stream_name":"stdout","time":11237.55122521,"data":"Saved 40000 records to shard_k14_deit_base_standard_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":11237.831996349,"data":"\n"}
+,{"stream_name":"stdout","time":11237.832034788,"data":"--- Running: deit_base (standard) on defocus_blur s3 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":11286.667210502,"data":"  Processed 800/10000 images (48.8s)\n"}
+,{"stream_name":"stdout","time":11334.938754821,"data":"  Processed 1600/10000 images (97.1s)\n"}
+,{"stream_name":"stdout","time":11382.732883679,"data":"  Processed 2400/10000 images (144.9s)\n"}
+,{"stream_name":"stdout","time":11431.028546258,"data":"  Processed 3200/10000 images (193.2s)\n"}
+,{"stream_name":"stdout","time":11478.988209512,"data":"  Processed 4000/10000 images (241.2s)\n"}
+,{"stream_name":"stdout","time":11527.008759676,"data":"  Processed 4800/10000 images (289.2s)\n"}
+,{"stream_name":"stdout","time":11575.573891098,"data":"  Processed 5600/10000 images (337.7s)\n"}
+,{"stream_name":"stdout","time":11624.186825948,"data":"  Processed 6400/10000 images (386.3s)\n"}
+,{"stream_name":"stdout","time":11672.491847395,"data":"  Processed 7200/10000 images (434.7s)\n"}
+,{"stream_name":"stdout","time":11720.833949029,"data":"  Processed 8000/10000 images (483.0s)\n"}
+,{"stream_name":"stdout","time":11768.98096668,"data":"  Processed 8800/10000 images (531.1s)\n"}
+,{"stream_name":"stdout","time":11817.09148985,"data":"  Processed 9600/10000 images (579.3s)\n"}
+,{"stream_name":"stdout","time":11841.368242198,"data":"Saved 20000 records to shard_k14_deit_base_standard_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":11841.651163823,"data":"\n"}
+,{"stream_name":"stdout","time":11841.651200098,"data":"--- Running: efficientnet_b3 (standard) on clean s0 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":11912.825919105,"data":"  Processed 800/10000 images (71.2s)\n"}
+,{"stream_name":"stdout","time":11970.763873229,"data":"  Processed 1600/10000 images (129.1s)\n"}
+,{"stream_name":"stdout","time":12028.303917096,"data":"  Processed 2400/10000 images (186.6s)\n"}
+,{"stream_name":"stdout","time":12086.269582351,"data":"  Processed 3200/10000 images (244.6s)\n"}
+,{"stream_name":"stdout","time":12144.436157114,"data":"  Processed 4000/10000 images (302.8s)\n"}
+,{"stream_name":"stdout","time":12202.103730243,"data":"  Processed 4800/10000 images (360.4s)\n"}
+,{"stream_name":"stdout","time":12259.953750555,"data":"  Processed 5600/10000 images (418.3s)\n"}
+,{"stream_name":"stdout","time":12317.860139608,"data":"  Processed 6400/10000 images (476.2s)\n"}
+,{"stream_name":"stdout","time":12375.815064495,"data":"  Processed 7200/10000 images (534.2s)\n"}
+,{"stream_name":"stdout","time":12433.819662142,"data":"  Processed 8000/10000 images (592.2s)\n"}
+,{"stream_name":"stdout","time":12492.100222725,"data":"  Processed 8800/10000 images (650.4s)\n"}
+,{"stream_name":"stdout","time":12549.947542056,"data":"  Processed 9600/10000 images (708.3s)\n"}
+,{"stream_name":"stdout","time":12579.063892277,"data":"Saved 30000 records to shard_k14_efficientnet_b3_standard_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":12579.337092827,"data":"\n"}
+,{"stream_name":"stdout","time":12579.337129332,"data":"--- Running: efficientnet_b3 (standard) on gaussian_noise s3 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":12691.585418584,"data":"  Processed 800/10000 images (112.2s)\n"}
+,{"stream_name":"stdout","time":12803.518491783,"data":"  Processed 1600/10000 images (224.2s)\n"}
+,{"stream_name":"stdout","time":12915.305395164,"data":"  Processed 2400/10000 images (336.0s)\n"}
+,{"stream_name":"stdout","time":13027.464051959,"data":"  Processed 3200/10000 images (448.1s)\n"}
+,{"stream_name":"stdout","time":13139.441556422,"data":"  Processed 4000/10000 images (560.1s)\n"}
+,{"stream_name":"stdout","time":13250.880816113,"data":"  Processed 4800/10000 images (671.5s)\n"}
+,{"stream_name":"stdout","time":13362.621940561,"data":"  Processed 5600/10000 images (783.3s)\n"}
+,{"stream_name":"stdout","time":13474.750382246,"data":"  Processed 6400/10000 images (895.4s)\n"}
+,{"stream_name":"stdout","time":13586.35571144,"data":"  Processed 7200/10000 images (1007.0s)\n"}
+,{"stream_name":"stdout","time":13698.508569041,"data":"  Processed 8000/10000 images (1119.2s)\n"}
+,{"stream_name":"stdout","time":13810.744785346,"data":"  Processed 8800/10000 images (1231.4s)\n"}
+,{"stream_name":"stdout","time":13923.131643129,"data":"  Processed 9600/10000 images (1343.8s)\n"}
+,{"stream_name":"stdout","time":13979.226579021,"data":"Saved 40000 records to shard_k14_efficientnet_b3_standard_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":13979.514179679,"data":"\n"}
+,{"stream_name":"stdout","time":13979.514211805,"data":"--- Running: efficientnet_b3 (standard) on gaussian_noise s5 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":14091.258950085,"data":"  Processed 800/10000 images (111.7s)\n"}
+,{"stream_name":"stdout","time":14202.697223188,"data":"  Processed 1600/10000 images (223.2s)\n"}
+,{"stream_name":"stdout","time":14313.605476926,"data":"  Processed 2400/10000 images (334.1s)\n"}
+,{"stream_name":"stdout","time":14425.59758327,"data":"  Processed 3200/10000 images (446.1s)\n"}
+,{"stream_name":"stdout","time":14537.918002721,"data":"  Processed 4000/10000 images (558.4s)\n"}
+,{"stream_name":"stdout","time":14649.706170432,"data":"  Processed 4800/10000 images (670.2s)\n"}
+,{"stream_name":"stdout","time":14762.006747262,"data":"  Processed 5600/10000 images (782.5s)\n"}
+,{"stream_name":"stdout","time":14874.228212066,"data":"  Processed 6400/10000 images (894.7s)\n"}
+,{"stream_name":"stdout","time":14985.74647286,"data":"  Processed 7200/10000 images (1006.2s)\n"}
+,{"stream_name":"stdout","time":15097.804868006,"data":"  Processed 8000/10000 images (1118.3s)\n"}
+,{"stream_name":"stdout","time":15210.13722432,"data":"  Processed 8800/10000 images (1230.6s)\n"}
+,{"stream_name":"stdout","time":15321.630019792,"data":"  Processed 9600/10000 images (1342.1s)\n"}
+,{"stream_name":"stdout","time":15377.418580158,"data":"Saved 40000 records to shard_k14_efficientnet_b3_standard_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":15377.692710555,"data":"\n"}
+,{"stream_name":"stdout","time":15377.69274911,"data":"--- Running: efficientnet_b3 (standard) on defocus_blur s3 (10000 images) ---\n"}
+,{"stream_name":"stdout","time":15439.265862386,"data":"  Processed 800/10000 images (61.6s)\n"}
+,{"stream_name":"stdout","time":15500.06748843,"data":"  Processed 1600/10000 images (122.4s)\n"}
+,{"stream_name":"stdout","time":15560.620737687,"data":"  Processed 2400/10000 images (182.9s)\n"}
+,{"stream_name":"stdout","time":15621.772637815,"data":"  Processed 3200/10000 images (244.1s)\n"}
+,{"stream_name":"stdout","time":15682.882746518,"data":"  Processed 4000/10000 images (305.2s)\n"}
+,{"stream_name":"stdout","time":15743.867796012,"data":"  Processed 4800/10000 images (366.2s)\n"}
+,{"stream_name":"stdout","time":15804.966438454,"data":"  Processed 5600/10000 images (427.3s)\n"}
+,{"stream_name":"stdout","time":15865.835186482,"data":"  Processed 6400/10000 images (488.1s)\n"}
+,{"stream_name":"stdout","time":15927.059341523,"data":"  Processed 7200/10000 images (549.4s)\n"}
+,{"stream_name":"stdout","time":15987.925117942,"data":"  Processed 8000/10000 images (610.2s)\n"}
+,{"stream_name":"stdout","time":16049.036827155,"data":"  Processed 8800/10000 images (671.3s)\n"}
+,{"stream_name":"stdout","time":16109.948653768,"data":"  Processed 9600/10000 images (732.3s)\n"}
+,{"stream_name":"stdout","time":16140.693582796,"data":"Saved 20000 records to shard_k14_efficientnet_b3_standard_defocus_blur_s3.parquet\n"}
+,{"stream_name":"stdout","time":16140.978933797,"data":"\n"}
+,{"stream_name":"stdout","time":16140.978971383,"data":"--- Running: flexivit_base (F-p) on clean s0 (10000 images) ---\n"}
+,{"stream_name":"stderr","time":16141.731611529,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":16141.733526832,"data":"  File \"/kaggle/src/script.py\", line 317, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":16141.733549067,"data":"    main()\n"}
+,{"stream_name":"stderr","time":16141.7335553,"data":"    ~~~~^^\n"}
+,{"stream_name":"stderr","time":16141.733575159,"data":"  File \"/kaggle/src/script.py\", line 305, in main\n"}
+,{"stream_name":"stderr","time":16141.733581841,"data":"    run_k14(\n"}
+,{"stream_name":"stderr","time":16141.733586694,"data":"    ~~~~~~~^\n"}
+,{"stream_name":"stderr","time":16141.733591638,"data":"        image_dir=img_dir,\n"}
+,{"stream_name":"stderr","time":16141.733601154,"data":"        ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":16141.733618371,"data":"    ...\u003c5 lines\u003e...\n"}
+,{"stream_name":"stderr","time":16141.733624221,"data":"        pretrained=True,\n"}
+,{"stream_name":"stderr","time":16141.733644879,"data":"        ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":16141.73364948,"data":"    )\n"}
+,{"stream_name":"stderr","time":16141.733653312,"data":"    ^\n"}
+,{"stream_name":"stderr","time":16141.733657896,"data":"  File \"/kaggle/src/script.py\", line 197, in run_k14\n"}
+,{"stream_name":"stderr","time":16141.733662862,"data":"    logits = model(in_norm)\n"}
+,{"stream_name":"stderr","time":16141.733681266,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stderr","time":16141.733686885,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":16141.733690859,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":16141.733694828,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stderr","time":16141.733699073,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":16141.733746634,"data":"  File \"/usr/local/lib/python3.13/dist-packages/timm/models/vision_transformer.py\", line 1308, in forward\n"}
+,{"stream_name":"stderr","time":16141.733753831,"data":"    x = self.forward_features(x, attn_mask=attn_mask, is_causal=is_causal)\n"}
+,{"stream_name":"stderr","time":16141.733826439,"data":"  File \"/usr/local/lib/python3.13/dist-packages/timm/models/vision_transformer.py\", line 1246, in forward_features\n"}
+,{"stream_name":"stderr","time":16141.733837831,"data":"    x = self.patch_embed(x)\n"}
+,{"stream_name":"stderr","time":16141.733851912,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stderr","time":16141.733856334,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":16141.733860304,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":16141.733919793,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stderr","time":16141.733926055,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":16141.734003916,"data":"  File \"/usr/local/lib/python3.13/dist-packages/timm/layers/patch_embed.py\", line 121, in forward\n"}
+,{"stream_name":"stderr","time":16141.73401201,"data":"    _assert(H == self.img_size[0], f\"Input height ({H}) doesn't match model ({self.img_size[0]}).\")\n"}
+,{"stream_name":"stderr","time":16141.734016344,"data":"    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":16141.734078502,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/__init__.py\", line 2254, in _assert\n"}
+,{"stream_name":"stderr","time":16141.734095921,"data":"    raise AssertionError(message)\n"}
+,{"stream_name":"stderr","time":16141.734120872,"data":"AssertionError: Input height (224) doesn't match model (448).\n"}
+,{"stream_name":"stderr","time":16150.105479734,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":16150.10553478,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":16150.426821682,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":16150.426858569,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":16151.478123691,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":16152.684894571,"data":"[NbConvertApp] Writing 329603 bytes to __results__.html\n"}
+]

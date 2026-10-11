@@ -29,7 +29,7 @@ def get_cache_dir() -> str:
     return cache_dir
 
 
-def load_all_raw_data(force_reload: bool = False) -> pd.DataFrame:
+def load_all_raw_data(force_reload: bool = False, columns: Optional[List[str]] = None) -> pd.DataFrame:
     """Loads all parquet shards from results/raw, deduplicating records.
     
     Preserves all distinct experimental variants across operator (K10),
@@ -38,7 +38,7 @@ def load_all_raw_data(force_reload: bool = False) -> pd.DataFrame:
     """
     cache_path = os.path.join(get_cache_dir(), "all_raw.parquet")
     if not force_reload and os.path.exists(cache_path):
-        return pd.read_parquet(cache_path)
+        return pd.read_parquet(cache_path, columns=columns)
 
     raw_dir = os.path.join(get_repo_root(), "results", "raw")
     shard_files = sorted(glob.glob(os.path.join(raw_dir, "**", "shards", "*.parquet"), recursive=True))
@@ -67,6 +67,9 @@ def load_all_raw_data(force_reload: bool = False) -> pd.DataFrame:
     
     # Cache for rapid access
     df.to_parquet(cache_path, index=False)
+    if columns is not None:
+        avail_cols = [c for c in columns if c in df.columns]
+        return df[avail_cols]
     return df
 
 

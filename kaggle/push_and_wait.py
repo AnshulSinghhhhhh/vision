@@ -35,7 +35,8 @@ CODE_DATASET_SLUG = "knobs-code"
 def run_cmd(cmd_list: list, check: bool = True) -> subprocess.CompletedProcess:
     """Executes a command and returns the completed process."""
     print(f"[CMD] {' '.join(cmd_list)}", flush=True)
-    res = subprocess.run(cmd_list, capture_output=True, text=True)
+    cmd_str = subprocess.list2cmdline(cmd_list) if os.name == 'nt' else cmd_list
+    res = subprocess.run(cmd_str, capture_output=True, text=True, shell=(os.name == 'nt'))
     if check and res.returncode != 0:
         print(f"[ERROR] Stderr: {res.stderr}", flush=True)
         print(f"[ERROR] Stdout: {res.stdout}", flush=True)
@@ -146,7 +147,15 @@ def push_and_wait_kernel(
             push_cmd.extend(["--accelerator", accelerator])
             
         print(f"Pushing kernel from {kernel_dir} with accelerator {accelerator}...")
-        run_cmd(push_cmd)
+        for attempt in range(1, 5):
+            try:
+                run_cmd(push_cmd)
+                break
+            except Exception as e:
+                print(f"[RETRY {attempt}/4] Kernel push encountered error: {e}. Retrying in 5s...", flush=True)
+                time.sleep(5)
+        else:
+            raise RuntimeError(f"Failed to push kernel {kernel_slug} after 4 attempts.")
     else:
         print(f"Skipping push (--wait-only); polling existing kernel {kernel_slug}...")
     

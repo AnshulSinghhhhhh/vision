@@ -28,21 +28,10 @@ def compute_k14_table(parquet_path: str = None, out_dir: str = None) -> Tuple[pd
         out_dir = get_out_dir()
 
     if parquet_path is None:
-        raw_candidates = [
-            os.path.join(get_repo_root(), "results", "raw", "k14-matched-noise-10k", "shard_matched_noise_10k.parquet"),
-            os.path.join(get_repo_root(), "results", "raw", "k14-matched-noise-10k", "shards"),
-        ]
+        shards_dir = os.path.join(get_repo_root(), "results", "raw", "k14-matched-noise-10k", "shards")
         df = None
-        if os.path.exists(raw_candidates[0]):
-            try:
-                candidate_df = pd.read_parquet(raw_candidates[0])
-                if len(candidate_df) > 0:
-                    df = candidate_df
-            except Exception:
-                pass
-
-        if df is None and os.path.exists(raw_candidates[1]):
-            shards = [os.path.join(raw_candidates[1], f) for f in os.listdir(raw_candidates[1]) if f.endswith(".parquet")]
+        if os.path.exists(shards_dir):
+            shards = [os.path.join(shards_dir, f) for f in os.listdir(shards_dir) if f.endswith(".parquet")]
             dfs = []
             for s in shards:
                 try:
@@ -53,10 +42,17 @@ def compute_k14_table(parquet_path: str = None, out_dir: str = None) -> Tuple[pd
                     pass
             if dfs:
                 df = pd.concat(dfs, ignore_index=True)
-            else:
-                raise FileNotFoundError("No valid non-empty shards found in k14 folder")
-        else:
-            raise FileNotFoundError("K14 results parquet not found")
+
+        if df is None:
+            final_p = os.path.join(get_repo_root(), "results", "raw", "k14-matched-noise-10k", "shard_matched_noise_10k.parquet")
+            if os.path.exists(final_p):
+                try:
+                    df = pd.read_parquet(final_p)
+                except Exception:
+                    pass
+
+        if df is None or len(df) == 0:
+            raise FileNotFoundError("K14 results parquet not found or empty")
     else:
         df = pd.read_parquet(parquet_path)
 

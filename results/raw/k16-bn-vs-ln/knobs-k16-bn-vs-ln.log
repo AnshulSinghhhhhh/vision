@@ -1,0 +1,75 @@
+[{"stream_name":"stdout","time":26.61893779,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 23.0 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":9381.107245661,"data":"Added knobs path to sys.path: /kaggle/input/knobs-code/src\n"}
+,{"stream_name":"stderr","time":9396.089504061,"data":"/usr/local/lib/python3.13/dist-packages/imagecorruptions/corruptions.py:17: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools\u003c81.\n"}
+,{"stream_name":"stderr","time":9396.089540775,"data":"  from pkg_resources import resource_filename\n"}
+,{"stream_name":"stdout","time":9396.349361837,"data":"=== Launching K16-BN-vs-LN Kernel ===\n"}
+,{"stream_name":"stdout","time":9397.227918392,"data":"Extracted N=5000 class-balanced images (seed=0)\n"}
+,{"stream_name":"stdout","time":9397.22982518,"data":"=== Initializing K16 Models on cuda:0 ===\n"}
+,{"stream_name":"stdout","time":9397.229898798,"data":"Loading resnet50 (tag: resnet50.a1_in1k)...\n"}
+,{"stream_name":"stderr","time":9397.883133124,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":9401.880321412,"data":"Loading convnext_base (tag: convnext_base.fb_in22k_ft_in1k)...\n"}
+,{"stream_name":"stdout","time":9405.400556494,"data":"\n"}
+,{"stream_name":"stdout","time":9405.400686422,"data":"--- Running: resnet50 on clean s0 (5000 images) ---\n"}
+,{"stream_name":"stdout","time":9435.064105928,"data":"  Processed 800/5000 images (29.7s)\n"}
+,{"stream_name":"stdout","time":9460.135791237,"data":"  Processed 1600/5000 images (54.7s)\n"}
+,{"stream_name":"stdout","time":9485.730360838,"data":"  Processed 2400/5000 images (80.3s)\n"}
+,{"stream_name":"stdout","time":9511.214411482,"data":"  Processed 3200/5000 images (105.8s)\n"}
+,{"stream_name":"stdout","time":9536.702278773,"data":"  Processed 4000/5000 images (131.3s)\n"}
+,{"stream_name":"stdout","time":9562.044554084,"data":"  Processed 4800/5000 images (156.6s)\n"}
+,{"stream_name":"stdout","time":9568.747203995,"data":"Saved 15000 records to shard_k16_resnet50_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":9569.024377156,"data":"\n"}
+,{"stream_name":"stdout","time":9569.024406084,"data":"--- Running: resnet50 on gaussian_noise s3 (5000 images) ---\n"}
+,{"stream_name":"stdout","time":9627.431473302,"data":"  Processed 800/5000 images (58.4s)\n"}
+,{"stream_name":"stdout","time":9685.270537491,"data":"  Processed 1600/5000 images (116.2s)\n"}
+,{"stream_name":"stdout","time":9743.343627151,"data":"  Processed 2400/5000 images (174.3s)\n"}
+,{"stream_name":"stdout","time":9800.786530251,"data":"  Processed 3200/5000 images (231.8s)\n"}
+,{"stream_name":"stdout","time":9858.59740615,"data":"  Processed 4000/5000 images (289.6s)\n"}
+,{"stream_name":"stdout","time":9916.112043981,"data":"  Processed 4800/5000 images (347.1s)\n"}
+,{"stream_name":"stdout","time":9930.501301597,"data":"Saved 20000 records to shard_k16_resnet50_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":9930.773878287,"data":"\n"}
+,{"stream_name":"stdout","time":9930.773914975,"data":"--- Running: resnet50 on gaussian_noise s5 (5000 images) ---\n"}
+,{"stream_name":"stdout","time":9988.745415702,"data":"  Processed 800/5000 images (58.0s)\n"}
+,{"stream_name":"stdout","time":10046.229464799,"data":"  Processed 1600/5000 images (115.5s)\n"}
+,{"stream_name":"stdout","time":10104.296219907,"data":"  Processed 2400/5000 images (173.5s)\n"}
+,{"stream_name":"stdout","time":10161.862057368,"data":"  Processed 3200/5000 images (231.1s)\n"}
+,{"stream_name":"stdout","time":10219.502120676,"data":"  Processed 4000/5000 images (288.7s)\n"}
+,{"stream_name":"stdout","time":10276.905298965,"data":"  Processed 4800/5000 images (346.1s)\n"}
+,{"stream_name":"stdout","time":10291.234493216,"data":"Saved 20000 records to shard_k16_resnet50_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":10291.531927061,"data":"\n"}
+,{"stream_name":"stdout","time":10291.531985593,"data":"--- Running: convnext_base on clean s0 (5000 images) ---\n"}
+,{"stream_name":"stdout","time":10338.919552039,"data":"  Processed 800/5000 images (47.4s)\n"}
+,{"stream_name":"stdout","time":10374.5953111,"data":"  Processed 1600/5000 images (83.1s)\n"}
+,{"stream_name":"stdout","time":10410.777779005,"data":"  Processed 2400/5000 images (119.2s)\n"}
+,{"stream_name":"stdout","time":10446.981010296,"data":"  Processed 3200/5000 images (155.4s)\n"}
+,{"stream_name":"stdout","time":10483.352238359,"data":"  Processed 4000/5000 images (191.8s)\n"}
+,{"stream_name":"stdout","time":10519.797334483,"data":"  Processed 4800/5000 images (228.3s)\n"}
+,{"stream_name":"stdout","time":10539.07602858,"data":"Saved 15000 records to shard_k16_convnext_base_clean_s0.parquet\n"}
+,{"stream_name":"stdout","time":10539.363176627,"data":"\n"}
+,{"stream_name":"stdout","time":10539.363214104,"data":"--- Running: convnext_base on gaussian_noise s3 (5000 images) ---\n"}
+,{"stream_name":"stdout","time":10620.950857706,"data":"  Processed 800/5000 images (81.6s)\n"}
+,{"stream_name":"stdout","time":10702.103177994,"data":"  Processed 1600/5000 images (162.7s)\n"}
+,{"stream_name":"stdout","time":10783.269976519,"data":"  Processed 2400/5000 images (243.9s)\n"}
+,{"stream_name":"stdout","time":10864.18046464,"data":"  Processed 3200/5000 images (324.8s)\n"}
+,{"stream_name":"stdout","time":10945.197736077,"data":"  Processed 4000/5000 images (405.8s)\n"}
+,{"stream_name":"stdout","time":11025.937738578,"data":"  Processed 4800/5000 images (486.6s)\n"}
+,{"stream_name":"stdout","time":11046.249531126,"data":"Saved 20000 records to shard_k16_convnext_base_gaussian_noise_s3.parquet\n"}
+,{"stream_name":"stdout","time":11046.536079792,"data":"\n"}
+,{"stream_name":"stdout","time":11046.53612276,"data":"--- Running: convnext_base on gaussian_noise s5 (5000 images) ---\n"}
+,{"stream_name":"stdout","time":11127.420570625,"data":"  Processed 800/5000 images (80.9s)\n"}
+,{"stream_name":"stdout","time":11208.205917458,"data":"  Processed 1600/5000 images (161.7s)\n"}
+,{"stream_name":"stdout","time":11289.164488368,"data":"  Processed 2400/5000 images (242.6s)\n"}
+,{"stream_name":"stdout","time":11370.008814268,"data":"  Processed 3200/5000 images (323.5s)\n"}
+,{"stream_name":"stdout","time":11451.013357121,"data":"  Processed 4000/5000 images (404.5s)\n"}
+,{"stream_name":"stdout","time":11532.217863773,"data":"  Processed 4800/5000 images (485.7s)\n"}
+,{"stream_name":"stdout","time":11552.466281558,"data":"Saved 20000 records to shard_k16_convnext_base_gaussian_noise_s5.parquet\n"}
+,{"stream_name":"stdout","time":11552.712928354,"data":"\n"}
+,{"stream_name":"stdout","time":11552.712990241,"data":"=== Consolidating All K16 Shards ===\n"}
+,{"stream_name":"stdout","time":11553.090526539,"data":"Final K16 dataset written to /kaggle/working/shard_bn_vs_ln.parquet (110000 rows)\n"}
+,{"stream_name":"stdout","time":11553.159913797,"data":"Wrote run metadata to /kaggle/working/run_meta.json\n"}
+,{"stream_name":"stderr","time":11564.22032968,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":11564.220370102,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":11564.662895069,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":11564.662921936,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":11565.687476004,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":11567.177501218,"data":"[NbConvertApp] Writing 342138 bytes to __results__.html\n"}
+]

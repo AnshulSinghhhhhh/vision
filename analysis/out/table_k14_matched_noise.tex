@@ -1,0 +1,51 @@
+\begin{table}[t]
+\centering
+\caption{K14: Matched-Noise and Defocus Verification ($N=10{,}000$).}
+\label{tab:k14_matched_noise}
+\small
+\begin{tabular}{lllccccc}
+\toprule
+Model & Condition & Suite & Accuracy (\%) & 95\% CI & $N$ \\
+\midrule
+deit_base & clean s0 & A_orig448 & 79.70 & [78.91, 80.49] & 10000 \\
+deit_base & clean s0 & B_filtered448 & 79.27 & [78.48, 80.06] & 10000 \\
+deit_base & clean s0 & C_down224 & 80.99 & [80.22, 81.76] & 10000 \\
+deit_base & defocus_blur s3 & A_orig448 & 65.63 & [64.70, 66.56] & 10000 \\
+deit_base & defocus_blur s3 & C_down224 & 72.96 & [72.09, 73.83] & 10000 \\
+deit_base & gaussian_noise s3 & A_orig448 & 71.81 & [70.93, 72.69] & 10000 \\
+deit_base & gaussian_noise s3 & B_filtered448 & 69.84 & [68.94, 70.74] & 10000 \\
+deit_base & gaussian_noise s3 & C_down224 & 78.00 & [77.19, 78.81] & 10000 \\
+deit_base & gaussian_noise s3 & E_noise_matched & 78.12 & [77.31, 78.93] & 10000 \\
+deit_base & gaussian_noise s5 & A_orig448 & 50.97 & [49.99, 51.95] & 10000 \\
+deit_base & gaussian_noise s5 & B_filtered448 & 54.84 & [53.86, 55.82] & 10000 \\
+deit_base & gaussian_noise s5 & C_down224 & 71.80 & [70.92, 72.68] & 10000 \\
+deit_base & gaussian_noise s5 & E_noise_matched & 75.95 & [75.11, 76.79] & 10000 \\
+efficientnet_b3 & clean s0 & A_orig448 & 82.32 & [81.57, 83.07] & 10000 \\
+efficientnet_b3 & clean s0 & B_filtered448 & 82.14 & [81.39, 82.89] & 10000 \\
+efficientnet_b3 & clean s0 & C_down224 & 77.95 & [77.14, 78.76] & 10000 \\
+efficientnet_b3 & defocus_blur s3 & A_orig448 & 69.94 & [69.04, 70.84] & 10000 \\
+efficientnet_b3 & defocus_blur s3 & C_down224 & 67.28 & [66.36, 68.20] & 10000 \\
+efficientnet_b3 & gaussian_noise s3 & A_orig448 & 52.98 & [52.00, 53.96] & 10000 \\
+efficientnet_b3 & gaussian_noise s3 & B_filtered448 & 73.41 & [72.54, 74.28] & 10000 \\
+efficientnet_b3 & gaussian_noise s3 & C_down224 & 70.79 & [69.90, 71.68] & 10000 \\
+efficientnet_b3 & gaussian_noise s3 & E_noise_matched & 79.90 & [79.11, 80.69] & 10000 \\
+efficientnet_b3 & gaussian_noise s5 & A_orig448 & 3.50 & [3.14, 3.86] & 10000 \\
+efficientnet_b3 & gaussian_noise s5 & B_filtered448 & 53.38 & [52.40, 54.36] & 10000 \\
+efficientnet_b3 & gaussian_noise s5 & C_down224 & 58.08 & [57.11, 59.05] & 10000 \\
+efficientnet_b3 & gaussian_noise s5 & E_noise_matched & 74.64 & [73.79, 75.49] & 10000 \\
+flexivit_base & clean s0 & A_orig448 & 83.65 & [82.93, 84.37] & 10000 \\
+flexivit_base & clean s0 & B_filtered448 & 83.40 & [82.67, 84.13] & 10000 \\
+flexivit_base & clean s0 & C_down224 & 83.26 & [82.53, 83.99] & 10000 \\
+flexivit_base & defocus_blur s3 & A_orig448 & 76.40 & [75.57, 77.23] & 10000 \\
+flexivit_base & defocus_blur s3 & C_down224 & 76.25 & [75.42, 77.08] & 10000 \\
+flexivit_base & gaussian_noise s3 & A_orig448 & 73.29 & [72.42, 74.16] & 10000 \\
+flexivit_base & gaussian_noise s3 & B_filtered448 & 75.79 & [74.95, 76.63] & 10000 \\
+flexivit_base & gaussian_noise s3 & C_down224 & 80.16 & [79.38, 80.94] & 10000 \\
+flexivit_base & gaussian_noise s3 & E_noise_matched & 82.07 & [81.32, 82.82] & 10000 \\
+flexivit_base & gaussian_noise s5 & A_orig448 & 31.02 & [30.11, 31.93] & 10000 \\
+flexivit_base & gaussian_noise s5 & B_filtered448 & 59.62 & [58.66, 60.58] & 10000 \\
+flexivit_base & gaussian_noise s5 & C_down224 & 73.85 & [72.99, 74.71] & 10000 \\
+flexivit_base & gaussian_noise s5 & E_noise_matched & 78.37 & [77.56, 79.18] & 10000 \\
+\bottomrule
+\end{tabular}
+\end{table}
